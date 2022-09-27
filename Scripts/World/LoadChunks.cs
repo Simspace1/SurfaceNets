@@ -244,7 +244,8 @@ public class LoadChunks : MonoBehaviour
 
             Columns column;
             //Check if Column exists
-            if(world.chunkColumns.TryGetValue(newChunkColumnPos, out column)){
+            column = world.TryGetColumn(newChunkColumnPos);
+            if(column != null){
                 //Check if close enough to do close Generation
                 if(i < 1 && WorldPos.Distance(playerPos, newChunkColumnPos) < loadDistance){
                     if(column.chunkColumn == null){
@@ -264,7 +265,7 @@ public class LoadChunks : MonoBehaviour
             //Creates far chunks and Columns
             else if(farCreateList.Count < farChunkupdates){
                 Columns col = new Columns(world, newChunkColumnPos);
-                world.chunkColumns.Add(newChunkColumnPos, col);
+                world.AddColumns(newChunkColumnPos, col);
                 farCreateList.Add(col);
             }
             //If chunkColumn is not created and farChunkUpdates is exceeded stop generating
@@ -286,7 +287,8 @@ public class LoadChunks : MonoBehaviour
 
         Columns columnAdj;
         foreach(WorldPos posAdj in adjChunkColumn){
-            if(world.chunkColumns.TryGetValue(posAdj, out columnAdj)){
+            columnAdj = world.TryGetColumn(posAdj);
+            if(columnAdj != null){
                 if(columnAdj.chunkColumn == null){
                     columnAdj.chunkColumn = new ChunkColumn(columnAdj);
                     createList1.Add(columnAdj);
@@ -294,7 +296,7 @@ public class LoadChunks : MonoBehaviour
             }
             else{
                 Columns col = new Columns(world, posAdj);
-                world.chunkColumns.Add(posAdj, col);
+                world.AddColumns(posAdj, col);
                 farCreateList.Add(col);
                 col.CreateChunkColumn();
                 createList1.Add(col);
@@ -841,23 +843,12 @@ public class LoadChunks : MonoBehaviour
         }
         else{
             Vector3 ppos = new Vector3(transform.position.x,0,transform.position.z);
-            float distance;
             float chunkDistance = (loadRadius+2)*Chunk.chunkSize;
             float columnDistance = (farLoadRadius+2)*Chunk.chunkSize;
 
-            List<Columns> toDestroy = new List<Columns>();
+            List<Columns> toDestroy;
 
-            foreach (var entry in world.chunkColumns){
-                distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), ppos);
-
-                if (entry.Value.chunkColumn != null && distance >= chunkDistance){
-                    entry.Value.DestroyChunkColumn();
-                }
-
-                if(distance >= columnDistance){
-                    toDestroy.Add(entry.Value);
-                }
-            }
+            toDestroy = world.CheckDestroyColumn(ppos,chunkDistance,columnDistance);
 
             foreach(Columns column in toDestroy){
                 Columns.Destroy(column);

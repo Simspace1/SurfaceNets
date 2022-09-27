@@ -28,7 +28,7 @@ public class World : MonoBehaviour
     // public Dictionary<WorldPos, ChunkColumn> chunkColumns2 = new Dictionary<WorldPos, ChunkColumn>(WorldPosEqC);
     // public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
 
-    public Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
+    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
@@ -92,7 +92,16 @@ public class World : MonoBehaviour
 
     void OnDestroy(){
         //MUST FIX HERE SAVE MANAGER AND PLAYERUICONTROLLER
-        SaveManager.SaveAll(this);
+        SaveAll();
+    }
+
+    public void SaveAll(){
+        foreach(var col in chunkColumns){
+            if(col.Value.CheckModified()){
+                SaveManager.SaveChunkColumn(col.Value.chunkColumn);
+            }  
+        }
+        SaveManager.SaveWorld(this);
     }
 
     
@@ -988,5 +997,44 @@ public class World : MonoBehaviour
 
     public void AddChunkUpdate(Chunk chunk){
         chunkUpdates.Add(chunk);
+    }
+
+    public void AddColumns(WorldPos pos, Columns col){
+        chunkColumns.Add(pos, col);
+    }
+
+    public Columns TryGetColumn(WorldPos pos){
+        Columns column;
+        bool check = chunkColumns.TryGetValue(pos, out column);
+
+        if(check){
+            return column; 
+        }
+        else{
+            return null;
+        }
+    }
+
+    public List<Columns> CheckDestroyColumn(Vector3 ppos, float chunkDistance, float columnDistance){
+
+        float distance;
+        List<Columns> toDestroy = new List<Columns>();
+        foreach (var entry in chunkColumns){
+            distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), ppos);
+
+            if (entry.Value.chunkColumn != null && distance >= chunkDistance){
+                entry.Value.DestroyChunkColumn();
+            }
+
+            if(distance >= columnDistance){
+                toDestroy.Add(entry.Value);
+            }
+        }
+        return toDestroy;
+
+    }
+
+    public void RemoveColumns(WorldPos pos){
+        chunkColumns.Remove(pos);
     }
 }

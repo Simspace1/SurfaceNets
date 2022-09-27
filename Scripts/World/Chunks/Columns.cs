@@ -80,7 +80,7 @@ public class Columns
             column.world.DestroyChunkColumn(column);
         }
 
-        column.world.chunkColumns.Remove(column.pos);
+        column.world.RemoveColumns(column.pos);
     }
 
     public bool CheckModified(){
