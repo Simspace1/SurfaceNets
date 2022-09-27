@@ -6,14 +6,15 @@ using System.Diagnostics;
 public class LoadChunks : MonoBehaviour
 {
 
-    public World world;
+    [SerializeField]
+    private World world;
 
-    List<WorldPos> updateList = new List<WorldPos>();
-    List<WorldPos> buildList = new List<WorldPos>();
+    private List<WorldPos> updateList = new List<WorldPos>();
+    private List<WorldPos> buildList = new List<WorldPos>();
 
-    List<ChunkColumn> createList = new List<ChunkColumn>();
-    List<ChunkColumn> renderList = new List<ChunkColumn>();
-    List<ChunkColumnFarAndClose> destroyList = new List<ChunkColumnFarAndClose>();
+    // private List<ChunkColumn> createList = new List<ChunkColumn>();
+    // private List<ChunkColumn> renderList = new List<ChunkColumn>();
+    // private List<ChunkColumnFarAndClose> destroyList = new List<ChunkColumnFarAndClose>();
 
     static List<Columns> farCreateList = new List<Columns>();
     static List<Columns> createList1 = new List<Columns>();
@@ -25,16 +26,16 @@ public class LoadChunks : MonoBehaviour
     public static int loadRadius = 10;
     public static float loadDistance = loadRadius * Chunk.chunkSize;
     public static int farLoadRadius = 40;
-    static int loadDiameter = loadRadius*2+1;
-    static int farLoadDiameter = farLoadRadius*2+1;
-    static int farChunkupdates = 10;
+    private static int loadDiameter = loadRadius*2+1;
+    private static int farLoadDiameter = farLoadRadius*2+1;
+    public static int farChunkupdates = 10;
 
-    WorldPos[] chunkPositions = new WorldPos[loadDiameter*loadDiameter];
-    WorldPos[] farChunkPositions = new WorldPos[farLoadDiameter*farLoadDiameter];
+    private WorldPos[] chunkPositions = new WorldPos[loadDiameter*loadDiameter];
+    private WorldPos[] farChunkPositions = new WorldPos[farLoadDiameter*farLoadDiameter];
 
-    bool built = false;
+    // bool built = false;
 
-    Stopwatch stopWatch = new Stopwatch();
+    // Stopwatch stopWatch = new Stopwatch();
 
 
     // Start is called before the first frame update
@@ -218,7 +219,7 @@ public class LoadChunks : MonoBehaviour
         }
 
         //If there are any chunksColumns still rendering wait for them to finish
-        if(renderList.Count > 0 ){
+        if(renderList1.Count > 0 ){
             // if(stopWatch.ElapsedMilliseconds > 10){
             //     print("Render Return: "+ stopWatch.ElapsedMilliseconds);
             // }

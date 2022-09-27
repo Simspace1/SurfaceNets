@@ -24,10 +24,6 @@ public class World : MonoBehaviour
     //This Var should be removed and all its functionality merged with chunkColumns for performance
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
-    // public Dictionary<WorldPos, List<WorldPos>> chunkColumns = new Dictionary<WorldPos, List<WorldPos>>(WorldPosEqC);
-    // public Dictionary<WorldPos, ChunkColumn> chunkColumns2 = new Dictionary<WorldPos, ChunkColumn>(WorldPosEqC);
-    // public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
-
     private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
