@@ -20,6 +20,8 @@ public class World : MonoBehaviour
 
 
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
+
+    //This Var should be removed and all its functionality merged with chunkColumns for performance
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
     // public Dictionary<WorldPos, List<WorldPos>> chunkColumns = new Dictionary<WorldPos, List<WorldPos>>(WorldPosEqC);
@@ -28,7 +30,7 @@ public class World : MonoBehaviour
 
     public Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
-    public List<Chunk> chunkUpdates = new List<Chunk>();
+    private List<Chunk> chunkUpdates = new List<Chunk>();
 
     private static float bottomWorldHeight = -1600;
 
@@ -977,5 +979,13 @@ public class World : MonoBehaviour
 
     public WorldData GetWorldData(){
         return worldData;
+    }
+
+    public int GetChunkUpdateCount(){
+        return chunkUpdates.Count;
+    }
+
+    public void AddChunkUpdate(Chunk chunk){
+        chunkUpdates.Add(chunk);
     }
 }

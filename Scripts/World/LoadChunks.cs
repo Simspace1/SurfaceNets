@@ -200,7 +200,7 @@ public class LoadChunks : MonoBehaviour
 
         //Check for render ChunkColumn
         foreach(Columns column in renderList1){
-            if(world.chunkUpdates.Count >= World.maxChunkUpdates){
+            if(world.GetChunkUpdateCount() >= World.maxChunkUpdates){
                 break;
             }
             else if(!column.chunkColumn.rendered){
@@ -707,19 +707,19 @@ public class LoadChunks : MonoBehaviour
     //     }
     // }
 
-    void RenderChunks(){
-        if(updateList.Count != 0 && !built){
-            int count = updateList.Count;
-            for (int i = 0; i< 1; i++){
-                Chunk chunk = world.GetChunk(updateList[0].x,updateList[0].y,updateList[0].z);
-                if(chunk != null){
-                    chunk.update = true;
-                    world.chunkUpdates.Add(chunk);
-                }
-                updateList.RemoveAt(0);
-            }
-        }
-    }
+    // void RenderChunks(){
+    //     if(updateList.Count != 0 && !built){
+    //         int count = updateList.Count;
+    //         for (int i = 0; i< 1; i++){
+    //             Chunk chunk = world.GetChunk(updateList[0].x,updateList[0].y,updateList[0].z);
+    //             if(chunk != null){
+    //                 chunk.update = true;
+    //                 world.chunkUpdates.Add(chunk);
+    //             }
+    //             updateList.RemoveAt(0);
+    //         }
+    //     }
+    // }
 
 
     bool DeleteChunks1(){

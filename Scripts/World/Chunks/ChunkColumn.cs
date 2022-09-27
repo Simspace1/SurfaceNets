@@ -173,7 +173,7 @@ public class ChunkColumn
                     chunk.RenderMesh(chunk.meshData);
                 }
                 else{
-                    world.chunkUpdates.Add(chunk);
+                    world.AddChunkUpdate(chunk);
                     chunk.update = true;
                 }
             }
@@ -182,7 +182,7 @@ public class ChunkColumn
         }        
         else{
             foreach(Chunk chunk in chunks){
-                world.chunkUpdates.Add(chunk);
+                world.AddChunkUpdate(chunk);
                 chunk.update = true;
             }
             rendered = true;
