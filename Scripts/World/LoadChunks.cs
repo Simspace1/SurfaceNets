@@ -304,233 +304,233 @@ public class LoadChunks : MonoBehaviour
 
 
 
-    void FindLoadCreateRenderChunks(){
-        // Stopwatch stopWatch = new Stopwatch();
-        // stopWatch.Start();
+    // void FindLoadCreateRenderChunks(){
+    //     // Stopwatch stopWatch = new Stopwatch();
+    //     // stopWatch.Start();
 
-        float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
-        float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
-        float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
-        WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
+    //     float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
+    //     float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
+    //     float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
+    //     WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
 
-        int i = 0;
-        bool check;
-        bool checkRender;
-        if(farChunkColThread == null){
-            check = false;
-            checkRender = true;
-        }
-        else{
-            check = farChunkColThread.CreateCheck();
-            checkRender = farChunkColThread.rendered;
-        }
+    //     int i = 0;
+    //     bool check;
+    //     bool checkRender;
+    //     if(farChunkColThread == null){
+    //         check = false;
+    //         checkRender = true;
+    //     }
+    //     else{
+    //         check = farChunkColThread.CreateCheck();
+    //         checkRender = farChunkColThread.rendered;
+    //     }
         
-        FarChunkCol farChunkCol;
-        if(!check && !checkRender){
-            farChunkColThread.Render();
-        }
-        else if(!check){
-            List<FarChunkCol> farChunkCols = new List<FarChunkCol>();
-            foreach(WorldPos chunkColumnPos in farChunkPositions){
-                if(chunkColumnPos == null){
-                    break;
-                }
-                WorldPos newFarChunkColumnPos = new WorldPos(
-                    chunkColumnPos.x+playerPos.x,
-                    0,
-                    chunkColumnPos.z+playerPos.z);
+    //     FarChunkCol farChunkCol;
+    //     if(!check && !checkRender){
+    //         farChunkColThread.Render();
+    //     }
+    //     else if(!check){
+    //         List<FarChunkCol> farChunkCols = new List<FarChunkCol>();
+    //         foreach(WorldPos chunkColumnPos in farChunkPositions){
+    //             if(chunkColumnPos == null){
+    //                 break;
+    //             }
+    //             WorldPos newFarChunkColumnPos = new WorldPos(
+    //                 chunkColumnPos.x+playerPos.x,
+    //                 0,
+    //                 chunkColumnPos.z+playerPos.z);
                 
-                if(!world.farChunkColumns.TryGetValue(newFarChunkColumnPos, out farChunkCol)){
+    //             if(!world.farChunkColumns.TryGetValue(newFarChunkColumnPos, out farChunkCol)){
                     
-                    if(i >= 10){
-                        break;
-                    }
+    //                 if(i >= 10){
+    //                     break;
+    //                 }
                     
 
-                    ChunkColumn chunkColumn1;
-                    if(!world.chunkColumns2.TryGetValue(newFarChunkColumnPos, out chunkColumn1) || !chunkColumn1.rendered){
-                        farChunkCol = world.CreateFarChunkColumn(newFarChunkColumnPos);
-                        farChunkCols.Add(farChunkCol);
-                        i++;
-                    }
-                }
-            }
-            farChunkColThread = new FarChunkColThread(farChunkCols);
-        }
+    //                 ChunkColumn chunkColumn1;
+    //                 if(!world.chunkColumns2.TryGetValue(newFarChunkColumnPos, out chunkColumn1) || !chunkColumn1.rendered){
+    //                     farChunkCol = world.CreateFarChunkColumn(newFarChunkColumnPos);
+    //                     farChunkCols.Add(farChunkCol);
+    //                     i++;
+    //                 }
+    //             }
+    //         }
+    //         farChunkColThread = new FarChunkColThread(farChunkCols);
+    //     }
         
 
-        if(world.chunkUpdates.Count > 0){
-            return;
-        }
+    //     if(world.chunkUpdates.Count > 0){
+    //         return;
+    //     }
 
-        List<ChunkColumn> createListRemover = new List<ChunkColumn>();
-        List<ChunkColumn> renderListRemover = new List<ChunkColumn>();
+    //     List<ChunkColumn> createListRemover = new List<ChunkColumn>();
+    //     List<ChunkColumn> renderListRemover = new List<ChunkColumn>();
 
-        i = 0;
-        int j = 0;
+    //     i = 0;
+    //     int j = 0;
 
-        //Check for create ChunkColumn
-        // int count = 0;
-        foreach(ChunkColumn chunkColumn in createList){
-            if(chunkColumn.creating){
-                if (chunkColumn.CreateCheck1()){
-                    i++;
-                    continue;
-                }
-                else{
-                    if(chunkColumn.creating2){
-                        if(chunkColumn.CreateCheck2()){
-                            i++;
-                            continue;
-                        }
-                        else{
-                            chunkColumn.CreateEnd();
-                            createListRemover.Add(chunkColumn);
-                        } 
-                    }
-                    else{
-                        if(j > 0){
-                            continue;
-                        }
-                        chunkColumn.CreateStart2();
-                        // count = count + chunkColumn.chunks.Count;
-                        i++;
-                        j++;
-                    }
+    //     //Check for create ChunkColumn
+    //     // int count = 0;
+    //     foreach(ChunkColumn chunkColumn in createList){
+    //         if(chunkColumn.creating){
+    //             if (chunkColumn.CreateCheck1()){
+    //                 i++;
+    //                 continue;
+    //             }
+    //             else{
+    //                 if(chunkColumn.creating2){
+    //                     if(chunkColumn.CreateCheck2()){
+    //                         i++;
+    //                         continue;
+    //                     }
+    //                     else{
+    //                         chunkColumn.CreateEnd();
+    //                         createListRemover.Add(chunkColumn);
+    //                     } 
+    //                 }
+    //                 else{
+    //                     if(j > 0){
+    //                         continue;
+    //                     }
+    //                     chunkColumn.CreateStart2();
+    //                     // count = count + chunkColumn.chunks.Count;
+    //                     i++;
+    //                     j++;
+    //                 }
                     
-                }
-            }
-            else{
-                if(j > 0){
-                    continue;
-                }
-                chunkColumn.CreateStart();
-                j++;
-                i++;
-            }
-        }
+    //             }
+    //         }
+    //         else{
+    //             if(j > 0){
+    //                 continue;
+    //             }
+    //             chunkColumn.CreateStart();
+    //             j++;
+    //             i++;
+    //         }
+    //     }
 
         
 
-        //remove ChunkColumns from create list if they are done creating
-        foreach(ChunkColumn chunkColumn in createListRemover){
-            createList.Remove(chunkColumn);
-        }
-        //If there are any chunksColumns still creating wait for them to finish
-        if(i > 0){
-            if(stopWatch.ElapsedMilliseconds > 10){
-                print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
-            } 
-            // print("Chunk create check count: "+ count);
-            // print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
+    //     //remove ChunkColumns from create list if they are done creating
+    //     foreach(ChunkColumn chunkColumn in createListRemover){
+    //         createList.Remove(chunkColumn);
+    //     }
+    //     //If there are any chunksColumns still creating wait for them to finish
+    //     if(i > 0){
+    //         if(stopWatch.ElapsedMilliseconds > 10){
+    //             print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
+    //         } 
+    //         // print("Chunk create check count: "+ count);
+    //         // print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
             
-            return;
-        }
-        i = 0;
+    //         return;
+    //     }
+    //     i = 0;
 
-        //Check for render ChunkColumn
-        foreach(ChunkColumn chunkColumn in renderList){
-            if(world.chunkUpdates.Count < World.maxChunkUpdates){
-                chunkColumn.Render();
-                if(world.farChunkColumns.TryGetValue(chunkColumn.pos, out farChunkCol)){
-                    destroyList.Add(new ChunkColumnFarAndClose(farChunkCol, chunkColumn));
-                    // world.DestroyFarChunkColumn(chunkColumn.pos);
-                }
-                renderListRemover.Add(chunkColumn);
-            }
-            else{
-                break;
-            }
-        }
+    //     //Check for render ChunkColumn
+    //     foreach(ChunkColumn chunkColumn in renderList){
+    //         if(world.chunkUpdates.Count < World.maxChunkUpdates){
+    //             chunkColumn.Render();
+    //             if(world.farChunkColumns.TryGetValue(chunkColumn.pos, out farChunkCol)){
+    //                 destroyList.Add(new ChunkColumnFarAndClose(farChunkCol, chunkColumn));
+    //                 // world.DestroyFarChunkColumn(chunkColumn.pos);
+    //             }
+    //             renderListRemover.Add(chunkColumn);
+    //         }
+    //         else{
+    //             break;
+    //         }
+    //     }
 
-        //remove ChunkColumns from render list if they are done rendering
-        foreach(ChunkColumn chunkColumn in renderListRemover){
-            renderList.Remove(chunkColumn);
-        }
+    //     //remove ChunkColumns from render list if they are done rendering
+    //     foreach(ChunkColumn chunkColumn in renderListRemover){
+    //         renderList.Remove(chunkColumn);
+    //     }
 
-        //If there are any chunksColumns still rendering wait for them to finish
-        if(renderList.Count > 0 ){
-            if(stopWatch.ElapsedMilliseconds > 10){
-                print("Render Return: "+ stopWatch.ElapsedMilliseconds);
-            }
-            return;
-        }
+    //     //If there are any chunksColumns still rendering wait for them to finish
+    //     if(renderList.Count > 0 ){
+    //         if(stopWatch.ElapsedMilliseconds > 10){
+    //             print("Render Return: "+ stopWatch.ElapsedMilliseconds);
+    //         }
+    //         return;
+    //     }
 
 
-        // float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
-        // float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
-        // float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
-        // WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
+    //     // float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
+    //     // float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
+    //     // float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
+    //     // WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
 
-        foreach(WorldPos chunkColumnPos in chunkPositions){
-            if(chunkColumnPos == null) {
-                break;
-            }
+    //     foreach(WorldPos chunkColumnPos in chunkPositions){
+    //         if(chunkColumnPos == null) {
+    //             break;
+    //         }
 
-            WorldPos newChunkColumnPos = new WorldPos(
-                chunkColumnPos.x+playerPos.x,
-                0,
-                chunkColumnPos.z+playerPos.z);
+    //         WorldPos newChunkColumnPos = new WorldPos(
+    //             chunkColumnPos.x+playerPos.x,
+    //             0,
+    //             chunkColumnPos.z+playerPos.z);
 
-            WorldPos newChunkColumnPosX = new WorldPos(
-                chunkColumnPos.x+playerPos.x+Chunk.chunkSize,
-                0,
-                chunkColumnPos.z+playerPos.z);
+    //         WorldPos newChunkColumnPosX = new WorldPos(
+    //             chunkColumnPos.x+playerPos.x+Chunk.chunkSize,
+    //             0,
+    //             chunkColumnPos.z+playerPos.z);
 
-            WorldPos newChunkColumnPosZ = new WorldPos(
-                chunkColumnPos.x+playerPos.x,
-                0,
-                chunkColumnPos.z+playerPos.z+Chunk.chunkSize);
+    //         WorldPos newChunkColumnPosZ = new WorldPos(
+    //             chunkColumnPos.x+playerPos.x,
+    //             0,
+    //             chunkColumnPos.z+playerPos.z+Chunk.chunkSize);
 
-            WorldPos newChunkColumnPosXZ = new WorldPos(
-                chunkColumnPos.x+playerPos.x+Chunk.chunkSize,
-                0,
-                chunkColumnPos.z+playerPos.z+Chunk.chunkSize);
+    //         WorldPos newChunkColumnPosXZ = new WorldPos(
+    //             chunkColumnPos.x+playerPos.x+Chunk.chunkSize,
+    //             0,
+    //             chunkColumnPos.z+playerPos.z+Chunk.chunkSize);
 
-            List<WorldPos> adjChunkColumn = new List<WorldPos>();
-            adjChunkColumn.Add(newChunkColumnPosX);
-            adjChunkColumn.Add(newChunkColumnPosZ);
-            adjChunkColumn.Add(newChunkColumnPosXZ);
+    //         List<WorldPos> adjChunkColumn = new List<WorldPos>();
+    //         adjChunkColumn.Add(newChunkColumnPosX);
+    //         adjChunkColumn.Add(newChunkColumnPosZ);
+    //         adjChunkColumn.Add(newChunkColumnPosXZ);
 
-            ChunkColumn chunkColumn;
-            ChunkColumn chunkColumnAdj;
-            if(world.chunkColumns2.TryGetValue(newChunkColumnPos, out chunkColumn)){
+    //         ChunkColumn chunkColumn;
+    //         ChunkColumn chunkColumnAdj;
+    //         if(world.chunkColumns2.TryGetValue(newChunkColumnPos, out chunkColumn)){
                 
-                if(chunkColumn.created && !chunkColumn.rendered){
-                    foreach(WorldPos pos in adjChunkColumn){
-                        if(!world.chunkColumns2.TryGetValue(pos, out chunkColumnAdj)){
-                            chunkColumnAdj = new ChunkColumn(world, pos);
-                            createList.Add(chunkColumnAdj);
-                            world.chunkColumns2.Add(pos,chunkColumnAdj);
-                        }
-                    }
-                    renderList.Add(chunkColumn);
-                }
-                else{
-                    continue;
-                }
-            }
-            else{
-                foreach(WorldPos pos in adjChunkColumn){
-                    if(!world.chunkColumns2.TryGetValue(pos, out chunkColumnAdj)){
-                        chunkColumnAdj = new ChunkColumn(world, pos);
-                        createList.Add(chunkColumnAdj);
-                        world.chunkColumns2.Add(pos,chunkColumnAdj);
-                    }
-                }
+    //             if(chunkColumn.created && !chunkColumn.rendered){
+    //                 foreach(WorldPos pos in adjChunkColumn){
+    //                     if(!world.chunkColumns2.TryGetValue(pos, out chunkColumnAdj)){
+    //                         chunkColumnAdj = new ChunkColumn(world, pos);
+    //                         createList.Add(chunkColumnAdj);
+    //                         world.chunkColumns2.Add(pos,chunkColumnAdj);
+    //                     }
+    //                 }
+    //                 renderList.Add(chunkColumn);
+    //             }
+    //             else{
+    //                 continue;
+    //             }
+    //         }
+    //         else{
+    //             foreach(WorldPos pos in adjChunkColumn){
+    //                 if(!world.chunkColumns2.TryGetValue(pos, out chunkColumnAdj)){
+    //                     chunkColumnAdj = new ChunkColumn(world, pos);
+    //                     createList.Add(chunkColumnAdj);
+    //                     world.chunkColumns2.Add(pos,chunkColumnAdj);
+    //                 }
+    //             }
 
-                chunkColumn = new ChunkColumn(world, newChunkColumnPos);
-                createList.Add(chunkColumn);
-                renderList.Add(chunkColumn);
-                world.chunkColumns2.Add(newChunkColumnPos,chunkColumn);
-                break;
-            }
-        }
-        if(stopWatch.ElapsedMilliseconds > 10){
-            print("End: "+ stopWatch.ElapsedMilliseconds);
-        } 
-        stopWatch.Stop();
-    }
+    //             chunkColumn = new ChunkColumn(world, newChunkColumnPos);
+    //             createList.Add(chunkColumn);
+    //             renderList.Add(chunkColumn);
+    //             world.chunkColumns2.Add(newChunkColumnPos,chunkColumn);
+    //             break;
+    //         }
+    //     }
+    //     if(stopWatch.ElapsedMilliseconds > 10){
+    //         print("End: "+ stopWatch.ElapsedMilliseconds);
+    //     } 
+    //     stopWatch.Stop();
+    // }
 
 
 
@@ -764,74 +764,74 @@ public class LoadChunks : MonoBehaviour
     //     return false;
     // }
 
-    bool DeleteChunks2(){
-        if(timer == 10){
-            List<WorldPos> chunksColumnToDelete = new List<WorldPos>();
-            foreach (var entry in world.chunkColumns2){
-                float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
+    // bool DeleteChunks2(){
+    //     if(timer == 10){
+    //         List<WorldPos> chunksColumnToDelete = new List<WorldPos>();
+    //         foreach (var entry in world.chunkColumns2){
+    //             float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
 
-                if (distance > (loadRadius+2)*Chunk.chunkSize){
-                    chunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
-                }
-            }
+    //             if (distance > (loadRadius+2)*Chunk.chunkSize){
+    //                 chunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
+    //             }
+    //         }
 
-            foreach (WorldPos pos in chunksColumnToDelete){
-                world.DestroyChunkColumn2(pos);
-            }
-            timer = 0;
-            return true;
-        }
-        timer ++;
-        return false;
-    }
+    //         foreach (WorldPos pos in chunksColumnToDelete){
+    //             world.DestroyChunkColumn2(pos);
+    //         }
+    //         timer = 0;
+    //         return true;
+    //     }
+    //     timer ++;
+    //     return false;
+    // }
 
 
-    bool DeleteChunksFar(){
-        if(timer == 10){
-            List<WorldPos> farChunksColumnToDelete = new List<WorldPos>();
-            foreach (var entry in world.farChunkColumns){
-                float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
+    // bool DeleteChunksFar(){
+    //     if(timer == 10){
+    //         List<WorldPos> farChunksColumnToDelete = new List<WorldPos>();
+    //         foreach (var entry in world.farChunkColumns){
+    //             float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
 
-                if (distance > (farLoadRadius+2)*Chunk.chunkSize){
-                    farChunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
-                }
-            }
+    //             if (distance > (farLoadRadius+2)*Chunk.chunkSize){
+    //                 farChunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
+    //             }
+    //         }
 
-            List<WorldPos> chunksColumnToDelete = new List<WorldPos>();
-            foreach (var entry in world.chunkColumns2){
-                float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
+    //         List<WorldPos> chunksColumnToDelete = new List<WorldPos>();
+    //         foreach (var entry in world.chunkColumns2){
+    //             float distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), new Vector3(transform.position.x,0,transform.position.z));
 
-                if (distance > (loadRadius+2)*Chunk.chunkSize){
-                    chunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
-                }
-            }
+    //             if (distance > (loadRadius+2)*Chunk.chunkSize){
+    //                 chunksColumnToDelete.Add(new WorldPos(entry.Key.x,0,entry.Key.z));
+    //             }
+    //         }
 
-            foreach (WorldPos pos in chunksColumnToDelete){
-                world.DestroyChunkColumn2(pos);
-            }
+    //         foreach (WorldPos pos in chunksColumnToDelete){
+    //             world.DestroyChunkColumn2(pos);
+    //         }
 
-            foreach (WorldPos pos in farChunksColumnToDelete){
-                world.DestroyFarChunkColumn(pos);
-            }
+    //         foreach (WorldPos pos in farChunksColumnToDelete){
+    //             world.DestroyFarChunkColumn(pos);
+    //         }
 
-            List<ChunkColumnFarAndClose> destroyListRemove = new List<ChunkColumnFarAndClose>();
-            foreach (ChunkColumnFarAndClose cols in destroyList){
-                if(cols.col.CheckRendered()){
-                    world.DestroyFarChunkColumn(cols.farChunkCol.pos);
-                    destroyListRemove.Add(cols);
-                }
-            }
+    //         List<ChunkColumnFarAndClose> destroyListRemove = new List<ChunkColumnFarAndClose>();
+    //         foreach (ChunkColumnFarAndClose cols in destroyList){
+    //             if(cols.col.CheckRendered()){
+    //                 world.DestroyFarChunkColumn(cols.farChunkCol.pos);
+    //                 destroyListRemove.Add(cols);
+    //             }
+    //         }
 
-            foreach(ChunkColumnFarAndClose cols in destroyListRemove){
-                destroyList.Remove(cols);
-            }
+    //         foreach(ChunkColumnFarAndClose cols in destroyListRemove){
+    //             destroyList.Remove(cols);
+    //         }
 
-            timer = 0;
-            return true;
-        }
-        timer ++;
-        return false;
-    }
+    //         timer = 0;
+    //         return true;
+    //     }
+    //     timer ++;
+    //     return false;
+    // }
 
 
     public bool DeleteColumns(){

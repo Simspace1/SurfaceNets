@@ -23,8 +23,8 @@ public class World : MonoBehaviour
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
     // public Dictionary<WorldPos, List<WorldPos>> chunkColumns = new Dictionary<WorldPos, List<WorldPos>>(WorldPosEqC);
-    public Dictionary<WorldPos, ChunkColumn> chunkColumns2 = new Dictionary<WorldPos, ChunkColumn>(WorldPosEqC);
-    public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
+    // public Dictionary<WorldPos, ChunkColumn> chunkColumns2 = new Dictionary<WorldPos, ChunkColumn>(WorldPosEqC);
+    // public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
 
     public Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
@@ -88,7 +88,8 @@ public class World : MonoBehaviour
     }
 
     void OnDestroy(){
-        SaveManager.SaveAll(this);
+        //MUST FIX HERE SAVE MANAGER AND PLAYERUICONTROLLER
+        // SaveManager.SaveAll(this);
     }
 
     
@@ -615,17 +616,17 @@ public class World : MonoBehaviour
         return chunkList;
     }
 
-    public FarChunkCol CreateFarChunkColumn(WorldPos pos){
-        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
+    // public FarChunkCol CreateFarChunkColumn(WorldPos pos){
+    //     GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+    //     FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
 
-        newFarChunkColumn.pos = pos;
-        newFarChunkColumn.world = this;
-        newFarChunkColumn.CreateFilter();
+    //     newFarChunkColumn.pos = pos;
+    //     newFarChunkColumn.world = this;
+    //     newFarChunkColumn.CreateFilter();
 
-        farChunkColumns.Add(pos, newFarChunkColumn);
-        return newFarChunkColumn;
-    }
+    //     farChunkColumns.Add(pos, newFarChunkColumn);
+    //     return newFarChunkColumn;
+    // }
 
     public FarChunkCol CreateFarChunkColumn(Columns col){
         GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
@@ -641,13 +642,13 @@ public class World : MonoBehaviour
         return newFarChunkColumn;
     }
 
-    public void DestroyFarChunkColumn(WorldPos pos){
-        FarChunkCol col;
-        if(farChunkColumns.TryGetValue(pos, out col)){
-            Object.Destroy(col.gameObject);
-            farChunkColumns.Remove(pos);
-        }
-    }
+    // public void DestroyFarChunkColumn(WorldPos pos){
+    //     FarChunkCol col;
+    //     if(farChunkColumns.TryGetValue(pos, out col)){
+    //         Object.Destroy(col.gameObject);
+    //         farChunkColumns.Remove(pos);
+    //     }
+    // }
 
     public void DestroyFarChunkColumn(Columns col){
         if(col.farChunkCol != null){
@@ -694,23 +695,23 @@ public class World : MonoBehaviour
     //     }
     // }
 
-    public void DestroyChunkColumn2(WorldPos pos){
-        ChunkColumn chunkColumn;
-        if(chunkColumns2.TryGetValue(pos, out chunkColumn)){
-            // SaveManager.SaveChunkColumn(chunkColumn);
+    // public void DestroyChunkColumn2(WorldPos pos){
+    //     ChunkColumn chunkColumn;
+    //     if(chunkColumns2.TryGetValue(pos, out chunkColumn)){
+    //         // SaveManager.SaveChunkColumn(chunkColumn);
 
-            foreach(Chunk chunk in chunkColumn.chunks){
-                //Insert Saving of chunk here
+    //         foreach(Chunk chunk in chunkColumn.chunks){
+    //             //Insert Saving of chunk here
                 
-                Object.Destroy(chunk.gameObject);
-                chunk.destoying = true;
-                chunks.Remove(chunk.pos);
-            }
+    //             Object.Destroy(chunk.gameObject);
+    //             chunk.destoying = true;
+    //             chunks.Remove(chunk.pos);
+    //         }
 
-            chunkColumn.destroying = true;
-            chunkColumns2.Remove(pos);
-        }
-    }
+    //         chunkColumn.destroying = true;
+    //         chunkColumns2.Remove(pos);
+    //     }
+    // }
 
     public void DestroyChunkColumn(Columns column){
 
