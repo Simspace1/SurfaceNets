@@ -9,8 +9,8 @@ public class LoadChunks : MonoBehaviour
     [SerializeField]
     private World world;
 
-    private List<WorldPos> updateList = new List<WorldPos>();
-    private List<WorldPos> buildList = new List<WorldPos>();
+    // private List<WorldPos> updateList = new List<WorldPos>();
+    // private List<WorldPos> buildList = new List<WorldPos>();
 
     // private List<ChunkColumn> createList = new List<ChunkColumn>();
     // private List<ChunkColumn> renderList = new List<ChunkColumn>();
@@ -537,46 +537,46 @@ public class LoadChunks : MonoBehaviour
 
 
 
-    void FindChunksToLoad(){
-        WorldPos playerPos = new WorldPos(
-            Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize,
-            Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize,
-            Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize);
+    // void FindChunksToLoad(){
+    //     WorldPos playerPos = new WorldPos(
+    //         Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize,
+    //         Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize,
+    //         Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize);
 
-        int j = 0;
-        if (updateList.Count == 0){
-            for(int i = 0; i<chunkPositions.Length;i++){
-                if(chunkPositions[i] == null){
-                    return;
-                }
+    //     int j = 0;
+    //     if (updateList.Count == 0){
+    //         for(int i = 0; i<chunkPositions.Length;i++){
+    //             if(chunkPositions[i] == null){
+    //                 return;
+    //             }
 
-                WorldPos newChunkPos = new WorldPos(
-                    chunkPositions[i].x*Chunk.chunkSize+playerPos.x,
-                    chunkPositions[i].y*Chunk.chunkSize+playerPos.y,
-                    chunkPositions[i].z*Chunk.chunkSize+playerPos.z);
+    //             WorldPos newChunkPos = new WorldPos(
+    //                 chunkPositions[i].x*Chunk.chunkSize+playerPos.x,
+    //                 chunkPositions[i].y*Chunk.chunkSize+playerPos.y,
+    //                 chunkPositions[i].z*Chunk.chunkSize+playerPos.z);
                 
-                Chunk newChunk = world.GetChunk(newChunkPos.x,newChunkPos.y,newChunkPos.z);
+    //             Chunk newChunk = world.GetChunk(newChunkPos.x,newChunkPos.y,newChunkPos.z);
 
-                if(newChunk != null && (newChunk.rendered || updateList.Contains(newChunkPos))){
-                    continue;
-                }
+    //             if(newChunk != null && (newChunk.rendered || updateList.Contains(newChunkPos))){
+    //                 continue;
+    //             }
 
-                for(float x = newChunkPos.x -Chunk.chunkSize; x <= newChunkPos.x +Chunk.chunkSize; x += Chunk.chunkSize){
-                    for(float y = newChunkPos.y -Chunk.chunkSize; y <= newChunkPos.y +Chunk.chunkSize; y += Chunk.chunkSize){
-                        for(float z = newChunkPos.z -Chunk.chunkSize; z <= newChunkPos.z +Chunk.chunkSize; z += Chunk.chunkSize){
-                            buildList.Add(new WorldPos(x,y,z));
-                        }
-                    }
-                }
-                updateList.Add(new WorldPos(newChunkPos.x, newChunkPos.y, newChunkPos.z));
-                j++;
+    //             for(float x = newChunkPos.x -Chunk.chunkSize; x <= newChunkPos.x +Chunk.chunkSize; x += Chunk.chunkSize){
+    //                 for(float y = newChunkPos.y -Chunk.chunkSize; y <= newChunkPos.y +Chunk.chunkSize; y += Chunk.chunkSize){
+    //                     for(float z = newChunkPos.z -Chunk.chunkSize; z <= newChunkPos.z +Chunk.chunkSize; z += Chunk.chunkSize){
+    //                         buildList.Add(new WorldPos(x,y,z));
+    //                     }
+    //                 }
+    //             }
+    //             updateList.Add(new WorldPos(newChunkPos.x, newChunkPos.y, newChunkPos.z));
+    //             j++;
 
-                if(j == 1){
-                    return;
-                }
-            }
-        }
-    }
+    //             if(j == 1){
+    //                 return;
+    //             }
+    //         }
+    //     }
+    // }
 
     // void FindAndLoadChunks(){
     //     float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
@@ -676,12 +676,12 @@ public class LoadChunks : MonoBehaviour
     //     }
     // }
 
-    void BuildChunk(WorldPos pos,TerrainGen gen){
-        if(world.GetChunk(pos.x,pos.y,pos.z) == null){
-            world.CreateChunk(pos.x,pos.y,pos.z,gen);
-            updateList.Add(new WorldPos(pos.x,pos.y,pos.z));
-        }
-    }
+    // void BuildChunk(WorldPos pos,TerrainGen gen){
+    //     if(world.GetChunk(pos.x,pos.y,pos.z) == null){
+    //         world.CreateChunk(pos.x,pos.y,pos.z,gen);
+    //         updateList.Add(new WorldPos(pos.x,pos.y,pos.z));
+    //     }
+    // }
 
     // void BuildChunk(WorldPos pos){
     //     if(world.GetChunk(pos.x,pos.y,pos.z) == null && pos.y >= World.bottomWorldHeight){
@@ -725,26 +725,26 @@ public class LoadChunks : MonoBehaviour
     // }
 
 
-    bool DeleteChunks1(){
-        if(timer == 10){
-            var chunksToDelete = new List<WorldPos>();
-            foreach(var chunk in world.chunks){
-                float distance = Vector3.Distance(new Vector3(chunk.Value.pos.x,chunk.Value.pos.y,chunk.Value.pos.z), new Vector3(transform.position.x,transform.position.y,transform.position.z));
+    // bool DeleteChunks1(){
+    //     if(timer == 10){
+    //         var chunksToDelete = new List<WorldPos>();
+    //         foreach(var chunk in world.chunks){
+    //             float distance = Vector3.Distance(new Vector3(chunk.Value.pos.x,chunk.Value.pos.y,chunk.Value.pos.z), new Vector3(transform.position.x,transform.position.y,transform.position.z));
 
-                if (distance > (loadRadius+2)*Chunk.chunkSize){
-                    chunksToDelete.Add(chunk.Key);
-                }
-            }
+    //             if (distance > (loadRadius+2)*Chunk.chunkSize){
+    //                 chunksToDelete.Add(chunk.Key);
+    //             }
+    //         }
 
-            foreach (var chunk in chunksToDelete){
-                world.DestroyChunk(chunk.x,chunk.y,chunk.z);
-            }
-            timer = 0;
-            return true;
-        }
-        timer ++;
-        return false;
-    }
+    //         foreach (var chunk in chunksToDelete){
+    //             world.DestroyChunk(chunk.x,chunk.y,chunk.z);
+    //         }
+    //         timer = 0;
+    //         return true;
+    //     }
+    //     timer ++;
+    //     return false;
+    // }
 
     // bool DeleteChunks(){
     //     if(timer == 10){
