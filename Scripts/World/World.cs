@@ -38,6 +38,7 @@ public class World : MonoBehaviour
 
     private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
+    [SerializeField]
     private bool purgeSave = false;
 
     
