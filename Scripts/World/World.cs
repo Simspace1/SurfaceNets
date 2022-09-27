@@ -13,8 +13,12 @@ public class World : MonoBehaviour
 
     private WorldData worldData;
 
-    public GameObject chunkPrefab;
-    public GameObject farChunkColumnPrefab;
+    [SerializeField]
+    private GameObject chunkPrefab;
+    [SerializeField]
+    private GameObject farChunkColumnPrefab;
+
+
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
@@ -26,14 +30,13 @@ public class World : MonoBehaviour
 
     public List<Chunk> chunkUpdates = new List<Chunk>();
 
-    public static float bottomWorldHeight = -1600;
+    private static float bottomWorldHeight = -1600;
 
-    
     public static int maxChunkUpdates = 4;
 
-    public List<ChunkThread> chunkThreads = new List<ChunkThread>();
+    private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
-    public bool purgeSave = false;
+    private bool purgeSave = false;
 
     
 
