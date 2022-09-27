@@ -107,13 +107,13 @@ public static class SaveManager
         }
     }
 
-//MUST FIX
-    // public static void SaveAll(World world){
-    //     foreach(var col in world.chunkColumns){
-    //         if(col.Value.CheckModified()){
-    //             SaveChunkColumn(col.Value);
-    //         }  
-    //     }
-    //     SaveWorld(world);
-    // }
+    // Probably broken
+    public static void SaveAll(World world){
+        foreach(var col in world.chunkColumns){
+            if(col.Value.CheckModified()){
+                SaveChunkColumn(col.Value.chunkColumn);
+            }  
+        }
+        SaveWorld(world);
+    }
 }

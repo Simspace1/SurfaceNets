@@ -89,7 +89,7 @@ public class World : MonoBehaviour
 
     void OnDestroy(){
         //MUST FIX HERE SAVE MANAGER AND PLAYERUICONTROLLER
-        // SaveManager.SaveAll(this);
+        SaveManager.SaveAll(this);
     }
 
     

@@ -83,4 +83,12 @@ public class Columns
         column.world.chunkColumns.Remove(column.pos);
     }
 
+    public bool CheckModified(){
+        if(chunkColumn == null){
+            return false;
+        }
+        else{
+            return chunkColumn.CheckModified();
+        }
+    }
 }

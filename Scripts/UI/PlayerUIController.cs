@@ -29,7 +29,7 @@ public class PlayerUIController : MonoBehaviour
     }
 
     public void MainMenu(){
-        //SaveManager.SaveAll(world);
+        SaveManager.SaveAll(world);
         SceneManager.LoadScene("Main Menu");
     }
 }
