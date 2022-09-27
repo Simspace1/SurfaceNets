@@ -20,7 +20,7 @@ public class Chunk : MonoBehaviour
     
     public Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
     // public float [, ,] sDists = new float[chunkVoxels,chunkVoxels,chunkVoxels];
-    public Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
+    private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
     // public Dictionary<Vector3, Vector3> surfPts3 = new Dictionary<Vector3, Vector3>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
     // public Dictionary<WorldPos, Vector3> surfPts2 = new Dictionary<WorldPos, Vector3>(WorldPosEqC);
@@ -34,11 +34,11 @@ public class Chunk : MonoBehaviour
     public bool updating = false;
     public bool destoying = false;
 
-    MeshFilter filter;
-    MeshCollider coll;
+    private MeshFilter filter;
+    private MeshCollider coll;
 
-    public World world;
-    public WorldPos pos;
+    public World world {get; private set;}
+    public WorldPos pos {get; private set;}
 
     static bool splatter = false;
     
@@ -596,6 +596,19 @@ public class Chunk : MonoBehaviour
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;
+    }
+
+
+    public WorldPos GetPos(){
+        return pos;
+    }
+
+    public void SetPos(WorldPos pos){
+        this.pos = pos;
+    }
+
+    public void SetWorld(World world){
+        this.world = world;
     }
 
 }

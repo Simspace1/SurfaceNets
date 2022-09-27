@@ -300,8 +300,8 @@ public class World : MonoBehaviour
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x,y,z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = worldPos;
-        newChunk.world = this;
+        newChunk.SetPos(worldPos);
+        newChunk.SetWorld(this);
 
         chunks.Add(worldPos,newChunk);
 
@@ -313,8 +313,8 @@ public class World : MonoBehaviour
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = pos;
-        newChunk.world = this;
+        newChunk.SetPos(pos);
+        newChunk.SetWorld(this);
 
         chunks.Add(pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
@@ -329,9 +329,9 @@ public class World : MonoBehaviour
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = chunkData.pos;
+        newChunk.SetPos(chunkData.pos);
         newChunk.voxels = chunkData.voxels;
-        newChunk.world = this;
+        newChunk.SetWorld(this);
         // newChunk.sDists = chunkData.sDists;
         newChunk.meshData = chunkData.meshData.Revert();
 
@@ -343,8 +343,8 @@ public class World : MonoBehaviour
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = chunkData.pos;
-        newChunk.world = this;
+        newChunk.SetPos(chunkData.pos);
+        newChunk.SetWorld(this);
 
         chunks.Add(chunkData.pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
@@ -359,8 +359,8 @@ public class World : MonoBehaviour
             GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
             
-            newChunk.pos = pos;
-            newChunk.world = this;
+            newChunk.SetPos(pos);
+            newChunk.SetWorld(this);
 
             chunkList.Add(newChunk);
             chunks.Add(pos,newChunk);
