@@ -8,8 +8,10 @@ using Unity.Collections;
 
 public class World : MonoBehaviour
 {
-    public string worldName = "world";
-    public ulong worldSeed;
+    private string worldName = "world";
+    private ulong worldSeed;
+
+    private WorldData worldData;
 
     public GameObject chunkPrefab;
     public GameObject farChunkColumnPrefab;
@@ -21,8 +23,6 @@ public class World : MonoBehaviour
     public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
 
     public Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
-
-    public WorldData worldData;
 
     public List<Chunk> chunkUpdates = new List<Chunk>();
 
@@ -955,5 +955,23 @@ public class World : MonoBehaviour
                 chunk.update = true;
             } 
         }
+    }
+
+    public string GetWorldName(){
+        return worldName;
+    }
+
+    public ulong GetWorldSeed(){
+        return worldSeed;
+    }
+
+    public void SetWorldData(WorldData wData){
+        worldName = wData.worldName;
+        worldSeed = wData.worldSeed;
+        worldData = wData;
+    }
+
+    public WorldData GetWorldData(){
+        return worldData;
     }
 }

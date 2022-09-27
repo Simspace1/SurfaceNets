@@ -125,7 +125,7 @@ public class ChunkColumn
     }
 
     void Create(){
-        if(world.worldData.Contains(pos)){
+        if(world.GetWorldData().Contains(pos)){
             loaded = true;
             if(gen == null){
                 gen = new TerrainGen();

@@ -8,28 +8,27 @@ public static class SaveManager
 {
     public static void SaveWorld(World world){
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Application.persistentDataPath + "/saves/"+world.worldName;
+        string path = Application.persistentDataPath + "/saves/"+world.GetWorldName();
         if(!Directory.Exists(path)){
             Directory.CreateDirectory(path);
         }
         path += "/world.sav";
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        formatter.Serialize(stream, world.worldData);
+        formatter.Serialize(stream, world.GetWorldData());
         stream.Close();
     }
 
     public static bool LoadWorld(World world){
-        string path = Application.persistentDataPath + "/saves/"+world.worldName+"/world.sav";
+        string path = Application.persistentDataPath + "/saves/"+world.GetWorldName()+"/world.sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
 
-            world.worldData = formatter.Deserialize(stream) as WorldData;
-            world.worldName = world.worldData.worldName;
-            world.worldSeed = world.worldData.worldSeed;
-            StaticWorld.worldName = world.worldData.worldName;
-            StaticWorld.seed = world.worldData.worldSeed;
+            WorldData wData = formatter.Deserialize(stream) as WorldData;
+            world.SetWorldData(wData);
+            StaticWorld.worldName = wData.worldName;
+            StaticWorld.seed = wData.worldSeed;
             stream.Close();
             return true;
         }
@@ -63,20 +62,22 @@ public static class SaveManager
             return;
         }
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Application.persistentDataPath + "/saves/"+col.world.worldName+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
+        string path = Application.persistentDataPath + "/saves/"+col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
         FileStream stream = new FileStream(path, FileMode.Create);
 
         ColumnData data = new ColumnData(col);
         formatter.Serialize(stream, data);
         stream.Close();
 
-        if(!col.world.worldData.columns.Contains(col.pos)){
-            col.world.worldData.columns.Add(col.pos);
+        WorldData wData = col.world.GetWorldData();
+
+        if(!wData.columns.Contains(col.pos)){
+            wData.columns.Add(col.pos);
         }
     }
 
     public static void LoadChunkColumn(ChunkColumn col){
-        string path = Application.persistentDataPath + "/saves/"+col.world.worldName+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
+        string path = Application.persistentDataPath + "/saves/"+col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
@@ -91,7 +92,7 @@ public static class SaveManager
     }
 
      public static ColumnData LoadChunkColumn2(ChunkColumn col){
-        string path = col.path + "/saves/" + col.world.worldName+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
+        string path = col.path + "/saves/" + col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
