@@ -24,7 +24,7 @@ public class Chunk : MonoBehaviour
     // public Dictionary<Vector3, Vector3> surfPts3 = new Dictionary<Vector3, Vector3>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
     // public Dictionary<WorldPos, Vector3> surfPts2 = new Dictionary<WorldPos, Vector3>(WorldPosEqC);
-    public Dictionary<WorldPos, SurfPt> surfPts2 = new Dictionary<WorldPos, SurfPt>(WorldPosEqC);
+    private Dictionary<WorldPos, SurfPt> surfPts2 = new Dictionary<WorldPos, SurfPt>(WorldPosEqC);
     public bool update = false;
     public bool rendered = false;
     public MyMesh meshData;
