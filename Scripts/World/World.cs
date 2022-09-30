@@ -21,8 +21,6 @@ public class World : MonoBehaviour
 
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
 
-    //This Var should be removed and all its functionality merged with chunkColumns for performance
-    public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
     private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
@@ -302,7 +300,6 @@ public class World : MonoBehaviour
         newChunk.SetPos(pos);
         newChunk.SetWorld(this);
 
-        chunks.Add(pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
 
         newChunk = chunkColumn.gen.ChunkGenC2(newChunk);
@@ -320,7 +317,6 @@ public class World : MonoBehaviour
         newChunk.SetPos(chunkData.pos);
         newChunk.SetWorld(this);
 
-        chunks.Add(chunkData.pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
     }
 
@@ -337,7 +333,6 @@ public class World : MonoBehaviour
             newChunk.SetWorld(this);
 
             chunkList.Add(newChunk);
-            chunks.Add(pos,newChunk);
         }
         return chunkList;
     }
@@ -353,7 +348,6 @@ public class World : MonoBehaviour
         newFarChunkColumn.column = col;
         newFarChunkColumn.gen = col.gen;
 
-        // farChunkColumns.Add(col.pos, newFarChunkColumn);
         return newFarChunkColumn;
     }
 
@@ -365,19 +359,6 @@ public class World : MonoBehaviour
         }
         
     }
-    
-
-
-    public void DestroyChunk(float x, float y, float z){
-        Chunk chunk = null;
-        if (chunks.TryGetValue(new WorldPos(x,y,z), out chunk)){
-            //Insert saving here
-
-            Object.Destroy(chunk.gameObject);
-            chunks.Remove(new WorldPos(x,y,z));
-        }
-    }
-
 
     public void DestroyChunkColumn(Columns column){
 
@@ -386,36 +367,53 @@ public class World : MonoBehaviour
             
             Object.Destroy(chunk.gameObject);
             chunk.destoying = true;
-            chunks.Remove(chunk.pos);
         }
 
         column.chunkColumn.destroying = true;
     }
 
     public Chunk GetChunk(float x, float y,float z){
+
+
         WorldPos pos = new WorldPos(x,y,z);
-        float multiple = Chunk.chunkSize;
-        float posx = Mathf.FloorToInt(x/multiple)*multiple;
-        float posy = Mathf.FloorToInt(y/multiple)*multiple;
-        float posz = Mathf.FloorToInt(z/multiple)*multiple;
-        pos.SetPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+        return GetChunk(pos);
+
+        // float multiple = Chunk.chunkSize;
+        // float posx = Mathf.FloorToInt(x/multiple)*multiple;
+        // float posy = Mathf.FloorToInt(y/multiple)*multiple;
+        // float posz = Mathf.FloorToInt(z/multiple)*multiple;
+        // pos.SetPos(posx,posy,posz);
+        // Chunk containerChunk = null;
+        // chunks.TryGetValue(pos, out containerChunk);
+        // return containerChunk;
     }
 
     public Chunk GetChunk(int xi, int yi, int zi){
-        // WorldPos pos = new WorldPos(xi,yi,zi);
-        int multiple = Chunk.chunkVoxels;
-        float multiplef = Chunk.chunkVoxels;
-        int posx = Mathf.FloorToInt(xi/multiplef)*multiple;
-        int posy = Mathf.FloorToInt(yi/multiplef)*multiple;
-        int posz = Mathf.FloorToInt(zi/multiplef)*multiple;
-        WorldPos pos = new WorldPos(posx,posy,posz);
-        // pos.SetPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+
+
+        WorldPos pos = new WorldPos(xi,yi,zi);
+        return GetChunk(pos);
+
+        // int multiple = Chunk.chunkVoxels;
+        // float multiplef = Chunk.chunkVoxels;
+        // int posx = Mathf.FloorToInt(xi/multiplef)*multiple;
+        // int posy = Mathf.FloorToInt(yi/multiplef)*multiple;
+        // int posz = Mathf.FloorToInt(zi/multiplef)*multiple;
+        // WorldPos pos = new WorldPos(posx,posy,posz);
+        // // pos.SetPos(posx,posy,posz);
+        // Chunk containerChunk = null;
+        // chunks.TryGetValue(pos, out containerChunk);
+        // return containerChunk;
+    }
+
+    private Columns GetColumn(WorldPos posin){
+        if(posin.yi != 0){
+            posin.SetPos(posin.xi,0,posin.zi);
+        }
+
+        Columns col = null;
+        chunkColumns.TryGetValue(posin ,out col);
+        return col;
     }
 
     public Chunk GetChunk(WorldPos posin){
@@ -424,10 +422,11 @@ public class World : MonoBehaviour
         int posx = Mathf.FloorToInt(posin.xi/multiplef)*multiple;
         int posy = Mathf.FloorToInt(posin.yi/multiplef)*multiple;
         int posz = Mathf.FloorToInt(posin.zi/multiplef)*multiple;
-        WorldPos pos = new WorldPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+
+        Columns col = GetColumn(new WorldPos(posx,0,posz));
+
+        Chunk chunk = col.GetChunk(new WorldPos(posx,posy,posz));        
+        return chunk;
     }
 
     public Voxel GetVoxel(float x, float y, float z){

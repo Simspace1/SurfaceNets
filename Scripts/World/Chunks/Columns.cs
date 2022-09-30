@@ -91,4 +91,13 @@ public class Columns
             return chunkColumn.CheckModified();
         }
     }
+
+    public Chunk GetChunk(WorldPos pos){
+        if(chunkColumn == null){
+            return null;
+        }
+        else{
+            return chunkColumn.GetChunk(pos);
+        }
+    }
 }

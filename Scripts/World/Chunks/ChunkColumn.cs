@@ -214,4 +214,13 @@ public class ChunkColumn
         return false;
     }
 
+    public Chunk GetChunk(WorldPos pos){
+        foreach(Chunk chunk in chunks){
+            if(chunk.pos.Equals(pos)){
+                return chunk;
+            }
+        }
+        return null;
+    }
+
 }
