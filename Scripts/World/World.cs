@@ -373,37 +373,13 @@ public class World : MonoBehaviour
     }
 
     public Chunk GetChunk(float x, float y,float z){
-
-
         WorldPos pos = new WorldPos(x,y,z);
         return GetChunk(pos);
-
-        // float multiple = Chunk.chunkSize;
-        // float posx = Mathf.FloorToInt(x/multiple)*multiple;
-        // float posy = Mathf.FloorToInt(y/multiple)*multiple;
-        // float posz = Mathf.FloorToInt(z/multiple)*multiple;
-        // pos.SetPos(posx,posy,posz);
-        // Chunk containerChunk = null;
-        // chunks.TryGetValue(pos, out containerChunk);
-        // return containerChunk;
     }
 
     public Chunk GetChunk(int xi, int yi, int zi){
-
-
         WorldPos pos = new WorldPos(xi,yi,zi);
         return GetChunk(pos);
-
-        // int multiple = Chunk.chunkVoxels;
-        // float multiplef = Chunk.chunkVoxels;
-        // int posx = Mathf.FloorToInt(xi/multiplef)*multiple;
-        // int posy = Mathf.FloorToInt(yi/multiplef)*multiple;
-        // int posz = Mathf.FloorToInt(zi/multiplef)*multiple;
-        // WorldPos pos = new WorldPos(posx,posy,posz);
-        // // pos.SetPos(posx,posy,posz);
-        // Chunk containerChunk = null;
-        // chunks.TryGetValue(pos, out containerChunk);
-        // return containerChunk;
     }
 
     private Columns GetColumn(WorldPos posin){
