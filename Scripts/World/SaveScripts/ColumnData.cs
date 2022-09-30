@@ -17,18 +17,6 @@ public class ColumnData
         }
     }
 
-    public void Revert(ChunkColumn col){
-        col.pos = pos;
-        col.chunks = new List<Chunk>();
-
-        foreach(ChunkData data in chunks){
-            col.world.CreateChunk(data,col);
-        }
-
-        col.created = true;
-        col.loaded = true;
-    }
-
     public void Revert1(ChunkColumn col){
         col.pos = pos;
         col.loaded = true;

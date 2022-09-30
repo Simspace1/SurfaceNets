@@ -130,7 +130,7 @@ public class ChunkColumn
             if(gen == null){
                 gen = new TerrainGen();
             }
-            data = SaveManager.LoadChunkColumn2(this);
+            data = SaveManager.LoadChunkColumn(this);
             data.Revert1(this);
         }
         else{

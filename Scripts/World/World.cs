@@ -294,20 +294,6 @@ public class World : MonoBehaviour
 
     // }
 
-    public void CreateChunk(float x, float y,float z,TerrainGen gen){
-        WorldPos worldPos = new WorldPos(x,y,z);
-
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x,y,z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        Chunk newChunk = newChunkObject.GetComponent<Chunk>();
-
-        newChunk.SetPos(worldPos);
-        newChunk.SetWorld(this);
-
-        chunks.Add(worldPos,newChunk);
-
-        newChunk = gen.ChunkGenC2(newChunk);
-
-    }
 
     public void CreateChunk(WorldPos pos, ChunkColumn chunkColumn){
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
@@ -325,20 +311,8 @@ public class World : MonoBehaviour
         chunkUpdates.Add(newChunk);
     }
 
-    public void CreateChunk(ChunkData chunkData, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.SetPos(chunkData.pos);
-        newChunk.voxels = chunkData.voxels;
-        newChunk.SetWorld(this);
-        // newChunk.sDists = chunkData.sDists;
-        newChunk.meshData = chunkData.meshData.Revert();
-
-        chunks.Add(chunkData.pos,newChunk);
-        chunkColumn.chunks.Add(newChunk);
-    }
-
+    //Creates chunk at chunkData location
     public void CreateChunkInst(ChunkData chunkData, ChunkColumn chunkColumn){
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();

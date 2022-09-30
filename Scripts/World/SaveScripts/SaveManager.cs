@@ -76,22 +76,7 @@ public static class SaveManager
         }
     }
 
-    public static void LoadChunkColumn(ChunkColumn col){
-        string path = Application.persistentDataPath + "/saves/"+col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
-        if(File.Exists(path)){
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
-
-            ColumnData data = formatter.Deserialize(stream) as ColumnData;
-            stream.Close();
-            data.Revert(col);
-        }
-        else{
-            Debug.LogError("ChunkColumn File not found in "+ path);
-        }
-    }
-
-     public static ColumnData LoadChunkColumn2(ChunkColumn col){
+     public static ColumnData LoadChunkColumn(ChunkColumn col){
         string path = col.path + "/saves/" + col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
