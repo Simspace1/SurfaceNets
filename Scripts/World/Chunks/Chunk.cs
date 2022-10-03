@@ -151,6 +151,15 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    public void SetVoxel(int xi, int yi, int zi, Voxel voxel){
+        if(InRange(xi,yi,zi)){
+            voxels[xi,yi,zi] = voxel;
+        }
+        else{
+            world.SetVoxel(WorldPos.Add(new WorldPos(xi,yi,zi),this.pos), voxel);
+        }
+    }
+
     public void SetVoxel(WorldPos pos ,Voxel voxel){
         if(InRange(pos)){
             voxels[pos.xi,pos.yi,pos.zi] = voxel;

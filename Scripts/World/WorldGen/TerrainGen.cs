@@ -760,7 +760,7 @@ public class TerrainGen
         z -=chunk.pos.zi;
         if(Chunk.InRange(x,y,z)){
             if(replaceBlocks || chunk.GetVoxel(x,y,z) == null){
-                chunk.SetVoxel(new WorldPos(x,y,z), voxel);
+                chunk.SetVoxel(x,y,z,voxel);
                 // chunk.sDists[x,y,z] = sDistF;
             }
         }
