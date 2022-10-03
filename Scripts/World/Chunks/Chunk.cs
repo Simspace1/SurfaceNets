@@ -18,20 +18,22 @@ public class Chunk : MonoBehaviour
     public const int chunkVoxels = 16;
     public const float sDistLimit = 3f*voxelSize;  // 10000000;
     
-    public Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
-    // public float [, ,] sDists = new float[chunkVoxels,chunkVoxels,chunkVoxels];
+    private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
-    // public Dictionary<Vector3, Vector3> surfPts3 = new Dictionary<Vector3, Vector3>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
-    // public Dictionary<WorldPos, Vector3> surfPts2 = new Dictionary<WorldPos, Vector3>(WorldPosEqC);
-    private Dictionary<WorldPos, SurfPt> surfPts2 = new Dictionary<WorldPos, SurfPt>(WorldPosEqC);
-    public bool update = false;
+
+    [HideInInspector]
+    public bool update = false ;
+    [HideInInspector]
     public bool rendered = false;
     public MyMesh meshData;
+    [HideInInspector]
     public bool modified = false;
 
-    ChunkThread chunkthread;
+    private ChunkThread chunkthread;
+    [HideInInspector]
     public bool updating = false;
+    [HideInInspector]
     public bool destoying = false;
 
     private MeshFilter filter;
@@ -609,6 +611,16 @@ public class Chunk : MonoBehaviour
 
     public void SetWorld(World world){
         this.world = world;
+    }
+
+    public void SetVoxels(Voxel[, ,] voxels){
+        if(voxels.GetLength(0) == chunkVoxels && voxels.GetLength(1) == chunkVoxels && voxels.GetLength(2) == chunkVoxels){
+            this.voxels = voxels;
+        }
+    }
+
+    public Voxel[, ,] GetVoxels(){
+        return voxels;
     }
 
 }

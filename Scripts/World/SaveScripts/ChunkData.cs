@@ -11,13 +11,13 @@ public class ChunkData
 
     public ChunkData(Chunk chunk){
         pos = chunk.GetPos();
-        voxels = chunk.voxels;
+        voxels = chunk.GetVoxels();
         meshData = new MeshData(chunk.meshData);
     }
 
     public void Revert(Chunk chunk){
         chunk.SetPos(pos);
-        chunk.voxels = voxels;
+        chunk.SetVoxels(voxels);
         chunk.meshData = meshData.Revert();
     }
 
