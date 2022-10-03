@@ -178,66 +178,7 @@ public class Chunk : MonoBehaviour
         }
     }
 
-    // public float GetSDistF(int xi, int yi, int zi){
-    //     if(InRange(xi,yi,zi)){
-    //         return sDists[xi,yi,zi];
-    //     }
-    //     else{
-    //         return world.GetSDistF(pos.xi+xi,pos.yi+yi,pos.zi+zi);
-    //     }
-    // }
 
-    //Int Version of setting sDistF
-    // public void SetSDistF(int xi, int yi, int zi, float sDistF){
-    //     if(InRange(xi,yi,zi)){
-    //         sDists[xi,yi,zi] = sDistF;
-    //     }
-    //     else{
-    //         world.SetSDistF(pos.xi+xi,pos.yi+yi,pos.zi+zi,sDistF);
-    //     }
-    // }
-
-
-    //Sets the sDistF, DOES NOT check if it is in the chunk
-    // private void USetSDistF(int xi, int yi, int zi, float sDistF){
-    //     sDists[xi,yi,zi] = sDistF;
-    // }
-
-
-    // public void SetVoxel(float x,float y, float z, Voxel voxel, float sDistF){
-    //     if(InRange(x,y,z)){
-    //         int xi = Mathf.FloorToInt(x/voxelSize);
-    //         int yi = Mathf.FloorToInt(y/voxelSize);
-    //         int zi = Mathf.FloorToInt(z/voxelSize);
-    //         voxels[xi,yi,zi] = voxel;
-    //         // USetSDistF(xi,yi,zi,sDistF);
-    //     }
-    //     else{
-    //         world.SetVoxel(pos.x+x,pos.y+y,pos.z+z,voxel,sDistF);
-    //     }
-    // }
-
-    // public void SetVoxel(int xi, int yi, int zi, Voxel voxel, float sDistF){
-    //     if(InRange(xi,yi,zi)){
-    //         voxels[xi,yi,zi] = voxel;
-    //         // USetSDistF(xi,yi,zi,sDistF);
-    //     }
-    //     else{
-    //         world.SetVoxel(pos.xi+xi,pos.yi+yi,pos.zi+zi,voxel,sDistF);
-    //     }
-    // }
-
-    // public void SetVoxelsDistF(float x,float y, float z, float sDistF){
-    //     if(InRange(x,y,z)){
-    //         int xi = Mathf.FloorToInt(x/voxelSize);
-    //         int yi = Mathf.FloorToInt(y/voxelSize);
-    //         int zi = Mathf.FloorToInt(z/voxelSize);
-    //         voxels[xi,yi,zi].sDistF = sDistF;
-    //     }
-    //     else{
-    //         world.SetVoxelsDistF(pos.x+x,pos.y+y,pos.z+z,sDistF);
-    //     }
-    // }
 
     //Checks if coordinate is in chunk
     public static bool InRange(float x,float y, float z){
