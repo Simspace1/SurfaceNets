@@ -7,12 +7,14 @@ using UnityEngine;
 
 public class FarChunkCol : MonoBehaviour
 {   
-    public World world;
-    public WorldPos pos;
+    public World world {get; private set;}
+    public WorldPos pos {get; private set;}
     public MyMesh meshData;
+    [HideInInspector]
     public bool render = false;
-    public Columns column;
+    public Columns column {get; private set;}
 
+    [HideInInspector]
     public TerrainGen gen;
 
     MeshFilter filter;
@@ -93,5 +95,17 @@ public class FarChunkCol : MonoBehaviour
         render = false;
         filter.mesh.Clear();
         coll.sharedMesh.Clear();
+    }
+
+    public void SetPos(WorldPos pos){
+        this.pos = pos;
+    }
+
+    public void SetWorld(World world){
+        this.world = world;
+    }
+
+    public void SetColumn(Columns col){
+        this.column = col;
     }
 }

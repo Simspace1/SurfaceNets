@@ -21,7 +21,7 @@ public class Columns
         this.pos = farChunkCol.pos;
         this.gen = farChunkCol.gen;
         this.world = farChunkCol.world;
-        farChunkCol.column = this;
+        farChunkCol.SetColumn(this);
     }
 
     public Columns(ChunkColumn chunkColumn){
@@ -39,7 +39,7 @@ public class Columns
             this.pos = farChunkCol.pos;
             this.gen = farChunkCol.gen;
             this.world = chunkColumn.world;
-            farChunkCol.column = this;
+            farChunkCol.SetColumn(this);
             chunkColumn.column = this;
         }
         else{

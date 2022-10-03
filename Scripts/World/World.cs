@@ -342,10 +342,10 @@ public class World : MonoBehaviour
         GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
 
-        newFarChunkColumn.pos = col.pos;
-        newFarChunkColumn.world = this;
+        newFarChunkColumn.SetPos(col.pos);
+        newFarChunkColumn.SetWorld(this);
         newFarChunkColumn.CreateFilter();
-        newFarChunkColumn.column = col;
+        newFarChunkColumn.SetColumn(col);
         newFarChunkColumn.gen = col.gen;
 
         return newFarChunkColumn;
