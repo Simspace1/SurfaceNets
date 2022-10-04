@@ -5,7 +5,7 @@ using SimplexNoise;
 
 public class TerrainGen2
 {
-    private ulong seed;
+    private int seed;
 
     private float scale = 1;
     private float persistance = 1;
@@ -14,8 +14,13 @@ public class TerrainGen2
     private float exponentiation = 1;
     private float height = 1;
 
-    public TerrainGen2(ulong seed){
+    public TerrainGen2(int seed){
         this.seed = seed;
+        GenPerm();
+    }
+
+    private void GenPerm(){
+
     }
     
     private float ComputeFBM(WorldPos pos){

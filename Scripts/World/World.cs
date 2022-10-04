@@ -9,7 +9,7 @@ using Unity.Collections;
 public class World : MonoBehaviour
 {
     private string worldName = "world";
-    private ulong worldSeed;
+    private int worldSeed;
 
     private WorldData worldData;
 
@@ -580,7 +580,7 @@ public class World : MonoBehaviour
         return worldName;
     }
 
-    public ulong GetWorldSeed(){
+    public int GetWorldSeed(){
         return worldSeed;
     }
 
