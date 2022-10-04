@@ -20,7 +20,14 @@ public class TerrainGen2
     }
 
     private void GenPerm(){
+        Random.InitState(seed);
+        byte[] perm = new byte[512];
 
+        for (int i = 0; i<512; i++){
+            perm[i] =  ((byte)Mathf.RoundToInt(Random.Range(0,255)));
+        }
+
+        // Noise.perm = perm;
     }
     
     private float ComputeFBM(WorldPos pos){

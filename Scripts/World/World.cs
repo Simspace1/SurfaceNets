@@ -9,7 +9,7 @@ using Unity.Collections;
 public class World : MonoBehaviour
 {
     private string worldName = "world";
-    private int worldSeed;
+    private int worldSeed = 111111111;
 
     private WorldData worldData;
 
@@ -41,6 +41,7 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gen = new TerrainGen2(worldSeed);
         if(StaticWorld.worldName != null){
             worldName = StaticWorld.worldName;
             worldSeed = StaticWorld.seed;
@@ -52,7 +53,7 @@ public class World : MonoBehaviour
             SaveManager.SaveWorld(this);
         }
 
-        gen = new TerrainGen2(worldSeed);
+        
 
         // Stopwatch stopwatch = new Stopwatch();
         // stopwatch.Start();

@@ -152,15 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85aa21fb108c6494691db58ab29b269d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldName: world1
-  worldSeed: 0
   chunkPrefab: {fileID: 7561224247468771875, guid: 36c62fa6a09b40d4cb58d490f7102d13, type: 3}
   farChunkColumnPrefab: {fileID: 4384561503284327496, guid: cf86e8689ae2adf46acfc0f459dc52d7, type: 3}
-  worldData:
-    columns: []
-    worldName: 
-    worldSeed: 0
-  chunkUpdates: []
   purgeSave: 0
 --- !u!4 &1577514
 Transform:
