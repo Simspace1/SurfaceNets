@@ -35,7 +35,7 @@ public class World : MonoBehaviour
     [SerializeField]
     private bool purgeSave = false;
 
-    
+    public TerrainGen2 gen {get; private set;}
 
 
     // Start is called before the first frame update
@@ -51,6 +51,8 @@ public class World : MonoBehaviour
             worldData = new WorldData(worldName,worldSeed);
             SaveManager.SaveWorld(this);
         }
+
+        gen = new TerrainGen2(worldSeed);
 
         // Stopwatch stopwatch = new Stopwatch();
         // stopwatch.Start();
