@@ -101,13 +101,13 @@ public class SingleplayerManager : MonoBehaviour
                     }
                }
 
-               StaticWorld.seed = ulong.Parse(seed);
+               StaticWorld.seed = int.Parse(seed);
             }
             else{
                 System.DateTime time = System.DateTime.Now;
                 int timeInt = time.Year + time.Month+ time.Hour + time.Minute + time.Second + time.Millisecond;
                 Random.InitState(timeInt);
-                StaticWorld.seed = (ulong) Mathf.FloorToInt(Random.Range(0, 2147483647));
+                StaticWorld.seed = (int) Mathf.FloorToInt(Random.Range(0, 2147483647));
             }
             
             StaticWorld.worldName = worldNameIn.text;
@@ -128,7 +128,7 @@ public class SingleplayerManager : MonoBehaviour
 public class AbrWorldData : System.IComparable
 {
     public string worldName;
-    public ulong worldSeed;
+    public long worldSeed;
     public System.DateTime date;
 
     public bool valid;
@@ -137,7 +137,7 @@ public class AbrWorldData : System.IComparable
         valid = false;
     }
 
-    public AbrWorldData(string name, ulong seed, System.DateTime time){
+    public AbrWorldData(string name, long seed, System.DateTime time){
         worldName = name;
         worldSeed = seed;
         date = time;

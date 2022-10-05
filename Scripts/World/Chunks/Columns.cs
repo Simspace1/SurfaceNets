@@ -21,7 +21,7 @@ public class Columns
         this.pos = farChunkCol.pos;
         this.gen = farChunkCol.gen;
         this.world = farChunkCol.world;
-        farChunkCol.column = this;
+        farChunkCol.SetColumn(this);
     }
 
     public Columns(ChunkColumn chunkColumn){
@@ -39,7 +39,7 @@ public class Columns
             this.pos = farChunkCol.pos;
             this.gen = farChunkCol.gen;
             this.world = chunkColumn.world;
-            farChunkCol.column = this;
+            farChunkCol.SetColumn(this);
             chunkColumn.column = this;
         }
         else{
@@ -80,7 +80,24 @@ public class Columns
             column.world.DestroyChunkColumn(column);
         }
 
-        column.world.chunkColumns.Remove(column.pos);
+        column.world.RemoveColumns(column.pos);
     }
 
+    public bool CheckModified(){
+        if(chunkColumn == null){
+            return false;
+        }
+        else{
+            return chunkColumn.CheckModified();
+        }
+    }
+
+    public Chunk GetChunk(WorldPos pos){
+        if(chunkColumn == null){
+            return null;
+        }
+        else{
+            return chunkColumn.GetChunk(pos);
+        }
+    }
 }

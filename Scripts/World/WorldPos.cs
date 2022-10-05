@@ -67,6 +67,13 @@ public class WorldPos
         return false;
     }
 
+    public bool Equals(WorldPos w2){
+        // if(GetHashCode(w1) == GetHashCode(w2))
+        if(this.x == w2.x && this.y == w2.y && this.z == w2.z)
+            return true;
+        return false;
+    }
+
     public override int GetHashCode(){
         unchecked{
             int hash = 47;

@@ -8,39 +8,40 @@ using Unity.Collections;
 
 public class World : MonoBehaviour
 {
-    public string worldName = "world";
-    public ulong worldSeed;
+    private string worldName = "world";
+    private long worldSeed = 0;
 
-    public GameObject chunkPrefab;
-    public GameObject farChunkColumnPrefab;
+    private WorldData worldData;
+
+    [SerializeField]
+    private GameObject chunkPrefab;
+    [SerializeField]
+    private GameObject farChunkColumnPrefab;
+
+
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
-    public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>(WorldPosEqC);
 
-    // public Dictionary<WorldPos, List<WorldPos>> chunkColumns = new Dictionary<WorldPos, List<WorldPos>>(WorldPosEqC);
-    public Dictionary<WorldPos, ChunkColumn> chunkColumns2 = new Dictionary<WorldPos, ChunkColumn>(WorldPosEqC);
-    public Dictionary<WorldPos, FarChunkCol> farChunkColumns = new Dictionary<WorldPos, FarChunkCol>(WorldPosEqC);
 
-    public Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
+    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
 
-    public WorldData worldData;
+    private List<Chunk> chunkUpdates = new List<Chunk>();
 
-    public List<Chunk> chunkUpdates = new List<Chunk>();
+    private static float bottomWorldHeight = -1600;
 
-    public static float bottomWorldHeight = -1600;
-
-    
     public static int maxChunkUpdates = 4;
 
-    public List<ChunkThread> chunkThreads = new List<ChunkThread>();
+    private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
-    public bool purgeSave = false;
+    [SerializeField]
+    private bool purgeSave = false;
 
-    
+    public TerrainGen2 gen {get; private set;}
 
 
     // Start is called before the first frame update
     void Start()
     {
+        gen = new TerrainGen2(worldSeed);
         if(StaticWorld.worldName != null){
             worldName = StaticWorld.worldName;
             worldSeed = StaticWorld.seed;
@@ -51,6 +52,8 @@ public class World : MonoBehaviour
             worldData = new WorldData(worldName,worldSeed);
             SaveManager.SaveWorld(this);
         }
+
+        
 
         // Stopwatch stopwatch = new Stopwatch();
         // stopwatch.Start();
@@ -66,12 +69,6 @@ public class World : MonoBehaviour
             return;
         }
 
-        // SurfacePoints(1);
-        // SurfacePoints2();
-        // SurfacePoints3();
-
-        // SurfacePoints4();
-        // SurfacePointsTest();
 
         // Stopwatch stopwatch = new Stopwatch();
         // stopwatch.Start();
@@ -85,7 +82,16 @@ public class World : MonoBehaviour
     }
 
     void OnDestroy(){
-        SaveManager.SaveAll(this);
+        SaveAll();
+    }
+
+    public void SaveAll(){
+        foreach(var col in chunkColumns){
+            if(col.Value.CheckModified()){
+                SaveManager.SaveChunkColumn(col.Value.chunkColumn);
+            }  
+        }
+        SaveManager.SaveWorld(this);
     }
 
     
@@ -264,255 +270,6 @@ public class World : MonoBehaviour
 
     
 
-    // Goes throught each of the chunks that require update
-    // Creates a job that calculates each of the surface points of each voxels in the chunks
-    // void SurfacePoints(int chunkUpdates){
-    //     int surfDataLength = chunkUpdates*(Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1);
-    //     var surfData = new NativeArray<Chunk.DataSurf>(surfDataLength, Allocator.TempJob);
-
-    //     //instantiates each DataSurf for each chunks
-    //     int i = 0;
-    //     int j = 0;
-    //     foreach(var chunk in chunks){
-    //         if (chunk.Value.update){
-    //             if(j >= maxChunkUpdates){
-    //                 break;
-    //             }
-    //             for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //                 for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //                     for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                         surfData[i] = new Chunk.DataSurf(chunk.Value,xi,yi,zi);
-    //                         i ++;
-    //                     }
-    //                 }
-    //             }
-    //             j++;
-    //         }
-    //     }
-
-    //     var job = new ChunkUpdaterJob{
-    //         ChunkData = surfData
-    //     };
-
-    //     var jobHandle = job.Schedule(surfDataLength,1);
-    //     jobHandle.Complete();
-
-    //     i = 0;
-    //     j = 0;
-    //     foreach(var chunk in chunks){
-    //         if (chunk.Value.update){
-    //             if(j >= maxChunkUpdates){
-    //                 break;
-    //             }
-    //             // chunk.Value.surfPts2 =  new Dictionary<WorldPos, Vector3>(WorldPosEqC);
-    //             chunk.Value.surfPts =  new Dictionary<Vector3, SurfPt>();
-    //             // chunk.Value.surfPts3 = new Dictionary<Vector3, Vector3>();
-    //             for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //                 for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //                     for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                         if (!surfData[i].surf){
-    //                             i++;
-    //                             continue;
-    //                         }
-    //                         else{
-    //                             // chunk.Value.surfPts2.Add(new WorldPos(xi,yi,zi),surfData[i].surfPt);
-    //                             chunk.Value.surfPts.Add(new Vector3(xi*Chunk.voxelSize,yi*Chunk.voxelSize,zi*Chunk.voxelSize),new SurfPt(surfData[i].surfPt.x,surfData[i].surfPt.y,surfData[i].surfPt.z));
-    //                             // chunk.Value.surfPts3.Add(new Vector3(xi*Chunk.voxelSize,yi*Chunk.voxelSize,zi*Chunk.voxelSize),surfData[i].surfPt);
-    //                             i++;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //             // Stopwatch stopWatch = new Stopwatch();
-    //             // stopWatch.Start();
-    //             chunk.Value.UpdateChunk();
-    //             // stopWatch.Stop();
-    //             // print("time: "+ stopWatch.ElapsedTicks);
-    //             j++;
-    //             chunk.Value.update = false;
-    //         }
-    //     }
-    //     surfData.Dispose();
-    // }
-
-    // // Goes throught each of the chunks that require update
-    // // Creates a job that calculates each of the surface points of each voxels in the chunks
-    // void SurfacePoints2(){
-    //     int surfDataLength = (Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1);        
-
-    //     //instantiates each DataSurf for each chunks
-    //     int i = 0;
-    //     int j = 0;
-    //     foreach(var chunk in chunkUpdates){
-    //         if(j >= maxChunkUpdates){
-    //             break;
-    //         }
-    //         i = 0;
-    //         var surfData = new NativeArray<Chunk.DataSurf>(surfDataLength, Allocator.TempJob);
-    //         for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //             for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //                 for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                     surfData[i] = new Chunk.DataSurf(chunk,xi,yi,zi);
-    //                     i ++;
-    //                 }
-    //             }
-    //         }
-    //         var job = new ChunkUpdaterJob{
-    //             ChunkData = surfData
-    //         };
-
-    //         var jobHandle = job.Schedule(surfDataLength,1);
-    //         jobHandle.Complete();
-
-    //         i=0;
-    //         chunk.surfPts =  new Dictionary<Vector3, SurfPt>();
-    //         for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //             for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //                 for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                     if (!surfData[i].surf){
-    //                         i++;
-    //                         continue;
-    //                     }
-    //                     else{
-    //                         chunk.surfPts.Add(new Vector3(xi*Chunk.voxelSize,yi*Chunk.voxelSize,zi*Chunk.voxelSize),new SurfPt(surfData[i].surfPt.x,surfData[i].surfPt.y,surfData[i].surfPt.z));
-    //                         i++;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         j++;
-    //         chunk.UpdateChunk();
-    //         chunk.update = false;
-    //         surfData.Dispose();
-    //     }
-    //     for(int k = 0; k < j; k++){
-    //         chunkUpdates.RemoveAt(0);
-    //     }
-    // }
-
-
-    // // Goes throught each of the chunks that require update
-    // // Creates a job that calculates each of the surface points of each voxels in the chunks
-    // //Current functioning one
-    // void SurfacePoints3(){
-    //     int surfDataLength = (Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1)*(Chunk.chunkVoxels+1);        
-
-    //     //instantiates each DataSurf for each chunks
-    //     int i = 0;
-    //     int j = 0;
-        
-    //     Chunk chunk = chunkUpdates[0];
-    //     i = 0;
-    //     var surfData = new NativeArray<Chunk.DataSurf>(surfDataLength, Allocator.TempJob);
-    //     for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //         for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //             for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                 surfData[i] = new Chunk.DataSurf(chunk,xi,yi,zi);
-    //                 i ++;
-    //             }
-    //         }
-    //     }
-    //     var job = new ChunkUpdaterJob{
-    //         ChunkData = surfData
-    //     };
-
-    //     var jobHandle = job.Schedule(surfDataLength,1);
-    //     jobHandle.Complete();
-
-    //     i=0;
-    //     chunk.surfPts =  new Dictionary<Vector3, SurfPt>();
-    //     for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //         for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //             for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                 if (!surfData[i].surf){
-    //                     i++;
-    //                     continue;
-    //                 }
-    //                 else{
-    //                     chunk.surfPts.Add(new Vector3(xi*Chunk.voxelSize,yi*Chunk.voxelSize,zi*Chunk.voxelSize),new SurfPt(surfData[i].surfPt.x,surfData[i].surfPt.y,surfData[i].surfPt.z));
-    //                     i++;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     j++;
-    //     chunk.UpdateChunk();
-    //     chunk.update = false;
-    //     chunkUpdates.RemoveAt(0);
-    //     surfData.Dispose();
-        
-        
-            
-        
-    // }
-
-
-
-    // void SurfacePoints4(){
-    //     Chunk chunk = chunkUpdates[0];
-
-    //     var chunkData = new NativeHashMap<Vector3,float>(4913,Allocator.TempJob);
-    //     var surfData = new NativeHashMap<Vector3,Vector3>(4913,Allocator.TempJob);
-
-        
-
-    //     float sDistF;
-    //     for(int xi = 0; xi<=Chunk.chunkVoxels; xi++){
-    //         for(int yi = 0; yi<=Chunk.chunkVoxels; yi++){
-    //             for(int zi = 0; zi<=Chunk.chunkVoxels; zi++){
-    //                 sDistF = chunk.GetSDistF(xi,yi,zi);
-    //                 if(sDistF >= 2 || sDistF <= -2){
-    //                     continue;
-    //                 }
-    //                 else{
-    //                     chunkData.Add(new Vector3(xi,yi,zi), sDistF);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-
-
-
-
-    //     chunkData.Dispose();
-    //     surfData.Dispose();
-    // }
-
-
-    // void SurfacePointsTest(){
-        
-
-    //     var chunkData = new NativeArray<Chunk.ChunkData>(chunkUpdates.Count,Allocator.TempJob);
-
-        
-    //     int i = 0;
-    //     foreach(var chunk in chunkUpdates){
-    //         chunkData[i] = new Chunk.ChunkData();
-    //     }
-
-    //     var job = new ChunkUpdaterJob2{
-    //         ChunkData = chunkData
-    //     };
-
-    //     var jobHandle = job.Schedule(chunkUpdates.Count,1);
-    //     jobHandle.Complete();
-
-
-
-    //     chunkData.Dispose();
-    // }
-    // public void CreateChunk(float x, float y,float z){
-    //     WorldPos worldPos = new WorldPos(x,y,z);
-
-    //     GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x,y,z), Quaternion.Euler(Vector3.zero)) as GameObject;
-    //     Chunk newChunk = newChunkObject.GetComponent<Chunk>();
-
-    //     newChunk.pos = worldPos;
-    //     newChunk.world = this;
-
-    //     chunks.Add(worldPos,newChunk);
-
 
     //     //Test Generation
     //     // Voxel voxel = null;
@@ -538,29 +295,14 @@ public class World : MonoBehaviour
 
     // }
 
-    public void CreateChunk(float x, float y,float z,TerrainGen gen){
-        WorldPos worldPos = new WorldPos(x,y,z);
-
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x,y,z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        Chunk newChunk = newChunkObject.GetComponent<Chunk>();
-
-        newChunk.pos = worldPos;
-        newChunk.world = this;
-
-        chunks.Add(worldPos,newChunk);
-
-        newChunk = gen.ChunkGenC2(newChunk);
-
-    }
 
     public void CreateChunk(WorldPos pos, ChunkColumn chunkColumn){
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = pos;
-        newChunk.world = this;
+        newChunk.SetPos(pos);
+        newChunk.SetWorld(this);
 
-        chunks.Add(pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
 
         newChunk = chunkColumn.gen.ChunkGenC2(newChunk);
@@ -569,28 +311,15 @@ public class World : MonoBehaviour
         chunkUpdates.Add(newChunk);
     }
 
-    public void CreateChunk(ChunkData chunkData, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = chunkData.pos;
-        newChunk.voxels = chunkData.voxels;
-        newChunk.world = this;
-        // newChunk.sDists = chunkData.sDists;
-        newChunk.meshData = chunkData.meshData.Revert();
-
-        chunks.Add(chunkData.pos,newChunk);
-        chunkColumn.chunks.Add(newChunk);
-    }
-
+    //Creates chunk at chunkData location
     public void CreateChunkInst(ChunkData chunkData, ChunkColumn chunkColumn){
         GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-        newChunk.pos = chunkData.pos;
-        newChunk.world = this;
+        newChunk.SetPos(chunkData.pos);
+        newChunk.SetWorld(this);
 
-        chunks.Add(chunkData.pos,newChunk);
         chunkColumn.chunks.Add(newChunk);
     }
 
@@ -603,48 +332,28 @@ public class World : MonoBehaviour
             GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
             
-            newChunk.pos = pos;
-            newChunk.world = this;
+            newChunk.SetPos(pos);
+            newChunk.SetWorld(this);
 
             chunkList.Add(newChunk);
-            chunks.Add(pos,newChunk);
         }
         return chunkList;
     }
 
-    public FarChunkCol CreateFarChunkColumn(WorldPos pos){
-        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
-        FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
-
-        newFarChunkColumn.pos = pos;
-        newFarChunkColumn.world = this;
-        newFarChunkColumn.CreateFilter();
-
-        farChunkColumns.Add(pos, newFarChunkColumn);
-        return newFarChunkColumn;
-    }
 
     public FarChunkCol CreateFarChunkColumn(Columns col){
         GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
 
-        newFarChunkColumn.pos = col.pos;
-        newFarChunkColumn.world = this;
+        newFarChunkColumn.SetPos(col.pos);
+        newFarChunkColumn.SetWorld(this);
         newFarChunkColumn.CreateFilter();
-        newFarChunkColumn.column = col;
+        newFarChunkColumn.SetColumn(col);
         newFarChunkColumn.gen = col.gen;
 
-        // farChunkColumns.Add(col.pos, newFarChunkColumn);
         return newFarChunkColumn;
     }
 
-    public void DestroyFarChunkColumn(WorldPos pos){
-        FarChunkCol col;
-        if(farChunkColumns.TryGetValue(pos, out col)){
-            Object.Destroy(col.gameObject);
-            farChunkColumns.Remove(pos);
-        }
-    }
 
     public void DestroyFarChunkColumn(Columns col){
         if(col.farChunkCol != null){
@@ -652,61 +361,6 @@ public class World : MonoBehaviour
             col.farChunkCol = null;
         }
         
-    }
-    
-
-    // public void UpdateChunkColumn(float x, float z){
-    //     List<WorldPos> chunkColumn;
-    //     if(chunkColumns.TryGetValue(new WorldPos(x,0,z), out chunkColumn)){
-    //         Chunk chunk;
-    //         foreach(var pos in chunkColumn){
-    //             chunk = GetChunk(pos.x,pos.y,pos.z);
-    //             chunkUpdates.Add(chunk);
-    //             chunk.update = true;
-    //         }
-    //     }
-    // }
-
-    public void DestroyChunk(float x, float y, float z){
-        Chunk chunk = null;
-        if (chunks.TryGetValue(new WorldPos(x,y,z), out chunk)){
-            //Insert saving here
-
-            Object.Destroy(chunk.gameObject);
-            chunks.Remove(new WorldPos(x,y,z));
-        }
-    }
-
-    // public void DestroyChunkColumn(float x, float y, float z){
-    //     List<WorldPos> chunkColumn;
-    //     if(chunkColumns.TryGetValue(new WorldPos(x,y,z), out chunkColumn)){
-    //         //Insert saving of chunkColumn here
-    //         int count = chunkColumn.Count;
-    //         for (int i = 0; i < count; i++){
-    //             DestroyChunk(chunkColumn[0].x,chunkColumn[0].y, chunkColumn[0].z);
-    //             chunkColumn.RemoveAt(0);
-    //         }
-
-    //         chunkColumns.Remove(new WorldPos(x,y,z));
-    //     }
-    // }
-
-    public void DestroyChunkColumn2(WorldPos pos){
-        ChunkColumn chunkColumn;
-        if(chunkColumns2.TryGetValue(pos, out chunkColumn)){
-            // SaveManager.SaveChunkColumn(chunkColumn);
-
-            foreach(Chunk chunk in chunkColumn.chunks){
-                //Insert Saving of chunk here
-                
-                Object.Destroy(chunk.gameObject);
-                chunk.destoying = true;
-                chunks.Remove(chunk.pos);
-            }
-
-            chunkColumn.destroying = true;
-            chunkColumns2.Remove(pos);
-        }
     }
 
     public void DestroyChunkColumn(Columns column){
@@ -716,7 +370,6 @@ public class World : MonoBehaviour
             
             Object.Destroy(chunk.gameObject);
             chunk.destoying = true;
-            chunks.Remove(chunk.pos);
         }
 
         column.chunkColumn.destroying = true;
@@ -724,28 +377,22 @@ public class World : MonoBehaviour
 
     public Chunk GetChunk(float x, float y,float z){
         WorldPos pos = new WorldPos(x,y,z);
-        float multiple = Chunk.chunkSize;
-        float posx = Mathf.FloorToInt(x/multiple)*multiple;
-        float posy = Mathf.FloorToInt(y/multiple)*multiple;
-        float posz = Mathf.FloorToInt(z/multiple)*multiple;
-        pos.SetPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+        return GetChunk(pos);
     }
 
     public Chunk GetChunk(int xi, int yi, int zi){
-        // WorldPos pos = new WorldPos(xi,yi,zi);
-        int multiple = Chunk.chunkVoxels;
-        float multiplef = Chunk.chunkVoxels;
-        int posx = Mathf.FloorToInt(xi/multiplef)*multiple;
-        int posy = Mathf.FloorToInt(yi/multiplef)*multiple;
-        int posz = Mathf.FloorToInt(zi/multiplef)*multiple;
-        WorldPos pos = new WorldPos(posx,posy,posz);
-        // pos.SetPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+        WorldPos pos = new WorldPos(xi,yi,zi);
+        return GetChunk(pos);
+    }
+
+    private Columns GetColumn(WorldPos posin){
+        if(posin.yi != 0){
+            posin.SetPos(posin.xi,0,posin.zi);
+        }
+
+        Columns col = null;
+        chunkColumns.TryGetValue(posin ,out col);
+        return col;
     }
 
     public Chunk GetChunk(WorldPos posin){
@@ -754,10 +401,11 @@ public class World : MonoBehaviour
         int posx = Mathf.FloorToInt(posin.xi/multiplef)*multiple;
         int posy = Mathf.FloorToInt(posin.yi/multiplef)*multiple;
         int posz = Mathf.FloorToInt(posin.zi/multiplef)*multiple;
-        WorldPos pos = new WorldPos(posx,posy,posz);
-        Chunk containerChunk = null;
-        chunks.TryGetValue(pos, out containerChunk);
-        return containerChunk;
+
+        Columns col = GetColumn(new WorldPos(posx,0,posz));
+
+        Chunk chunk = col.GetChunk(new WorldPos(posx,posy,posz));        
+        return chunk;
     }
 
     public Voxel GetVoxel(float x, float y, float z){
@@ -823,20 +471,6 @@ public class World : MonoBehaviour
     //     }
     // }
 
-    // public void SetVoxel(float x, float y, float z, Voxel voxel, float sDistF){
-    //     Chunk chunk = GetChunk(x,y,z);
-    //     if(chunk != null){
-    //         chunk.SetVoxel(x-chunk.pos.x, y-chunk.pos.y, z-chunk.pos.z,voxel,sDistF);
-    //         chunk.update = true;
-
-    //         UpdateIfEqual(x - chunk.pos.x, voxelSize, new WorldPos(x - 1, y, z));
-    //         UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - voxelSize, new WorldPos(x + 1, y, z));
-    //         UpdateIfEqual(y - chunk.pos.y, voxelSize, new WorldPos(x, y - 1, z));
-    //         UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - voxelSize, new WorldPos(x, y + 1, z));
-    //         UpdateIfEqual(z - chunk.pos.z, voxelSize, new WorldPos(x, y, z - 1));
-    //         UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - voxelSize, new WorldPos(x, y, z + 1));
-    //     }        
-    // }
 
     public void SetVoxel(WorldPos pos, Voxel voxel){
         Chunk chunk = GetChunk(pos);
@@ -884,20 +518,6 @@ public class World : MonoBehaviour
         }
     }
 
-    // public void SetVoxelsDistF(float x,float y,float z,float sDistF){
-    //     Chunk chunk = GetChunk(x,y,z);
-    //     if(chunk != null){
-    //         chunk.SetVoxelsDistF(x-chunk.pos.x, y-chunk.pos.y, z-chunk.pos.z,sDistF);
-    //         chunk.update = true;
-
-    //         UpdateIfEqual(x - chunk.pos.x, voxelSize, new WorldPos(x - 1, y, z));
-    //         UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - voxelSize , new WorldPos(x + 1, y, z));
-    //         UpdateIfEqual(y - chunk.pos.y, voxelSize, new WorldPos(x, y - 1, z));
-    //         UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - voxelSize, new WorldPos(x, y + 1, z));
-    //         UpdateIfEqual(z - chunk.pos.z, voxelSize, new WorldPos(x, y, z - 1));
-    //         UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - voxelSize, new WorldPos(x, y, z + 1));
-    //     }
-    // }
 
     void UpdateIfEqual(int val1, int val2, WorldPos pos){  
         if(val1 == val2){
@@ -955,5 +575,70 @@ public class World : MonoBehaviour
                 chunk.update = true;
             } 
         }
+    }
+
+    public string GetWorldName(){
+        return worldName;
+    }
+
+    public long GetWorldSeed(){
+        return worldSeed;
+    }
+
+    public void SetWorldData(WorldData wData){
+        worldName = wData.worldName;
+        worldSeed = wData.worldSeed;
+        worldData = wData;
+    }
+
+    public WorldData GetWorldData(){
+        return worldData;
+    }
+
+    public int GetChunkUpdateCount(){
+        return chunkUpdates.Count;
+    }
+
+    public void AddChunkUpdate(Chunk chunk){
+        chunkUpdates.Add(chunk);
+    }
+
+    public void AddColumns(WorldPos pos, Columns col){
+        chunkColumns.Add(pos, col);
+    }
+
+    public Columns TryGetColumn(WorldPos pos){
+        Columns column;
+        bool check = chunkColumns.TryGetValue(pos, out column);
+
+        if(check){
+            return column; 
+        }
+        else{
+            return null;
+        }
+    }
+
+    public List<Columns> CheckDestroyColumn(Vector3 ppos, float chunkDistance, float columnDistance){
+
+        float distance;
+        List<Columns> toDestroy = new List<Columns>();
+        foreach (var entry in chunkColumns){
+            distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), ppos);
+
+            if (entry.Value.chunkColumn != null && distance >= chunkDistance){
+                entry.Value.DestroyChunkColumn();
+            }
+
+            if(distance >= columnDistance){
+                toDestroy.Add(entry.Value);
+            }
+        }
+        return toDestroy;
+
+    }
+
+    public void RemoveColumns(WorldPos pos){
+        chunkColumns.Remove(pos);
     }
 }

@@ -125,12 +125,12 @@ public class ChunkColumn
     }
 
     void Create(){
-        if(world.worldData.Contains(pos)){
+        if(world.GetWorldData().Contains(pos)){
             loaded = true;
             if(gen == null){
                 gen = new TerrainGen();
             }
-            data = SaveManager.LoadChunkColumn2(this);
+            data = SaveManager.LoadChunkColumn(this);
             data.Revert1(this);
         }
         else{
@@ -173,7 +173,7 @@ public class ChunkColumn
                     chunk.RenderMesh(chunk.meshData);
                 }
                 else{
-                    world.chunkUpdates.Add(chunk);
+                    world.AddChunkUpdate(chunk);
                     chunk.update = true;
                 }
             }
@@ -182,7 +182,7 @@ public class ChunkColumn
         }        
         else{
             foreach(Chunk chunk in chunks){
-                world.chunkUpdates.Add(chunk);
+                world.AddChunkUpdate(chunk);
                 chunk.update = true;
             }
             rendered = true;
@@ -212,6 +212,15 @@ public class ChunkColumn
             }
         }
         return false;
+    }
+
+    public Chunk GetChunk(WorldPos pos){
+        foreach(Chunk chunk in chunks){
+            if(chunk.pos.Equals(pos)){
+                return chunk;
+            }
+        }
+        return null;
     }
 
 }
