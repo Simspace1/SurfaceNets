@@ -21,47 +21,51 @@ public class TerrainGen2
     }
 
     
-    // private float ComputeFBM(WorldPos pos){
-    //     float xs = pos.x / scale;
-    //     float zs = pos.z /scale;
-    //     float G = 2.0f * (-persistance);
-    //     float amplitude = 1;
-    //     float frequency = 1;
-    //     float norm = 0;
-    //     float total = 0;
+    private double ComputeFBM(WorldPos pos){
+        double xs = pos.x / scale;
+        double zs = pos.z /scale;
+        double G = 2.0f * (-persistance);
+        double amplitude = 1;
+        double frequency = 1;
+        double norm = 0;
+        double total = 0;
 
-    //     for (int i = 0; i <octaves ; i++){
-    //         float noise = GetNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
-    //         total += noise * amplitude;
-    //         norm += amplitude;
-    //         amplitude *= G;
-    //         frequency *= lacunarity;
-    //     }
+        for (int i = 0; i <octaves ; i++){
+            double noise = Get2DNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
+            total += noise * amplitude;
+            norm += amplitude;
+            amplitude *= G;
+            frequency *= lacunarity;
+        }
 
-    //     total /= norm;
-    //     return Mathf.Pow(total, exponentiation * height);
-    // }
+        total /= norm;
+        return System.Math.Pow(total, exponentiation * height);
+    }
 
-    // private float ComputeFBM(float x, float z){
-    //     float xs = x / scale;
-    //     float zs = z /scale;
-    //     float G = 2.0f * (-persistance);
-    //     float amplitude = 1;
-    //     float frequency = 1;
-    //     float norm = 0;
-    //     float total = 0;
+    private double ComputeFBM(float x, float z){
+        double xs = x / scale;
+        double zs = z /scale;
+        double G = 2.0f * (-persistance);
+        double amplitude = 1;
+        double frequency = 1;
+        double norm = 0;
+        double total = 0;
 
-    //     for (int i = 0; i <octaves ; i++){
-    //         float noise = GetNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
-    //         total += noise * amplitude;
-    //         norm += amplitude;
-    //         amplitude *= G;
-    //         frequency *= lacunarity;
-    //     }
+        for (int i = 0; i <octaves ; i++){
+            double noise = Get2DNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
+            total += noise * amplitude;
+            norm += amplitude;
+            amplitude *= G;
+            frequency *= lacunarity;
+        }
 
-    //     total /= norm;
-    //     return Mathf.Pow(total, exponentiation * height);
-    // }
+        total /= norm;
+        return System.Math.Pow(total, exponentiation * height);
+    }
+
+    private double Get2DNoise(double x, double y){
+        return Noise.Evaluate(x,y);
+    }
 
     
 }
