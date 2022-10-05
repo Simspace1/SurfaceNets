@@ -17,7 +17,6 @@ public class TerrainGen2
 
 
     private float stoneBaseHeight = 0;
-    private float stoneBaseNoise = 0.005f;
     private float stoneBaseNoiseHeight = 4;
 
     private float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
@@ -27,7 +26,6 @@ public class TerrainGen2
     private float stoneMountainFrequency = 0.008f;
 
     private float dirtBaseHeight = 1;
-    private float dirtNoise = 0.04f;
     private float dirtNoiseHeight = 3;
 
 
