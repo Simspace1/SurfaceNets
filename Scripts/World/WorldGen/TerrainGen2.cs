@@ -67,7 +67,7 @@ public class TerrainGen2
         return Noise.Evaluate(x,y);
     }
 
-    public ColumnGen GenColumn(WorldPos pos){
+    public ColumnGen GenerateColumnGen(WorldPos pos){
         return new ColumnGen();
     }
 
