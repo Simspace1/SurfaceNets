@@ -8,44 +8,44 @@ public class Columns
     public ChunkColumn chunkColumn;
     public World world;
     public WorldPos pos;
-    public TerrainGen gen;
+    public ColumnGen gen {get; private set;}
 
-    public Columns(World world, WorldPos pos){
+    public Columns(World world, WorldPos pos, ColumnGen gen){
         this.world = world;
         this.pos = pos;
-        this.gen = new TerrainGen();
+        this.gen = gen;
     }
 
-    public Columns(FarChunkCol farChunkCol){
-        this.farChunkCol = farChunkCol;
-        this.pos = farChunkCol.pos;
-        this.gen = farChunkCol.gen;
-        this.world = farChunkCol.world;
-        farChunkCol.SetColumn(this);
-    }
+    // public Columns(FarChunkCol farChunkCol){
+    //     this.farChunkCol = farChunkCol;
+    //     this.pos = farChunkCol.pos;
+    //     this.gen = farChunkCol.gen;
+    //     this.world = farChunkCol.world;
+    //     farChunkCol.SetColumn(this);
+    // }
 
-    public Columns(ChunkColumn chunkColumn){
-        this.chunkColumn = chunkColumn;
-        this.pos = chunkColumn.pos;
-        this.gen = chunkColumn.gen;
-        this.world = chunkColumn.world;
-        chunkColumn.column = this;
-    }
+    // public Columns(ChunkColumn chunkColumn){
+    //     this.chunkColumn = chunkColumn;
+    //     this.pos = chunkColumn.pos;
+    //     this.gen = chunkColumn.gen;
+    //     this.world = chunkColumn.world;
+    //     chunkColumn.column = this;
+    // }
 
-    public Columns(FarChunkCol farChunkCol, ChunkColumn chunkColumn){
-        this.farChunkCol = farChunkCol;
-        this.chunkColumn = chunkColumn;
-        if(WorldPos.Equals(chunkColumn.pos, farChunkCol.pos)){
-            this.pos = farChunkCol.pos;
-            this.gen = farChunkCol.gen;
-            this.world = chunkColumn.world;
-            farChunkCol.SetColumn(this);
-            chunkColumn.column = this;
-        }
-        else{
-            throw new System.Exception("Columns WorldPos not equal");
-        }
-    }
+    // public Columns(FarChunkCol farChunkCol, ChunkColumn chunkColumn){
+    //     this.farChunkCol = farChunkCol;
+    //     this.chunkColumn = chunkColumn;
+    //     if(WorldPos.Equals(chunkColumn.pos, farChunkCol.pos)){
+    //         this.pos = farChunkCol.pos;
+    //         this.gen = farChunkCol.gen;
+    //         this.world = chunkColumn.world;
+    //         farChunkCol.SetColumn(this);
+    //         chunkColumn.column = this;
+    //     }
+    //     else{
+    //         throw new System.Exception("Columns WorldPos not equal");
+    //     }
+    // }
 
     public void CreateFarChunkCol(){
         farChunkCol = world.CreateFarChunkColumn(this);
@@ -98,6 +98,12 @@ public class Columns
         }
         else{
             return chunkColumn.GetChunk(pos);
+        }
+    }
+
+    public void SetGen(ColumnGen gen){
+        if(this.gen == null){
+            this.gen = gen;
         }
     }
 }

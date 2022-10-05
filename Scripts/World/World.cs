@@ -305,7 +305,7 @@ public class World : MonoBehaviour
 
         chunkColumn.chunks.Add(newChunk);
 
-        newChunk = chunkColumn.gen.ChunkGenC2(newChunk);
+        // newChunk = chunkColumn.col.gen.ChunkGenC2(newChunk);
 
         newChunk.update = true;
         chunkUpdates.Add(newChunk);
@@ -349,7 +349,6 @@ public class World : MonoBehaviour
         newFarChunkColumn.SetWorld(this);
         newFarChunkColumn.CreateFilter();
         newFarChunkColumn.SetColumn(col);
-        newFarChunkColumn.gen = col.gen;
 
         return newFarChunkColumn;
     }

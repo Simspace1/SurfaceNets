@@ -19,27 +19,24 @@ public class ChunkColumn
     public bool modified = false;
     private ColumnData data;
     public string path = Application.persistentDataPath;
-    public Columns column;
-
-    public TerrainGen gen;
+    public Columns col;
 
 
     private Thread CreateThread;
     private Thread CreateThread2;
 
-    public ChunkColumn(World world, WorldPos pos){
-        this.world = world;
-        this.pos = pos;
-        CreateThread = new Thread(new ThreadStart(() => Create()));
-        CreateThread2 = new Thread(new ThreadStart(() => Create2()));
+    // public ChunkColumn(World world, WorldPos pos){
+    //     this.world = world;
+    //     this.pos = pos;
+    //     CreateThread = new Thread(new ThreadStart(() => Create()));
+    //     CreateThread2 = new Thread(new ThreadStart(() => Create2()));
         
-    }
+    // }
 
     public ChunkColumn(Columns column){
         this.world = column.world;
         this.pos = column.pos;
-        this.column = column;
-        this.gen = column.gen;
+        this.col = column;
         CreateThread = new Thread(new ThreadStart(() => Create()));
         CreateThread2 = new Thread(new ThreadStart(() => Create2()));
     }
@@ -127,21 +124,17 @@ public class ChunkColumn
     void Create(){
         if(world.GetWorldData().Contains(pos)){
             loaded = true;
-            if(gen == null){
-                gen = new TerrainGen();
+            if(col.gen == null){
+                col.SetGen(world.gen.GenerateColumnGen(pos));
             }
             data = SaveManager.LoadChunkColumn(this);
             data.Revert1(this);
         }
         else{
-            if(gen == null){
-                gen = new TerrainGen();
-                gen.MmTerrainHeight(pos);
+            if(col.gen == null){
+                col.SetGen(world.gen.GenerateColumnGen(pos));
             }
-            else if(!gen.generated){
-                gen.MmTerrainHeight(pos);
-            }
-            float [] minMax = gen.minMax;
+            float [] minMax = col.gen.minMax;
 
             float min = Mathf.FloorToInt((minMax[0]-Chunk.chunkSize)/Chunk.chunkSize)*Chunk.chunkSize;
             float max = Mathf.CeilToInt((minMax[1]+Chunk.chunkSize)/Chunk.chunkSize)*Chunk.chunkSize;
@@ -160,7 +153,7 @@ public class ChunkColumn
         }
         else{
             foreach(Chunk chunk in chunks){
-                gen.ChunkGenC2(chunk);
+                col.gen.ChunkGenC2(chunk);
             }
         }
     }

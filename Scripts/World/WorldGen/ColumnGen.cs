@@ -9,11 +9,14 @@ public class ColumnGen
     private float[,] stoneHeight;
     public float [] minMax;
     public bool generated = false;
-
-
+   
+   public ColumnGen(){}
 
     public ColumnGen(float[] minMax, float[,] terrainHeight, float[,] stoneHeight){
-
+        this.minMax = minMax;
+        this.terrainHeight = terrainHeight;
+        this.stoneHeight = stoneHeight;
+        generated = true;
     }
 
     // Local code to set voxels

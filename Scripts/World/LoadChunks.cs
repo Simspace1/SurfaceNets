@@ -236,7 +236,7 @@ public class LoadChunks : MonoBehaviour
             }
             //Creates far chunks and Columns
             else if(farCreateList.Count < farChunkupdates){
-                Columns col = new Columns(world, newChunkColumnPos);
+                Columns col = new Columns(world, newChunkColumnPos, world.gen.GenerateColumnGen(newChunkColumnPos));
                 world.AddColumns(newChunkColumnPos, col);
                 farCreateList.Add(col);
             }
@@ -267,7 +267,7 @@ public class LoadChunks : MonoBehaviour
                 }
             }
             else{
-                Columns col = new Columns(world, posAdj);
+                Columns col = new Columns(world, posAdj, world.gen.GenerateColumnGen(posAdj));
                 world.AddColumns(posAdj, col);
                 farCreateList.Add(col);
                 col.CreateChunkColumn();
