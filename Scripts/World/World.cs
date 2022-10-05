@@ -9,7 +9,7 @@ using Unity.Collections;
 public class World : MonoBehaviour
 {
     private string worldName = "world";
-    private int worldSeed = 111111111;
+    private long worldSeed = 0;
 
     private WorldData worldData;
 
@@ -581,7 +581,7 @@ public class World : MonoBehaviour
         return worldName;
     }
 
-    public int GetWorldSeed(){
+    public long GetWorldSeed(){
         return worldSeed;
     }
 

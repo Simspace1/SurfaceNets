@@ -8,9 +8,9 @@ public class WorldData
 
     public List<WorldPos> columns = new List<WorldPos>();
     public string worldName;
-    public int worldSeed;
+    public long worldSeed;
 
-    public WorldData(string name, int seed){
+    public WorldData(string name, long seed){
         worldName = name;
         worldSeed = seed;
     }

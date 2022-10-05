@@ -128,7 +128,7 @@ public class SingleplayerManager : MonoBehaviour
 public class AbrWorldData : System.IComparable
 {
     public string worldName;
-    public int worldSeed;
+    public long worldSeed;
     public System.DateTime date;
 
     public bool valid;
@@ -137,7 +137,7 @@ public class AbrWorldData : System.IComparable
         valid = false;
     }
 
-    public AbrWorldData(string name, int seed, System.DateTime time){
+    public AbrWorldData(string name, long seed, System.DateTime time){
         worldName = name;
         worldSeed = seed;
         date = time;
