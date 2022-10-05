@@ -5,28 +5,16 @@ using UnityEngine;
 public class ColumnGen
 {
     
-    private float[,] terrainHeight = new float[Chunk.chunkVoxels+3,Chunk.chunkVoxels+3];
-    private float[,] stoneHeight = new float[Chunk.chunkVoxels+3,Chunk.chunkVoxels+3];
+    private float[,] terrainHeight;
+    private float[,] stoneHeight;
     public float [] minMax;
     public bool generated = false;
 
-    //Vars for Actual Generation of heights
-    // private float stoneBaseHeight = 0;
-    // private float stoneBaseNoise = 0.005f;
-    // private float stoneBaseNoiseHeight = 4;
-
-    // private float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
-    // private float MountainsBiomeSize = 5;
-    // private float MountainsBiomeAmplitureMultiplier = 1;
-
-    // private float stoneMountainFrequency = 0.008f;
-
-    // private float dirtBaseHeight = 1;
-    // private float dirtNoise = 0.04f;
-    // private float dirtNoiseHeight = 3;
 
 
+    public ColumnGen(float[] minMax, float[,] terrainHeight, float[,] stoneHeight){
 
+    }
 
     // Local code to set voxels
     private static void SetVoxel(int x, int y, int z, Voxel voxel, Chunk chunk, float sDistF, bool replaceBlocks = false){
@@ -205,86 +193,5 @@ public class ColumnGen
     public float[,] GetTerrainHeight(){
         return terrainHeight;
     }
-
-
-//Commented For now might go in TerrainGen2 instead
-
-    // public float[] MmTerrainHeight(WorldPos pos){
-    //     // float stoneheight, MountainsBiome,dirtHeight;
-    //     float min = 0;
-    //     float max = 0;
-    //     for (float x = pos.x-Chunk.voxelSize ; x<pos.x+Chunk.chunkSize+Chunk.voxelSize*2; x += Chunk.voxelSize){
-    //         for (float z = pos.z-Chunk.voxelSize ; z<pos.z+Chunk.chunkSize+Chunk.voxelSize*2; z += Chunk.voxelSize){
-    //             int xi = Mathf.FloorToInt((x-(pos.x-Chunk.voxelSize))/Chunk.voxelSize);
-    //             int zi = Mathf.FloorToInt((z-(pos.z-Chunk.voxelSize))/Chunk.voxelSize);
-
-    //             // stoneheight = stoneBaseHeight;
-    //             // stoneheight += GetNoise(x,0,z,stoneBaseNoise,stoneBaseNoiseHeight);
-
-    //             // MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize)*MountainsBiomeAmplitureMultiplier;
-    //             // stoneheight += GetNoise(x,0,z,stoneMountainFrequency,MountainsBiome);
-
-    //             // dirtHeight = stoneheight + dirtBaseHeight;
-    //             // dirtHeight += GetNoise(x,100,z,dirtNoise,dirtNoiseHeight);
-
-    //             var val = GenerateHeights(x,z);
-
-    //             stoneHeight[xi,zi] = val[0];
-
-    //             terrainHeight[xi,zi] = val[1];
-    //             if (min == 0 && max == 0 && val[1] != 0){
-    //                 min = val[1];
-    //                 max = val[1];
-    //             }
-    //             else if(val[1] < min){
-    //                 min = val[1];
-    //             }
-    //             else if(val[1] > max){
-    //                 max = val[1];
-    //             }
-
-    //             // terrainHeight[xi,zi] = dirtHeight;
-    //             // if (min == 0 && max == 0 && dirtHeight != 0){
-    //             //     min = dirtHeight;
-    //             //     max = dirtHeight;
-    //             // }
-    //             // else if(dirtHeight < min){
-    //             //     min = dirtHeight;
-    //             // }
-    //             // else if(dirtHeight > max){
-    //             //     max = dirtHeight;
-    //             // }
-    //         }
-    //     }
-    //     minMax = new float[2];
-    //     minMax[0] = min;
-    //     minMax[1] = max;
-    //     generated = true;
-    //     return minMax;
-    // }
-
-    // public float[] GenerateHeights(float x, float z){
-    //     float stoneheight, dirtheight, MountainsBiome;
-    //     stoneheight = 0;
-    //     dirtheight = 0;
-
-    //     stoneheight = stoneBaseHeight;
-    //     stoneheight += GetNoise(x,0,z,stoneBaseNoise,stoneBaseNoiseHeight);
-
-
-    //     MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
-    //     MountainsBiome = GetNoise(x,0,z,0.05f,100);
-    //     stoneheight += GetNoise(x,0,z,stoneMountainFrequency,MountainsBiome);
-
-
-    //     dirtheight = stoneheight + dirtBaseHeight;
-    //     dirtheight += GetNoise(x,100,z,dirtNoise,dirtNoiseHeight);
-
-
-    //     float[] val = new float[2];
-    //     val[0] = stoneheight;
-    //     val[1] = dirtheight;
-    //     return val;
-    // }
 
 }

@@ -703,7 +703,7 @@ public class TerrainGen
         return minMax;
     }
 
-    public float[] GenerateHeights(float x, float z){
+    private float[] GenerateHeights(float x, float z){
         float stoneheight, dirtheight, MountainsBiome;
         stoneheight = 0;
         dirtheight = 0;
