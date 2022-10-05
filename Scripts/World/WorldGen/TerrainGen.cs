@@ -110,292 +110,292 @@ public class TerrainGen
 
     }
 
-    public float sDistFGen(Chunk chunk, float x, float y, float z){
-        float sDistF = 0;
-        int xi = Mathf.FloorToInt((x-(chunk.pos.x-Chunk.voxelSize))/Chunk.voxelSize);
-        int zi = Mathf.FloorToInt((z-(chunk.pos.z-Chunk.voxelSize))/Chunk.voxelSize);
-        int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
+    // public float sDistFGen(Chunk chunk, float x, float y, float z){
+    //     float sDistF = 0;
+    //     int xi = Mathf.FloorToInt((x-(chunk.pos.x-Chunk.voxelSize))/Chunk.voxelSize);
+    //     int zi = Mathf.FloorToInt((z-(chunk.pos.z-Chunk.voxelSize))/Chunk.voxelSize);
+    //     int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
 
-        if(SameSignHeight(y,xi,zi)){
-            sDistF = y-terrainHeight[xi,zi];
-        }
-        else{
-            List<SurfPt> edgePts= new List<SurfPt>();
-            // SurfPt surfPt0;
+    //     if(SameSignHeight(y,xi,zi)){
+    //         sDistF = y-terrainHeight[xi,zi];
+    //     }
+    //     else{
+    //         List<SurfPt> edgePts= new List<SurfPt>();
+    //         // SurfPt surfPt0;
 
-            if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
-                edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
-            }
-            if(!SameSignHeight(y,xi,zi,xi+1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi+1,zi);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi,zi+1);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi-1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi-1,zi);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi,zi-1);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
+    //         if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
+    //             edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
+    //         }
+    //         if(!SameSignHeight(y,xi,zi,xi+1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi+1,zi);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi,zi+1);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi-1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi-1,zi);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi,zi-1);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
 
-            int edgePtN = edgePts.Count;
-            SurfPt surfPt = new SurfPt(0,0,0);
-            for(int i = 0; i < edgePtN; i++){
-                surfPt.Add(edgePts[0]);
-                edgePts.RemoveAt(0);
-            }
-            surfPt.Divide(edgePtN);
-            sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
-            if (y < terrainHeight[xi,zi]){
-                sDistF = -sDistF;
-            }
-        }
-        return sDistF;
-    }
+    //         int edgePtN = edgePts.Count;
+    //         SurfPt surfPt = new SurfPt(0,0,0);
+    //         for(int i = 0; i < edgePtN; i++){
+    //             surfPt.Add(edgePts[0]);
+    //             edgePts.RemoveAt(0);
+    //         }
+    //         surfPt.Divide(edgePtN);
+    //         sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
+    //         if (y < terrainHeight[xi,zi]){
+    //             sDistF = -sDistF;
+    //         }
+    //     }
+    //     return sDistF;
+    // }
     
     //Int inputs version
-    public float sDistFGen(Chunk chunk, int x, int yi, int z){
-        float sDistF = 0;
-        int xi = x-(chunk.pos.xi-1);
-        int zi = z-(chunk.pos.zi-1);
-        // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
+    // public float sDistFGen(Chunk chunk, int x, int yi, int z){
+    //     float sDistF = 0;
+    //     int xi = x-(chunk.pos.xi-1);
+    //     int zi = z-(chunk.pos.zi-1);
+    //     // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
 
-        float y = yi*Chunk.voxelSize;
+    //     float y = yi*Chunk.voxelSize;
 
-        if(SameSignHeight(y,xi,zi)){
-            sDistF = y-terrainHeight[xi,zi];
-        }
-        else{
-            List<SurfPt> edgePts= new List<SurfPt>();
-            // SurfPt surfPt0;
+    //     if(SameSignHeight(y,xi,zi)){
+    //         sDistF = y-terrainHeight[xi,zi];
+    //     }
+    //     else{
+    //         List<SurfPt> edgePts= new List<SurfPt>();
+    //         // SurfPt surfPt0;
 
-            if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
-                edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
-            }
-            if(!SameSignHeight(y,xi,zi,xi+1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi+1,zi);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi,zi+1);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi-1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi-1,zi);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
-            if(!SameSignHeight(y,xi,zi,xi,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
-            }
-            // else{
-            //     surfPt0 = Intercept(y,xi,zi,xi,zi-1);
-            //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
-            //         edgePts.Add(surfPt0);
-            //     }
-            // }
+    //         if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
+    //             edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
+    //         }
+    //         if(!SameSignHeight(y,xi,zi,xi+1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi+1,zi);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi,zi+1);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi-1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi-1,zi);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
+    //         if(!SameSignHeight(y,xi,zi,xi,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
+    //         }
+    //         // else{
+    //         //     surfPt0 = Intercept(y,xi,zi,xi,zi-1);
+    //         //     if(Mathf.Sqrt(Mathf.Pow(surfPt0.y,2)+Mathf.Pow(surfPt0.x,2)+Mathf.Pow(surfPt0.z,2)) < y-terrainHeight[xi,zi]){
+    //         //         edgePts.Add(surfPt0);
+    //         //     }
+    //         // }
 
-            int edgePtN = edgePts.Count;
-            SurfPt surfPt = new SurfPt(0,0,0);
-            for(int i = 0; i < edgePtN; i++){
-                surfPt.Add(edgePts[0]);
-                edgePts.RemoveAt(0);
-            }
-            surfPt.Divide(edgePtN);
-            sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
-            if (y < terrainHeight[xi,zi]){
-                sDistF = -sDistF;
-            }
-        }
-        return sDistF;
-    }
-
-    //Int inputs version
-    public float sDistFGen1(Chunk chunk, int x, int yi, int z){
-        float sDistF = 0;
-        int xi = x-(chunk.pos.xi-1);
-        int zi = z-(chunk.pos.zi-1);
-        // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
-
-        float y = yi*Chunk.voxelSize;
-
-        if(SameSignHeight1(y,xi,zi)){
-            sDistF = y-terrainHeight[xi,zi];
-        }
-        else{
-            List<SurfPt> edgePts= new List<SurfPt>();
-            // SurfPt surfPt0;
-
-            if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
-                edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi+1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi+1));
-            }
-
-            float min = 2;
-            float sDist;
-            foreach(SurfPt pt in edgePts){
-                sDist = Mathf.Sqrt(Mathf.Pow(pt.y,2)+Mathf.Pow(pt.x,2)+Mathf.Pow(pt.z,2));
-                if(Mathf.Abs(sDist) < min){
-                    min = sDist;
-                }
-            }
-
-            // int edgePtN = edgePts.Count;
-            // SurfPt surfPt = new SurfPt(0,0,0);
-            // for(int i = 0; i < edgePtN; i++){
-            //     surfPt.Add(edgePts[0]);
-            //     edgePts.RemoveAt(0);
-            // }
-            // surfPt.Divide(edgePtN);
-            // sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
-
-            // if(sDistF > min){
-            //     sDistF = min;
-            // }
-            
-            sDistF = min;
-            if (y < terrainHeight[xi,zi]){
-                sDistF = -sDistF;
-            }
-        }
-        return sDistF;
-    }
+    //         int edgePtN = edgePts.Count;
+    //         SurfPt surfPt = new SurfPt(0,0,0);
+    //         for(int i = 0; i < edgePtN; i++){
+    //             surfPt.Add(edgePts[0]);
+    //             edgePts.RemoveAt(0);
+    //         }
+    //         surfPt.Divide(edgePtN);
+    //         sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
+    //         if (y < terrainHeight[xi,zi]){
+    //             sDistF = -sDistF;
+    //         }
+    //     }
+    //     return sDistF;
+    // }
 
     //Int inputs version
-    public float sDistFGen2(Chunk chunk, int x, int yi, int z){
-        float sDistF = 0;
-        int xi = x-(chunk.pos.xi-1);
-        int zi = z-(chunk.pos.zi-1);
-        // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
+    // public float sDistFGen1(Chunk chunk, int x, int yi, int z){
+    //     float sDistF = 0;
+    //     int xi = x-(chunk.pos.xi-1);
+    //     int zi = z-(chunk.pos.zi-1);
+    //     // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
 
-        float y = yi*Chunk.voxelSize;
+    //     float y = yi*Chunk.voxelSize;
 
-        if(SameSignHeight1(y,xi,zi)){
-            sDistF = y-terrainHeight[xi,zi];
-        }
-        else{
-            List<SurfPt> edgePts= new List<SurfPt>();
-            // SurfPt surfPt0;
+    //     if(SameSignHeight1(y,xi,zi)){
+    //         sDistF = y-terrainHeight[xi,zi];
+    //     }
+    //     else{
+    //         List<SurfPt> edgePts= new List<SurfPt>();
+    //         // SurfPt surfPt0;
 
-            // if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
-                edgePts.Add(new SurfPt(0,Mathf.Abs(y-terrainHeight[xi,zi]),0));
-            // }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi-1)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi-1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi-1,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi-1,zi+1));
-            }
-            if(!SameSignHeight1(y,xi,zi,xi+1,zi+1)){
-                edgePts.Add(Intercept(y,xi,zi,xi+1,zi+1));
-            }
+    //         if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
+    //             edgePts.Add(new SurfPt(0,terrainHeight[xi,zi]-y,0));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi+1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi+1));
+    //         }
 
-            float min = 1000;
-            float sDist;
-            foreach(SurfPt pt in edgePts){
-                sDist = Mathf.Sqrt(Mathf.Pow(pt.y,2)+Mathf.Pow(pt.x,2)+Mathf.Pow(pt.z,2));
-                if(Mathf.Abs(sDist) < min){
-                    min = sDist;
-                }
-            }
+    //         float min = 2;
+    //         float sDist;
+    //         foreach(SurfPt pt in edgePts){
+    //             sDist = Mathf.Sqrt(Mathf.Pow(pt.y,2)+Mathf.Pow(pt.x,2)+Mathf.Pow(pt.z,2));
+    //             if(Mathf.Abs(sDist) < min){
+    //                 min = sDist;
+    //             }
+    //         }
 
-            // int edgePtN = edgePts.Count;
-            // SurfPt surfPt = new SurfPt(0,0,0);
-            // for(int i = 0; i < edgePtN; i++){
-            //     surfPt.Add(edgePts[0]);
-            //     edgePts.RemoveAt(0);
-            // }
-            // surfPt.Divide(edgePtN);
-            // sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
+    //         // int edgePtN = edgePts.Count;
+    //         // SurfPt surfPt = new SurfPt(0,0,0);
+    //         // for(int i = 0; i < edgePtN; i++){
+    //         //     surfPt.Add(edgePts[0]);
+    //         //     edgePts.RemoveAt(0);
+    //         // }
+    //         // surfPt.Divide(edgePtN);
+    //         // sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
 
-            // if(sDistF > min){
-            //     sDistF = min;
-            // }
+    //         // if(sDistF > min){
+    //         //     sDistF = min;
+    //         // }
             
-            sDistF = min;
-            if (y < terrainHeight[xi,zi]){
-                sDistF = -sDistF;
-            }
-        }
-        return sDistF;
-    }
+    //         sDistF = min;
+    //         if (y < terrainHeight[xi,zi]){
+    //             sDistF = -sDistF;
+    //         }
+    //     }
+    //     return sDistF;
+    // }
+
+    //Int inputs version
+    // public float sDistFGen2(Chunk chunk, int x, int yi, int z){
+    //     float sDistF = 0;
+    //     int xi = x-(chunk.pos.xi-1);
+    //     int zi = z-(chunk.pos.zi-1);
+    //     // int yi = Mathf.FloorToInt((y-(chunk.pos.y))/Chunk.voxelSize);
+
+    //     float y = yi*Chunk.voxelSize;
+
+    //     if(SameSignHeight1(y,xi,zi)){
+    //         sDistF = y-terrainHeight[xi,zi];
+    //     }
+    //     else{
+    //         List<SurfPt> edgePts= new List<SurfPt>();
+    //         // SurfPt surfPt0;
+
+    //         // if( y <= terrainHeight[xi,zi]+Chunk.voxelSize && y >= terrainHeight[xi,zi]-Chunk.voxelSize){
+    //             edgePts.Add(new SurfPt(0,Mathf.Abs(y-terrainHeight[xi,zi]),0));
+    //         // }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi+1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi-1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi-1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi-1,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi-1,zi+1));
+    //         }
+    //         if(!SameSignHeight1(y,xi,zi,xi+1,zi+1)){
+    //             edgePts.Add(Intercept(y,xi,zi,xi+1,zi+1));
+    //         }
+
+    //         float min = 1000;
+    //         float sDist;
+    //         foreach(SurfPt pt in edgePts){
+    //             sDist = Mathf.Sqrt(Mathf.Pow(pt.y,2)+Mathf.Pow(pt.x,2)+Mathf.Pow(pt.z,2));
+    //             if(Mathf.Abs(sDist) < min){
+    //                 min = sDist;
+    //             }
+    //         }
+
+    //         // int edgePtN = edgePts.Count;
+    //         // SurfPt surfPt = new SurfPt(0,0,0);
+    //         // for(int i = 0; i < edgePtN; i++){
+    //         //     surfPt.Add(edgePts[0]);
+    //         //     edgePts.RemoveAt(0);
+    //         // }
+    //         // surfPt.Divide(edgePtN);
+    //         // sDistF = Mathf.Sqrt(Mathf.Pow(surfPt.y,2)+Mathf.Pow(surfPt.x,2)+Mathf.Pow(surfPt.z,2));
+
+    //         // if(sDistF > min){
+    //         //     sDistF = min;
+    //         // }
+            
+    //         sDistF = min;
+    //         if (y < terrainHeight[xi,zi]){
+    //             sDistF = -sDistF;
+    //         }
+    //     }
+    //     return sDistF;
+    // }
 
     
 
@@ -474,18 +474,18 @@ public class TerrainGen
     }
 
     //checks a single position to verify if it needs to be calculated for sDist
-    bool SingleHeightCheck(float y, int x, int z, bool posit, float height, float offset){
-        bool val;
+    // bool SingleHeightCheck(float y, int x, int z, bool posit, float height, float offset){
+    //     bool val;
         
-        if(posit){
-            val = terrainHeight[x,z]-offset >= height && y-terrainHeight[x,z] <= Chunk.sDistLimit;
-        }
-        else{
-            val = terrainHeight[x,z]+offset <= height && terrainHeight[x,z]-y <= Chunk.sDistLimit;
-        }
+    //     if(posit){
+    //         val = terrainHeight[x,z]-offset >= height && y-terrainHeight[x,z] <= Chunk.sDistLimit;
+    //     }
+    //     else{
+    //         val = terrainHeight[x,z]+offset <= height && terrainHeight[x,z]-y <= Chunk.sDistLimit;
+    //     }
 
-        return val;
-    }
+    //     return val;
+    // }
 
     float Intercept2(float delyi, float y, int xi, int zi, int x, int z){
         float d, theta, delx, dely;
@@ -511,62 +511,62 @@ public class TerrainGen
         return d;
     }
 
-    float Dist(float y,int xi, int zi, int x, int z){
-        return Mathf.Sqrt(Mathf.Pow((xi-x)*Chunk.voxelSize, 2) + Mathf.Pow((zi-z)*Chunk.voxelSize, 2) + Mathf.Pow((y-terrainHeight[x,z])*Chunk.voxelSize, 2));
-    }
+    // float Dist(float y,int xi, int zi, int x, int z){
+    //     return Mathf.Sqrt(Mathf.Pow((xi-x)*Chunk.voxelSize, 2) + Mathf.Pow((zi-z)*Chunk.voxelSize, 2) + Mathf.Pow((y-terrainHeight[x,z])*Chunk.voxelSize, 2));
+    // }
 
-    SurfPt Intercept(float y, int xi, int zi, int xii, int zii){
-        float slope;
-        float b;
-        float xint,zint;
-        if (zi == zii){
-            slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/((xii-xi)*Chunk.voxelSize);
-            b = terrainHeight[xi,zi];
-            xint = (y-b)/slope;
-            zint = 0;
-        }
-        else if(xi == xii){
-            slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/((zii-zi)*Chunk.voxelSize);
-            b = terrainHeight[xi,zi];
-            zint = (y-b)/slope;
-            xint = 0;
-        }
-        // else{
-        //     xint = 0;
-        //     zint = 0;
-        // }
-        else{
-            float xzi, xzii, xzint, mag;
-            xzi = Mathf.Sqrt(Mathf.Pow(xi*Chunk.voxelSize,2) + Mathf.Pow(zi*Chunk.voxelSize,2));
-            xzii = Mathf.Sqrt(Mathf.Pow(xii*Chunk.voxelSize,2) + Mathf.Pow(zii*Chunk.voxelSize,2));
-            slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/(xzii-xzi);
-            b = terrainHeight[xi,zi];
-            xzint = (y-b)/slope;
-            mag = Mathf.Sqrt(Mathf.Pow(xzint,2)/2);
-            if(xii > xi){
-                xint = mag;
-            }
-            else{
-                xint = -mag;
-            }
+    // SurfPt Intercept(float y, int xi, int zi, int xii, int zii){
+    //     float slope;
+    //     float b;
+    //     float xint,zint;
+    //     if (zi == zii){
+    //         slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/((xii-xi)*Chunk.voxelSize);
+    //         b = terrainHeight[xi,zi];
+    //         xint = (y-b)/slope;
+    //         zint = 0;
+    //     }
+    //     else if(xi == xii){
+    //         slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/((zii-zi)*Chunk.voxelSize);
+    //         b = terrainHeight[xi,zi];
+    //         zint = (y-b)/slope;
+    //         xint = 0;
+    //     }
+    //     // else{
+    //     //     xint = 0;
+    //     //     zint = 0;
+    //     // }
+    //     else{
+    //         float xzi, xzii, xzint, mag;
+    //         xzi = Mathf.Sqrt(Mathf.Pow(xi*Chunk.voxelSize,2) + Mathf.Pow(zi*Chunk.voxelSize,2));
+    //         xzii = Mathf.Sqrt(Mathf.Pow(xii*Chunk.voxelSize,2) + Mathf.Pow(zii*Chunk.voxelSize,2));
+    //         slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/(xzii-xzi);
+    //         b = terrainHeight[xi,zi];
+    //         xzint = (y-b)/slope;
+    //         mag = Mathf.Sqrt(Mathf.Pow(xzint,2)/2);
+    //         if(xii > xi){
+    //             xint = mag;
+    //         }
+    //         else{
+    //             xint = -mag;
+    //         }
             
-            if(zii > zi){
-                zint = mag;
-            }
-            else{
-                zint = -mag;
-            }
-        }
-        // else{
-        //     slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/(Mathf.Sqrt(Mathf.Pow(zii-zi,2)+Mathf.Pow(xii-xi,2))*Chunk.voxelSize);
-        //     b = terrainHeight[xi,zi];
-        //     inter = (y-b)/slope;
-        //     zint = zi
-        //     xint = xi;
-        // }
+    //         if(zii > zi){
+    //             zint = mag;
+    //         }
+    //         else{
+    //             zint = -mag;
+    //         }
+    //     }
+    //     // else{
+    //     //     slope = (terrainHeight[xii,zii]-terrainHeight[xi,zi])/(Mathf.Sqrt(Mathf.Pow(zii-zi,2)+Mathf.Pow(xii-xi,2))*Chunk.voxelSize);
+    //     //     b = terrainHeight[xi,zi];
+    //     //     inter = (y-b)/slope;
+    //     //     zint = zi
+    //     //     xint = xi;
+    //     // }
         
-        return new SurfPt(xint,y,zint);
-    }
+    //     return new SurfPt(xint,y,zint);
+    // }
 
     //Temp Method To generate Far voxels for correct textures
     public Voxel[,] FarVoxelGen(FarChunkCol col){
@@ -595,59 +595,59 @@ public class TerrainGen
         return terrainHeight;
     }
 
-    bool SameSignHeight(float y,int xi, int zi){
-        bool sameSign = (y < terrainHeight[xi,zi] && y < terrainHeight[xi+1,zi] && y < terrainHeight[xi,zi+1] && y < terrainHeight[xi-1,zi] && y < terrainHeight[xi,zi-1]) || (y >= terrainHeight[xi,zi] && y >= terrainHeight[xi+1,zi] && y >= terrainHeight[xi,zi+1] && y >= terrainHeight[xi-1,zi] && y >= terrainHeight[xi,zi-1]);
-        return sameSign;
-    }
+    // bool SameSignHeight(float y,int xi, int zi){
+    //     bool sameSign = (y < terrainHeight[xi,zi] && y < terrainHeight[xi+1,zi] && y < terrainHeight[xi,zi+1] && y < terrainHeight[xi-1,zi] && y < terrainHeight[xi,zi-1]) || (y >= terrainHeight[xi,zi] && y >= terrainHeight[xi+1,zi] && y >= terrainHeight[xi,zi+1] && y >= terrainHeight[xi-1,zi] && y >= terrainHeight[xi,zi-1]);
+    //     return sameSign;
+    // }
 
-    bool SameSignHeight1(float y,int xi, int zi){
-        bool sameSign = (y < terrainHeight[xi,zi]+Chunk.voxelSize && y < terrainHeight[xi+1,zi]+Chunk.voxelSize && y < terrainHeight[xi,zi+1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi]+Chunk.voxelSize && y < terrainHeight[xi,zi-1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi-1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi+1]+Chunk.voxelSize && y < terrainHeight[xi+1,zi-1]+Chunk.voxelSize && y < terrainHeight[xi+1,zi+1]+Chunk.voxelSize) || (y >= terrainHeight[xi,zi]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi]-Chunk.voxelSize && y >= terrainHeight[xi,zi+1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi] && y >= terrainHeight[xi,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi+1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi+1]-Chunk.voxelSize);
-        return sameSign;
-    }
+    // bool SameSignHeight1(float y,int xi, int zi){
+    //     bool sameSign = (y < terrainHeight[xi,zi]+Chunk.voxelSize && y < terrainHeight[xi+1,zi]+Chunk.voxelSize && y < terrainHeight[xi,zi+1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi]+Chunk.voxelSize && y < terrainHeight[xi,zi-1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi-1]+Chunk.voxelSize && y < terrainHeight[xi-1,zi+1]+Chunk.voxelSize && y < terrainHeight[xi+1,zi-1]+Chunk.voxelSize && y < terrainHeight[xi+1,zi+1]+Chunk.voxelSize) || (y >= terrainHeight[xi,zi]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi]-Chunk.voxelSize && y >= terrainHeight[xi,zi+1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi] && y >= terrainHeight[xi,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi-1]-Chunk.voxelSize && y >= terrainHeight[xi+1,zi+1]-Chunk.voxelSize && y >= terrainHeight[xi-1,zi+1]-Chunk.voxelSize);
+    //     return sameSign;
+    // }
 
-    bool SameSignHeight2(float y, int xi, int zi){
-        bool sameSign = (y < terrainHeight[xi,zi] ) || (y  >= terrainHeight[xi,zi]);
-        return sameSign;
-    }
+    // bool SameSignHeight2(float y, int xi, int zi){
+    //     bool sameSign = (y < terrainHeight[xi,zi] ) || (y  >= terrainHeight[xi,zi]);
+    //     return sameSign;
+    // }
 
-    bool SameSignHeight(float y,int xi, int zi, int xii,int zii){
-        bool sameSign = (y < terrainHeight[xi,zi] && y < terrainHeight[xii,zii]) || (y >= terrainHeight[xi,zi] && y>= terrainHeight[xii,zii]);
-        return sameSign;
-    }
+    // bool SameSignHeight(float y,int xi, int zi, int xii,int zii){
+    //     bool sameSign = (y < terrainHeight[xi,zi] && y < terrainHeight[xii,zii]) || (y >= terrainHeight[xi,zi] && y>= terrainHeight[xii,zii]);
+    //     return sameSign;
+    // }
 
-    bool SameSignHeight1(float y,int xi, int zi, int xii,int zii){
-        bool sameSign = (y < terrainHeight[xi,zi]+Chunk.voxelSize && y < terrainHeight[xii,zii]+Chunk.voxelSize) || (y >= terrainHeight[xi,zi]-Chunk.voxelSize && y>= terrainHeight[xii,zii]-Chunk.voxelSize);
-        return sameSign;
-    }
+    // bool SameSignHeight1(float y,int xi, int zi, int xii,int zii){
+    //     bool sameSign = (y < terrainHeight[xi,zi]+Chunk.voxelSize && y < terrainHeight[xii,zii]+Chunk.voxelSize) || (y >= terrainHeight[xi,zi]-Chunk.voxelSize && y>= terrainHeight[xii,zii]-Chunk.voxelSize);
+    //     return sameSign;
+    // }
 
-    public void TerrainHeight(Chunk chunk){
-        // float stoneheight, MountainsBiome,dirtHeight;
-        for (float x = chunk.pos.x-Chunk.voxelSize ; x<chunk.pos.x+Chunk.chunkSize+Chunk.voxelSize; x += Chunk.voxelSize){
-            for (float z = chunk.pos.z-Chunk.voxelSize ; z<chunk.pos.z+Chunk.chunkSize+Chunk.voxelSize; z += Chunk.voxelSize){
-                int xi = Mathf.FloorToInt((x-(chunk.pos.x-Chunk.voxelSize))/Chunk.voxelSize);
-                int zi = Mathf.FloorToInt((z-(chunk.pos.z-Chunk.voxelSize))/Chunk.voxelSize);
+    // public void TerrainHeight(Chunk chunk){
+    //     // float stoneheight, MountainsBiome,dirtHeight;
+    //     for (float x = chunk.pos.x-Chunk.voxelSize ; x<chunk.pos.x+Chunk.chunkSize+Chunk.voxelSize; x += Chunk.voxelSize){
+    //         for (float z = chunk.pos.z-Chunk.voxelSize ; z<chunk.pos.z+Chunk.chunkSize+Chunk.voxelSize; z += Chunk.voxelSize){
+    //             int xi = Mathf.FloorToInt((x-(chunk.pos.x-Chunk.voxelSize))/Chunk.voxelSize);
+    //             int zi = Mathf.FloorToInt((z-(chunk.pos.z-Chunk.voxelSize))/Chunk.voxelSize);
 
-                // stoneheight = stoneBaseHeight;
-                // stoneheight += GetNoise(x,0,z,stoneBaseNoise,stoneBaseNoiseHeight);
+    //             // stoneheight = stoneBaseHeight;
+    //             // stoneheight += GetNoise(x,0,z,stoneBaseNoise,stoneBaseNoiseHeight);
 
-                // MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
-                // stoneheight += GetNoise(x,0,z,stoneMountainFrequency,MountainsBiome);
+    //             // MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
+    //             // stoneheight += GetNoise(x,0,z,stoneMountainFrequency,MountainsBiome);
 
-                // stoneHeight[xi,zi] = stoneheight;
+    //             // stoneHeight[xi,zi] = stoneheight;
 
-                // dirtHeight = stoneheight + dirtBaseHeight;
-                // dirtHeight += GetNoise(x,100,z,dirtNoise,dirtNoiseHeight);
+    //             // dirtHeight = stoneheight + dirtBaseHeight;
+    //             // dirtHeight += GetNoise(x,100,z,dirtNoise,dirtNoiseHeight);
 
-                var val = GenerateHeights(x,z);
+    //             var val = GenerateHeights(x,z);
 
-                stoneHeight[xi,zi] = val[0];
+    //             stoneHeight[xi,zi] = val[0];
 
-                terrainHeight[xi,zi] = val[1];
+    //             terrainHeight[xi,zi] = val[1];
 
-                // terrainHeight[xi,zi] = dirtHeight;
-            }
-        }
-    }
+    //             // terrainHeight[xi,zi] = dirtHeight;
+    //         }
+    //     }
+    // }
 
     public float[] MmTerrainHeight(WorldPos pos){
         // float stoneheight, MountainsBiome,dirtHeight;
