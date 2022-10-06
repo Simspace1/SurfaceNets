@@ -37,13 +37,13 @@ public class TerrainGen2
     }
 
     
-    private float ComputeFBM(WorldPos pos, double scale, int octaves = 1, double frequency = 1){
-        return ComputeFBM(pos.x,pos.z,scale, octaves, frequency);
+    private float ComputeFBM(WorldPos pos, double scale, int octaves = 1, double frequency = 1, float exponentiation = 3){
+        return ComputeFBM(pos.x,pos.z,scale, octaves, frequency, exponentiation);
     }
 
-    private float ComputeFBM(float x, float z , double scale, int octaves = 1, double frequency = 1){
-        double xs = x / scale;
-        double zs = z / scale;
+    private float ComputeFBM(float x, float z , double scale, int octaves = 1, double frequency = 1, float exponentiation = 3){
+        double xs = x +10000/ scale;
+        double zs = z +10000/ scale;
         double G = 2.0 * (persistance);
         double amplitude = 1;
         double norm = 0;
@@ -105,7 +105,7 @@ public class TerrainGen2
     }
 
     private float[] GenerateHeight(float x, float z){
-        float stoneheight, dirtheight;
+        float stoneheight, dirtheight, MountainsBiome;
         stoneheight = 0;
         dirtheight = 0;
 
@@ -113,9 +113,15 @@ public class TerrainGen2
         stoneheight += ComputeFBM(x,z,100,5,0.1)*stoneBaseNoiseHeight;
 
 
-        // MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
-        // MountainsBiome = GetNoise(x,0,z,0.05f,100);
-        // stoneheight += GetNoise(x,0,z,stoneMountainFrequency,MountainsBiome);
+        MountainsBiome = ComputeFBM(x,z,100,3,0.05);
+        // stoneheight += MountainsBiome;
+
+        //MountainHeight
+        // if(MountainsBiome >= 0.1){
+        //     MountainsBiome = (MountainsBiome-0.1f)/0.9f;
+            stoneheight += ComputeFBM(x,z,200,6,0.5,3)*MountainsBiome*400;;
+        // }
+        
 
 
         dirtheight = stoneheight + dirtBaseHeight;
@@ -127,6 +133,9 @@ public class TerrainGen2
         val[1] = dirtheight;
         return val;
     }
+
+
+
 
     public float[,] GenerateWorldHeight(){
         float[,] heights = new float[2001,2001];
@@ -175,17 +184,5 @@ public class TerrainGen2
 
         
     }
-
-    public void SaveTexture(Texture2D texture, string filePath) {
-         byte[] bytes = texture.EncodeToPNG();
-         FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-         BinaryWriter writer = new BinaryWriter(stream);
-         for (int i = 0; i < bytes.Length; i++) {
-             writer.Write(bytes[i]);
-         }
-         writer.Close();
-         stream.Close();
-    }
-
     
 }
