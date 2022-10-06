@@ -12,7 +12,12 @@ public class PlayerUIController : MonoBehaviour
     private Canvas escMenu;
 
     [SerializeField]
+    private UnityEngine.UI.RawImage map;
+
+    [SerializeField]
     private PlayerController playerController;
+
+    private bool gen = false;
 
     public void ToggleEscMenu(){
         if(escMenu.enabled){
@@ -20,6 +25,10 @@ public class PlayerUIController : MonoBehaviour
         }
         else{
             escMenu.enabled = true;
+            if(!gen){
+                gen = true;
+                map.texture = world.gen.GenTexture2D(world.gen.GenerateWorldHeight());
+            }
         }
     }
 

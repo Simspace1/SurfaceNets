@@ -2,22 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NoiseTest;
+using System.IO;
 
 public class TerrainGen2
 {
     private long seed;
 
     private float scale = 1;
-    private float persistance = 1;
+    private float persistance = 0.5f;
     private int octaves = 5;
-    private float lacunarity = 1;
-    private float exponentiation = 1;
+    private float lacunarity = 2f;
+    private float exponentiation = 3;
     private float height = 1;
     private OpenSimplexNoise Noise;
 
 
     private float stoneBaseHeight = 0;
-    private float stoneBaseNoiseHeight = 4;
+    private float stoneBaseNoiseHeight = 50;
 
     private float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
     private float MountainsBiomeSize = 5;
@@ -25,8 +26,8 @@ public class TerrainGen2
 
     private float stoneMountainFrequency = 0.008f;
 
-    private float dirtBaseHeight = 1;
-    private float dirtNoiseHeight = 3;
+    private float dirtBaseHeight = 3;
+    private float dirtNoiseHeight = 2;
 
 
 
@@ -36,16 +37,15 @@ public class TerrainGen2
     }
 
     
-    private float ComputeFBM(WorldPos pos, int octaves = 1){
-        return ComputeFBM(pos.x,pos.z, octaves);
+    private float ComputeFBM(WorldPos pos, double scale, int octaves = 1, double frequency = 1){
+        return ComputeFBM(pos.x,pos.z,scale, octaves, frequency);
     }
 
-    private float ComputeFBM(float x, float z , int octaves = 1){
+    private float ComputeFBM(float x, float z , double scale, int octaves = 1, double frequency = 1){
         double xs = x / scale;
-        double zs = z /scale;
-        double G = 2.0f * (-persistance);
+        double zs = z / scale;
+        double G = 2.0 * (persistance);
         double amplitude = 1;
-        double frequency = 1;
         double norm = 0;
         double total = 0;
 
@@ -58,7 +58,7 @@ public class TerrainGen2
         }
 
         total /= norm;
-        return (float) System.Math.Pow(total, exponentiation * height);
+        return (float) System.Math.Pow(total, exponentiation)*height;
     }
 
     private double Get2DNoise(double x, double y){
@@ -105,12 +105,12 @@ public class TerrainGen2
     }
 
     private float[] GenerateHeight(float x, float z){
-        float stoneheight, dirtheight, MountainsBiome;
+        float stoneheight, dirtheight;
         stoneheight = 0;
         dirtheight = 0;
 
         stoneheight = stoneBaseHeight;
-        stoneheight += ComputeFBM(x,z,2)*stoneBaseNoiseHeight;
+        stoneheight += ComputeFBM(x,z,100,5,0.1)*stoneBaseNoiseHeight;
 
 
         // MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
@@ -119,13 +119,72 @@ public class TerrainGen2
 
 
         dirtheight = stoneheight + dirtBaseHeight;
-        dirtheight += ComputeFBM(x,z,1)*dirtNoiseHeight;
+        dirtheight += ComputeFBM(x,z,100,5,0.5)*dirtNoiseHeight*2;
 
 
         float[] val = new float[2];
         val[0] = stoneheight;
         val[1] = dirtheight;
         return val;
+    }
+
+    public float[,] GenerateWorldHeight(){
+        float[,] heights = new float[2001,2001];
+        float[] val;
+
+        for(int i = 0; i < 2001; i++){
+            for(int j = 0; j < 2001; j++){
+                val = GenerateHeight((i-1000)*Chunk.chunkSize, (j-1000)*Chunk.chunkSize);
+                heights[i,j] = val[1];
+            }
+        }
+
+        return heights;
+    }
+
+    public Texture2D GenTexture2D(float[,] data){
+        int width = data.GetLength(0);
+        int height = data.GetLength(1);
+        Texture2D texture = new Texture2D(width,height);
+        
+        float max = 0;
+        float min = 0;
+        foreach(float x in data){
+            if(x > max){
+                max = x;
+            }
+            else if(x < min){
+                min = x;
+            }
+        }
+
+        float val;
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                val = data[i,j];
+                val = val - min;
+                val /= (max-min);
+                texture.SetPixel(i,j,new Color(val,val,val,1));
+            }
+        }
+        texture.Apply();
+
+        return texture;
+
+        // SaveTexture(texture, Application.persistentDataPath + "/saves/worldMap.png");
+
+        
+    }
+
+    public void SaveTexture(Texture2D texture, string filePath) {
+         byte[] bytes = texture.EncodeToPNG();
+         FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+         BinaryWriter writer = new BinaryWriter(stream);
+         for (int i = 0; i < bytes.Length; i++) {
+             writer.Write(bytes[i]);
+         }
+         writer.Close();
+         stream.Close();
     }
 
     
