@@ -42,15 +42,21 @@ public class TerrainGen2
     }
 
     private float ComputeFBM(float x, float z , double scale, int octaves = 1, double frequency = 1, float exponentiation = 3){
-        double xs = x +10000/ scale;
-        double zs = z +10000/ scale;
+        double xs = (x) / scale;
+        double zs = (z) / scale;
         double G = 2.0 * (persistance);
         double amplitude = 1;
         double norm = 0;
         double total = 0;
 
         for (int i = 0; i <octaves ; i++){
-            double noise = Get2DNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
+            double noise;
+            if(i % 2 == 1){
+                noise = Get2DNoise(zs*frequency+20,xs*frequency+20)*0.5f+0.5f;
+            }
+            else{
+                noise = Get2DNoise(xs*frequency,zs*frequency)*0.5f+0.5f;
+            }
             total += noise * amplitude;
             norm += amplitude;
             amplitude *= G;
@@ -63,6 +69,10 @@ public class TerrainGen2
 
     private double Get2DNoise(double x, double y){
         return Noise.Evaluate(x,y);
+    }
+
+    private double Get3DNoise(double x, double y, double z){
+        return Noise.Evaluate(x,y,z);
     }
 
     public ColumnGen GenerateColumnGen(WorldPos pos){
