@@ -364,8 +364,13 @@ public class World : MonoBehaviour
     }
 
     public void DestroyChunkColumn(Columns column){
-
+        if(column.chunkColumn == null){
+            return;
+        }
         foreach(Chunk chunk in column.chunkColumn.chunks){
+            if(chunk == null){
+                continue;
+            }
             //Insert Saving of chunk here
             
             Object.Destroy(chunk.gameObject);

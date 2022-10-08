@@ -117,6 +117,10 @@ public class LoadChunks : MonoBehaviour
         //Check for create ChunkColumn
         // int count = 0;
         foreach(Columns column in createList1){
+            if(column.chunkColumn == null){
+                createListRemover.Add(column);
+                continue;
+            }
             if(column.chunkColumn.creating){
                 if (column.chunkColumn.CreateCheck1()){
                     i++;
@@ -304,6 +308,16 @@ public class LoadChunks : MonoBehaviour
     public static void CreateChunkColumn(Columns column){
         column.CreateChunkColumn();
         createList1.Add(column);
+    }
+
+    public static void RemoveColumnFLists(Columns column){
+        if(column.farChunkCol != null){
+            farCreateList.Remove(column);
+        }
+        if(column.chunkColumn != null){
+            createList1.Remove(column);
+            renderList1.Remove(column);
+        }
     }
 
 }

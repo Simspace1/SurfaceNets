@@ -12,6 +12,7 @@ public class FarChunkCol : MonoBehaviour
     public MyMesh meshData;
     [HideInInspector]
     public bool render = false;
+    public bool created = false;
     public Columns col {get; private set;}
 
 
@@ -56,7 +57,8 @@ public class FarChunkCol : MonoBehaviour
                 meshData.AddQuadTriangles();
                 meshData.uv.AddRange(voxels[xi,zi].FaceUVs());
             }
-        }        
+        }      
+        created = true;  
     }
 
     public void CreateFilter(){
@@ -91,6 +93,9 @@ public class FarChunkCol : MonoBehaviour
     }
 
     public void UnRender(){
+        if(render == false){
+            return;
+        }
         render = false;
         filter.mesh.Clear();
         coll.sharedMesh.Clear();

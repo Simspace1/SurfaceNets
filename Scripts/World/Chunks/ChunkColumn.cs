@@ -216,4 +216,22 @@ public class ChunkColumn
         return null;
     }
 
+    public bool UpdatingQueued(){
+        foreach(Chunk chunk in chunks){
+            if(chunk.update){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool ChunkUpdating(){
+        foreach(Chunk chunk in chunks){
+            if(chunk.updating){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

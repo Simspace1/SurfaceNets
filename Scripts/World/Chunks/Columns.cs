@@ -72,6 +72,7 @@ public class Columns
     }
 
     public static void Destroy(Columns column){
+        LoadChunks.RemoveColumnFLists(column);
         if(column.farChunkCol != null){
             column.world.DestroyFarChunkColumn(column);
         }
