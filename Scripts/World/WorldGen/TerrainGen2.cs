@@ -8,11 +8,11 @@ public class TerrainGen2
 {
     private long seed;
 
-    private float scale = 1;
+    // private float scale = 1;
     private float persistance = 0.5f;
-    private int octaves = 5;
+    // private int octaves = 5;
     private float lacunarity = 2f;
-    private float exponentiation = 3;
+    // private float exponentiation = 3;
     private float height = 1;
     private OpenSimplexNoise Noise;
 
@@ -20,11 +20,11 @@ public class TerrainGen2
     private float stoneBaseHeight = 0;
     private float stoneBaseNoiseHeight = 50;
 
-    private float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
-    private float MountainsBiomeSize = 5;
-    private float MountainsBiomeAmplitureMultiplier = 1;
+    // private float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
+    // private float MountainsBiomeSize = 5;
+    // private float MountainsBiomeAmplitureMultiplier = 1;
 
-    private float stoneMountainFrequency = 0.008f;
+    // private float stoneMountainFrequency = 0.008f;
 
     private float dirtBaseHeight = 3;
     private float dirtNoiseHeight = 2;
@@ -123,14 +123,13 @@ public class TerrainGen2
         stoneheight += ComputeFBM(x,z,100,5,0.1)*stoneBaseNoiseHeight;
 
 
-        MountainsBiome = ComputeFBM(x,z,100,3,0.05);
-        // stoneheight += MountainsBiome;
+        // MountainsBiome = ComputeFBM(x,z,100,3,0.05);
+        MountainsBiome = ComputeFBM(x,z,200,2,0.05);
+        // stoneheight += MountainsBiome*100;
 
         //MountainHeight
-        // if(MountainsBiome >= 0.1){
-        //     MountainsBiome = (MountainsBiome-0.1f)/0.9f;
-            stoneheight += ComputeFBM(x,z,200,6,0.5,3)*MountainsBiome*400;;
-        // }
+        // stoneheight += ComputeFBM(x,z,200,6,0.5,3)*MountainsBiome*400;
+        stoneheight += ComputeFBM(x,z,1000,6,0.5,3)*MountainsBiome*400;
         
 
 

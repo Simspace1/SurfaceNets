@@ -26,7 +26,7 @@ public class World : MonoBehaviour
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
-    private static float bottomWorldHeight = -1600;
+    // private static float bottomWorldHeight = -1600;
 
     public static int maxChunkUpdates = 4;
 

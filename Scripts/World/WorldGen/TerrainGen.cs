@@ -18,7 +18,7 @@ public class TerrainGen
 
     float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
     float MountainsBiomeSize = 5;
-    float MountainsBiomeAmplitureMultiplier = 1;
+    // float MountainsBiomeAmplitureMultiplier = 1;
 
     float stoneMountainFrequency = 0.008f;
 
