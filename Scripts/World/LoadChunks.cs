@@ -176,6 +176,10 @@ public class LoadChunks : MonoBehaviour
 
         //Check for render ChunkColumn
         foreach(Columns column in renderList1){
+            if(column.chunkColumn == null){
+                renderListRemover.Add(column);
+                continue;
+            }
             if(world.GetChunkUpdateCount() >= World.maxChunkUpdates){
                 break;
             }

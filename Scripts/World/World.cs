@@ -364,7 +364,7 @@ public class World : MonoBehaviour
     }
 
     public void DestroyChunkColumn(Columns column){
-        if(column.chunkColumn == null){
+        if(column == null || column.chunkColumn == null || column.chunkColumn.chunks == null){
             return;
         }
         foreach(Chunk chunk in column.chunkColumn.chunks){
@@ -408,9 +408,11 @@ public class World : MonoBehaviour
         int posz = Mathf.FloorToInt(posin.zi/multiplef)*multiple;
 
         Columns col = GetColumn(new WorldPos(posx,0,posz));
+        if(col == null){
+            return null;
+        }
 
-        Chunk chunk = col.GetChunk(new WorldPos(posx,posy,posz));        
-        return chunk;
+        return col.GetChunk(new WorldPos(posx,posy,posz));        
     }
 
     public Voxel GetVoxel(float x, float y, float z){

@@ -80,7 +80,9 @@ public class Columns
         if(column.chunkColumn != null && !column.chunkColumn.destroying){
             column.world.DestroyChunkColumn(column);
         }
-
+        if(column.chunkColumn != null || column.farChunkCol != null){
+            return;
+        }
         column.world.RemoveColumns(column.pos);
     }
 
