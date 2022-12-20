@@ -10,6 +10,8 @@ public class Columns
     public WorldPos pos;
     public ColumnGen gen {get; private set;}
 
+    public bool updating = false;
+
     public Columns(World world, WorldPos pos, ColumnGen gen){
         this.world = world;
         this.pos = pos;

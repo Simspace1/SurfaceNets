@@ -26,7 +26,7 @@ public class LoadChunks : MonoBehaviour
     private WorldPos[] chunkPositions = new WorldPos[loadDiameter*loadDiameter];
     private WorldPos[] farChunkPositions = new WorldPos[farLoadDiameter*farLoadDiameter];
 
-    // Stopwatch stopWatch = new Stopwatch();
+    Stopwatch stopWatch = new Stopwatch();
 
 
     // Start is called before the first frame update
@@ -62,7 +62,7 @@ public class LoadChunks : MonoBehaviour
             }
         }
         
-        // stopWatch.Start();
+        stopWatch.Start();
     }
 
     // Update is called once per frame
@@ -97,6 +97,7 @@ public class LoadChunks : MonoBehaviour
             foreach(Columns column in farCreateList){
                 column.farChunkCol = world.CreateFarChunkColumn(column);
                 farChunkCols.Add(column.farChunkCol);
+                column.farChunkCol.SetCreating();
                 farCreateListRemover.Add(column);
             }
             farChunkColThread = new FarChunkColThread(farChunkCols);
@@ -219,6 +220,12 @@ public class LoadChunks : MonoBehaviour
                 break;
             }
 
+            // //Check end of farChunk Loading
+            // if(farChunkPositions[5168].Equals(chunkColumnPos)){
+            //     // stopWatch.Stop();
+            //     print("FarChunk Loading Time:  " + stopWatch.ElapsedMilliseconds);
+            // }
+
             //Create Pos for checking chunks
             WorldPos newChunkColumnPos = new WorldPos(chunkColumnPos.x+playerPos.x,0,chunkColumnPos.z+playerPos.z);
 
@@ -234,6 +241,13 @@ public class LoadChunks : MonoBehaviour
                         createList1.Add(column);
                         renderList1.Add(column);
                         i++;
+
+                        // //Check how long to load "all" chunks
+                        // if(WorldPos.Distance(playerPos, newChunkColumnPos) < loadDistance && WorldPos.Distance(playerPos, newChunkColumnPos) >= loadDistance-Chunk.chunkSize){
+                        //     // stopWatch.Stop();
+                        //     print("Chunk Loading:  " + stopWatch.ElapsedMilliseconds);
+                        // }
+                        
                     }
                     else if(column.chunkColumn.created && !column.chunkColumn.rendered){
                         CreateAdjChunkColumns(newChunkColumnPos);
@@ -301,6 +315,11 @@ public class LoadChunks : MonoBehaviour
             toDestroy = world.CheckDestroyColumn(ppos,chunkDistance,columnDistance);
 
             foreach(Columns column in toDestroy){
+                if(column.farChunkCol != null && column.farChunkCol.creating){
+                    column.farChunkCol.GetType();
+                    continue;
+                }
+                column.DestroyChunkColumn();
                 Columns.Destroy(column);
             }
             

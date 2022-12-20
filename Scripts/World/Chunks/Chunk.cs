@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Collections;
 using System.Diagnostics;
+using System.Threading;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
@@ -36,6 +37,9 @@ public class Chunk : MonoBehaviour
     [HideInInspector]
     public bool destoying = false;
 
+    [HideInInspector]
+    public bool updateThread = false;
+
     private MeshFilter filter;
     private MeshCollider coll;
 
@@ -65,17 +69,26 @@ public class Chunk : MonoBehaviour
     public void StartUpdateTh(){
         updating = true;
         update = false;
-        chunkthread = new ChunkThread(this);
-        chunkthread.Start();
+        // chunkthread = new ChunkThread(this);
+        // chunkthread.Start();
+
+        updateThread = true;
+        ThreadPool.QueueUserWorkItem(UpdateChunk2, this);
     }
 
+    // private void UpdateChunk2(object state)
+    // {
+    //     throw new System.NotImplementedException();
+    // }
+
     public bool CheckUpdateTh(){
-        return chunkthread.IsAlive();
+        // return chunkthread.IsAlive();
+        return updateThread;
     }
 
     public void EndUpdateTh(){
         updating = false;
-        chunkthread = null;
+        // chunkthread = null;
         RenderMesh(meshData);
     }
 
@@ -427,6 +440,235 @@ public class Chunk : MonoBehaviour
         }
         // RenderMesh(meshData);
         this.meshData = meshData;
+    }
+
+    private void UpdateChunk2(object stateIn){
+
+        Chunk state = (Chunk) stateIn;
+        //Updates surface points                   
+        state.SurfacePoints();
+        
+        MyMesh meshData = new MyMesh();
+        meshData.useRenderDataForCol = true;
+
+        // Booleans to check whether there is a connecting side mesh
+        // bool side1= true,side2= true,side3= true,side4 = true;
+        
+        //Variables and constants for convenience
+        Voxel voxel0, voxel1, voxel2, temp, temp2;
+        // float vS = voxelSize;
+        SurfPt surfpt1,surfpt2,surfpt3;
+        foreach (KeyValuePair<Vector3, SurfPt> entry in state.surfPts){
+            //Veryfy there is a value at the Key location in dictionary
+            if(entry.Value != null){
+                //Sets values for key and a voxel for easier access and reuse
+                float x = entry.Key.x, y = entry.Key.y, z = entry.Key.z;
+                voxel0 = state.GetVoxel(x,y,z);
+                voxel2 = state.GetVoxel(x+voxelSize,y+voxelSize,z+voxelSize);
+
+                //Verifys if the mesh is supposed to be formed in case of close surface points
+                voxel1 = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){
+                    //Checks if there are more surface points to form an mesh on the xz plane
+                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z+voxelSize),out surfpt3)){
+                        //Calculates the booleans to check weather there are connecting meshes on all sides
+                        // side1 = Contunity(x-vS,y,z, x-vS,y,z+vS) || Contunity(x,y+vS,z, x,y+vS,z+vS) || Contunity(x,y-vS,z, x,y-vS,z+vS);
+                        // side2 = Contunity(x,y,z+2*vS, x+vS,y,z+2*vS) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y-vS,z+vS, x+vS,y-vS,z+vS);
+                        // side3 = Contunity(x+2*vS,y,z, x+2*vS,y,z+vS) || Contunity(x+vS,y+vS,z, x+vS,y+vS,z+vS) || Contunity(x+vS,y-vS,z, x+vS,y-vS,z+vS);
+                        // side4 = Contunity(x,y,z-vS, x+vS,y,z-vS) || Contunity(x,y+vS,z, x+vS,y+vS,z) || Contunity(x,y-vS,z, x+vS,y-vS,z);
+
+                        
+                        //Chooses which direction to render mesh
+                        if(voxel1.sDistF < voxel2.sDistF ){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));  
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                     
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }
+                    }
+                }
+                //Repeat same code but for xy plane mesh
+                voxel1 = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){
+                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y+voxelSize,z),out surfpt3)){
+                        // side1 = Contunity(x-vS,y,z, x-vS,y+vS,z) || Contunity(x,y,z+vS, x,y+vS,z+vS) || Contunity(x,y,z-vS, x,y+vS,z-vS);
+                        // side2 = Contunity(x,y+2*vS,z, x+vS,y+2*vS,z) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y+vS,z-vS, x+vS,y+vS,z-vS);
+                        // side3 = Contunity(x+2*vS,y,z, x+2*vS,y+vS,z) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x+vS,y,z-vS, x+vS,y+vS,z-vS);
+                        // side4 = Contunity(x,y-vS,z, x+vS,y-vS,z) || Contunity(x,y,z+vS, x+vS,y,z+vS) || Contunity(x,y,z-vS, x+vS,y,z-vS);
+
+                        
+                        if(voxel1.sDistF < voxel2.sDistF ){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));  
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                     
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }
+                    }
+                }
+                //Repeat same code but for yz plane mesh
+                voxel1 = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){  
+                    if(state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z+voxelSize),out surfpt3)){                    
+                        // side1 = Contunity(x,y-vS,z, x,y-vS,z+vS) || Contunity(x+vS,y,z, x+vS,y,z+vS) || Contunity(x-vS,y,z, x-vS,y,z+vS);
+                        // side2 = Contunity(x,y,z+2*vS, x,y+vS,z+2*vS) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x-vS,y,z+vS, x-vS,y+vS,z+vS);
+                        // side3 = Contunity(x,y+2*vS,z, x,y+2*vS,z+vS) || Contunity(x+vS,y+vS,z, x+vS,y+vS,z+vS) || Contunity(x-vS,y+vS,z, x-vS,y+vS,z+vS);
+                        // side4 = Contunity(x,y,z-vS, x,y+vS,z-vS) || Contunity(x+vS,y,z, x+vS,y+vS,z) || Contunity(x-vS,y,z, x-vS,y+vS,z);
+                    
+                        
+                        if(voxel1.sDistF < voxel2.sDistF){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));                    
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                      
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }                 
+                    }
+                }
+            }
+        }
+        // RenderMesh(meshData);
+        state.meshData = meshData;
+        state.updateThread = false;
     }
 
     void AirVoxelFace(Voxel temp, Voxel voxel0, List<Vector2> uv){
