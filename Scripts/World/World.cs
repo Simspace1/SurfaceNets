@@ -26,7 +26,7 @@ public class World : MonoBehaviour
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
-    private static float bottomWorldHeight = -1600;
+    // private static float bottomWorldHeight = -1600;
 
     public static int maxChunkUpdates = 4;
 
@@ -53,6 +53,7 @@ public class World : MonoBehaviour
             SaveManager.SaveWorld(this);
         }
 
+        
         
 
         // Stopwatch stopwatch = new Stopwatch();
@@ -305,7 +306,7 @@ public class World : MonoBehaviour
 
         chunkColumn.chunks.Add(newChunk);
 
-        newChunk = chunkColumn.gen.ChunkGenC2(newChunk);
+        // newChunk = chunkColumn.col.gen.ChunkGenC2(newChunk);
 
         newChunk.update = true;
         chunkUpdates.Add(newChunk);
@@ -349,7 +350,6 @@ public class World : MonoBehaviour
         newFarChunkColumn.SetWorld(this);
         newFarChunkColumn.CreateFilter();
         newFarChunkColumn.SetColumn(col);
-        newFarChunkColumn.gen = col.gen;
 
         return newFarChunkColumn;
     }
@@ -364,8 +364,13 @@ public class World : MonoBehaviour
     }
 
     public void DestroyChunkColumn(Columns column){
-
+        if(column == null || column.chunkColumn == null || column.chunkColumn.chunks == null){
+            return;
+        }
         foreach(Chunk chunk in column.chunkColumn.chunks){
+            if(chunk == null){
+                continue;
+            }
             //Insert Saving of chunk here
             
             Object.Destroy(chunk.gameObject);
@@ -403,9 +408,11 @@ public class World : MonoBehaviour
         int posz = Mathf.FloorToInt(posin.zi/multiplef)*multiple;
 
         Columns col = GetColumn(new WorldPos(posx,0,posz));
+        if(col == null){
+            return null;
+        }
 
-        Chunk chunk = col.GetChunk(new WorldPos(posx,posy,posz));        
-        return chunk;
+        return col.GetChunk(new WorldPos(posx,posy,posz));        
     }
 
     public Voxel GetVoxel(float x, float y, float z){

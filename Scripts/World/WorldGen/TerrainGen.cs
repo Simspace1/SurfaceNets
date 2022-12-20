@@ -18,7 +18,7 @@ public class TerrainGen
 
     float MountainsBiomeFrequency = 0.000000000000000000000000000000000000000000000000000000005f;
     float MountainsBiomeSize = 5;
-    float MountainsBiomeAmplitureMultiplier = 1;
+    // float MountainsBiomeAmplitureMultiplier = 1;
 
     float stoneMountainFrequency = 0.008f;
 
@@ -87,7 +87,7 @@ public class TerrainGen
     // }
 
     //Int version of Chunk Column gen
-    public Chunk ChunkColumnGen(Chunk chunk, int xi, int zi){
+    private Chunk ChunkColumnGen(Chunk chunk, int xi, int zi){
 
         // float stoneheight = stoneHeight[xi,zi];
         // // float MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
@@ -399,7 +399,7 @@ public class TerrainGen
 
     
 
-    public float sDistFGen3(Chunk chunk, int x, int yi, int z){
+    private float sDistFGen3(Chunk chunk, int x, int yi, int z){
         float sDistF = 0;
         int xi = x-(chunk.pos.xi-1);
         int zi = z-(chunk.pos.zi-1);
@@ -447,7 +447,7 @@ public class TerrainGen
     }
 
     // returns true if surounding voxels need to be calculated for sDist generation
-    bool HeightCheck(float y, int xi, int zi,bool posit, float height, float offset){
+    private bool HeightCheck(float y, int xi, int zi,bool posit, float height, float offset){
         bool val = false;
 
         for(int x = xi-1; x<= xi+1; x++){
@@ -487,7 +487,7 @@ public class TerrainGen
     //     return val;
     // }
 
-    float Intercept2(float delyi, float y, int xi, int zi, int x, int z){
+    private float Intercept2(float delyi, float y, int xi, int zi, int x, int z){
         float d, theta, delx, dely;
         
         dely = Mathf.Abs(terrainHeight[x,z] - terrainHeight[xi,zi]);
@@ -703,7 +703,7 @@ public class TerrainGen
         return minMax;
     }
 
-    public float[] GenerateHeights(float x, float z){
+    private float[] GenerateHeights(float x, float z){
         float stoneheight, dirtheight, MountainsBiome;
         stoneheight = 0;
         dirtheight = 0;
@@ -754,7 +754,7 @@ public class TerrainGen
     // }
 
 
-    public static void SetVoxel(int x, int y, int z, Voxel voxel, Chunk chunk, float sDistF, bool replaceBlocks = false){
+    private static void SetVoxel(int x, int y, int z, Voxel voxel, Chunk chunk, float sDistF, bool replaceBlocks = false){
         x -=chunk.pos.xi;
         y -=chunk.pos.yi;
         z -=chunk.pos.zi;

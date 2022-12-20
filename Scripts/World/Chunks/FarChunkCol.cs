@@ -12,10 +12,9 @@ public class FarChunkCol : MonoBehaviour
     public MyMesh meshData;
     [HideInInspector]
     public bool render = false;
-    public Columns column {get; private set;}
+    public bool created = false;
+    public Columns col {get; private set;}
 
-    [HideInInspector]
-    public TerrainGen gen;
 
     MeshFilter filter;
     MeshCollider coll;
@@ -38,12 +37,13 @@ public class FarChunkCol : MonoBehaviour
 
     public void Create(){
         meshData = new MyMesh();
-        gen = new TerrainGen();
-        gen.MmTerrainHeight(pos);
+        if(col.gen == null){
+            col.SetGen(world.gen.GenerateColumnGen(pos));
+        }
 
-        Voxel[,] voxels = gen.FarVoxelGen(this);
-        float[,] heights = gen.FarHeightConversion();
-        float[,] terrain = gen.Terrain();
+        Voxel[,] voxels = col.gen.FarVoxelGen(this);
+        float[,] heights = col.gen.FarHeightConversion();
+        float[,] terrain = col.gen.GetTerrainHeight();
 
         float x,z;
         for(int xi = 0; xi < Chunk.chunkVoxels+1; xi++){
@@ -57,7 +57,8 @@ public class FarChunkCol : MonoBehaviour
                 meshData.AddQuadTriangles();
                 meshData.uv.AddRange(voxels[xi,zi].FaceUVs());
             }
-        }        
+        }      
+        created = true;  
     }
 
     public void CreateFilter(){
@@ -92,6 +93,9 @@ public class FarChunkCol : MonoBehaviour
     }
 
     public void UnRender(){
+        if(render == false){
+            return;
+        }
         render = false;
         filter.mesh.Clear();
         coll.sharedMesh.Clear();
@@ -106,6 +110,6 @@ public class FarChunkCol : MonoBehaviour
     }
 
     public void SetColumn(Columns col){
-        this.column = col;
+        this.col = col;
     }
 }
