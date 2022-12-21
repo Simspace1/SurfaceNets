@@ -17,6 +17,8 @@ public class ChunkColumn
     public bool creating2 = false;
     public bool loaded = false;
     public bool modified = false;
+    private bool createTh1 = false;
+    private bool createTh2 = false;
     private ColumnData data;
     public string path = Application.persistentDataPath;
     public Columns col;
@@ -37,15 +39,17 @@ public class ChunkColumn
         this.world = column.world;
         this.pos = column.pos;
         this.col = column;
-        CreateThread = new Thread(new ThreadStart(() => Create()));
-        CreateThread2 = new Thread(new ThreadStart(() => Create2()));
+        // CreateThread = new Thread(new ThreadStart(() => Create()));
+        // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
     }
 
 
     public void CreateStart(){
         creating = true;
+        createTh1 = true;
         // CreateThread = new Thread(new ThreadStart(() => Create()));
-        CreateThread.Start();
+        // CreateThread.Start();
+        ThreadPool.QueueUserWorkItem(Create);
     }
 
     public void CreateStart2(){
@@ -57,7 +61,9 @@ public class ChunkColumn
         }
         // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
         creating2 = true;
-        CreateThread2.Start();
+        createTh2 = true;
+        // CreateThread2.Start();
+        ThreadPool.QueueUserWorkItem(Create2);
     }
 
     // public void RenderStart(){
@@ -72,29 +78,15 @@ public class ChunkColumn
     //     DestroyThread.Start();
     // }
 
-    public bool CreateCheck(){
-        if(CreateThread.IsAlive){
-            return true;
-        }
-        else if(CreateThread2 == null){
-            creating2 = true;
-            CreateStart2();
-            return true;
-        }
-        else if(CreateThread2.IsAlive){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
+    
     public bool CreateCheck1(){
-        return CreateThread.IsAlive;
+        // return CreateThread.IsAlive;
+        return createTh1;
     }
 
     public bool CreateCheck2(){
-        return CreateThread2.IsAlive;
+        // return CreateThread2.IsAlive;
+        return createTh2;
     }
 
     // public bool RenderCheck(){
@@ -113,15 +105,9 @@ public class ChunkColumn
         // CreateThread2 = null;
     }
 
-    public void RenderEnd(){
 
-    }
-
-    public void DestroyEnd(){
-
-    }
-
-    void Create(){
+    private void Create(object state){
+        
         if(world.GetWorldData().Contains(pos)){
             loaded = true;
             if(col.gen == null){
@@ -145,9 +131,10 @@ public class ChunkColumn
                 chunkColumn.Add(chunkPos);
             }
         }
+        createTh1 = false;
     }
 
-    void Create2(){
+    private void Create2(object state){
         if(loaded){
             data.Revert2(this);
         }
@@ -156,6 +143,7 @@ public class ChunkColumn
                 col.gen.ChunkGenC2(chunk);
             }
         }
+        createTh2 = false;
     }
 
 
