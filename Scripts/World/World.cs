@@ -428,7 +428,8 @@ public class World : MonoBehaviour
     public Voxel GetVoxel(float x, float y, float z){
         Chunk containerChunk = GetChunk(x,y,z);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(x - containerChunk.pos.x, y - containerChunk.pos.y, z-containerChunk.pos.z);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxel(x - chunkPos.x, y - chunkPos.y, z-chunkPos.z);
             return voxel;
         }
         else{
@@ -439,7 +440,8 @@ public class World : MonoBehaviour
     public Voxel GetVoxel(int xi, int yi, int zi){
         Chunk containerChunk = GetChunk(xi,yi,zi);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(xi - containerChunk.pos.xi, yi - containerChunk.pos.yi, zi-containerChunk.pos.zi);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxel(xi - chunkPos.xi, yi - chunkPos.yi, zi-chunkPos.zi);
             return voxel;
         }
         else{
@@ -450,7 +452,7 @@ public class World : MonoBehaviour
     public Voxel GetVoxel(WorldPos pos){
         Chunk containerChunk = GetChunk(pos);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(WorldPos.Sub(pos, containerChunk.pos));
+            Voxel voxel = containerChunk.GetVoxel(WorldPos.Sub(pos, containerChunk.GetPos()));
             return voxel;
         }
         else{
@@ -461,7 +463,8 @@ public class World : MonoBehaviour
     public Voxel GetVoxelDb(float x, float y, float z){
         Chunk containerChunk = GetChunk(x,y,z);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxelDb(x - containerChunk.pos.x, y - containerChunk.pos.y, z-containerChunk.pos.z);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxelDb(x - chunkPos.x, y - chunkPos.y, z-chunkPos.z);
             return voxel;
         }
         else{
@@ -492,9 +495,10 @@ public class World : MonoBehaviour
     public void SetVoxel(WorldPos pos, Voxel voxel){
         Chunk chunk = GetChunk(pos);
         if(chunk != null){
-            int xi = pos.xi - chunk.pos.xi;
-            int yi = pos.yi - chunk.pos.yi;
-            int zi = pos.zi - chunk.pos.zi;
+            WorldPos chunkPos = chunk.GetPos();
+            int xi = pos.xi - chunkPos.xi;
+            int yi = pos.yi - chunkPos.yi;
+            int zi = pos.zi - chunkPos.zi;
             chunk.SetVoxel(new WorldPos(xi,yi,zi), voxel);
             chunk.modified = true;
             if(!chunk.update){
@@ -502,12 +506,12 @@ public class World : MonoBehaviour
                 chunkUpdates.Add(chunk);
             }
 
-            UpdateIfEqual(xi, 1, new WorldPos(chunk.pos.xi - Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi + Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(yi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi-Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi+Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(zi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi-Chunk.chunkVoxels));
-            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi+Chunk.chunkVoxels));
+            UpdateIfEqual(xi, 1, new WorldPos(chunkPos.xi - Chunk.chunkVoxels,chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi + Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(yi, 1, new WorldPos(chunkPos.xi, chunkPos.yi-Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi+Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(zi, 1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi-Chunk.chunkVoxels));
+            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi+Chunk.chunkVoxels));
 
         }
     }
@@ -515,9 +519,10 @@ public class World : MonoBehaviour
     public void SetSDistF(WorldPos pos, Voxel voxel, float sDistf){
         Chunk chunk = GetChunk(pos);
         if(chunk != null){
-            int xi = pos.xi - chunk.pos.xi;
-            int yi = pos.yi - chunk.pos.yi;
-            int zi = pos.zi - chunk.pos.zi;
+            WorldPos chunkPos = chunk.GetPos();
+            int xi = pos.xi - chunkPos.xi;
+            int yi = pos.yi - chunkPos.yi;
+            int zi = pos.zi - chunkPos.zi;
             chunk.SetSDistF(new WorldPos(xi,yi,zi), voxel, sDistf);
             chunk.modified = true;
             if(!chunk.update){
@@ -525,12 +530,12 @@ public class World : MonoBehaviour
                 chunkUpdates.Add(chunk);
             }
 
-            UpdateIfEqual(xi, 1, new WorldPos(chunk.pos.xi - Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi + Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(yi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi-Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi+Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(zi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi-Chunk.chunkVoxels));
-            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi+Chunk.chunkVoxels));
+            UpdateIfEqual(xi, 1, new WorldPos(chunkPos.xi - Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi + Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(yi, 1, new WorldPos(chunkPos.xi, chunkPos.yi-Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi+Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(zi, 1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi-Chunk.chunkVoxels));
+            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi+Chunk.chunkVoxels));
 
         }
     }
@@ -560,7 +565,7 @@ public class World : MonoBehaviour
                 if(column.chunkColumn != null){
                     bool found = false;
                     foreach(Chunk chunk in column.chunkColumn.chunks){
-                        if (WorldPos.Equals(chunk.pos, pos)){
+                        if (WorldPos.Equals(chunk.GetPos(), pos)){
                             found = true;
                             if(chunk.update){
                                 break;

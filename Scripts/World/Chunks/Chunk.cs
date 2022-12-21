@@ -52,7 +52,8 @@ public class Chunk : MonoBehaviour
     private MeshCollider coll;
 
     public World world {get; private set;}
-    public WorldPos pos {get; private set;}
+    [SerializeField]
+    private WorldPos pos;
 
     static bool splatter = false;
     

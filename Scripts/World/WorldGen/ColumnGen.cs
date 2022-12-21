@@ -21,9 +21,10 @@ public class ColumnGen
 
     // Local code to set voxels
     private static void SetVoxel(int x, int y, int z, Voxel voxel, Chunk chunk, float sDistF, bool replaceBlocks = false){
-        x -=chunk.pos.xi;
-        y -=chunk.pos.yi;
-        z -=chunk.pos.zi;
+        WorldPos chunkPos = chunk.GetPos();
+        x -=chunkPos.xi;
+        y -=chunkPos.yi;
+        z -=chunkPos.zi;
         if(Chunk.InRange(x,y,z)){
             if(replaceBlocks || chunk.GetVoxel(x,y,z) == null){
                 chunk.SetVoxel(x,y,z,voxel);
@@ -35,8 +36,9 @@ public class ColumnGen
 
     //Start Chunk Gen here
     public Chunk ChunkGenC2(Chunk chunk){
-        for (int x = chunk.pos.xi ; x<chunk.pos.xi+Chunk.chunkVoxels; x++){
-            for (int z = chunk.pos.zi ; z<chunk.pos.zi+Chunk.chunkVoxels; z++){
+        WorldPos chunkPos = chunk.GetPos();
+        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels; x++){
+            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels; z++){
                 chunk = ChunkColumnGen(chunk,x,z);
             }
         }
@@ -50,14 +52,16 @@ public class ColumnGen
         // // float MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
         // float dirtHeight = terrainHeight[xi,zi];
 
-        for(int yi = chunk.pos.yi+Chunk.chunkVoxels; yi>=chunk.pos.yi; yi--){
+        WorldPos chunkPos = chunk.GetPos();
+
+        for(int yi = chunkPos.yi+Chunk.chunkVoxels; yi>=chunkPos.yi; yi--){
             float sDistF = sDistFGen(chunk,xi,yi,zi);
 
             if (sDistF >0){
                 SetVoxel(xi,yi,zi,new VoxelAir(sDistF),chunk,sDistF);
             }
             else{
-                if(chunk.pos.y >= 8){
+                if(chunkPos.y >= 8){
                      SetVoxel(xi,yi,zi,new VoxelGrass(sDistF),chunk,sDistF);
                 }
                 SetVoxel(xi,yi,zi,new Voxel(sDistF),chunk,sDistF);
@@ -70,8 +74,8 @@ public class ColumnGen
     //Main function to generate a Signed distance field at location
     private float sDistFGen(Chunk chunk, int x, int yi, int z){
         float sDistF = 0;
-        int xi = x-(chunk.pos.xi-1);
-        int zi = z-(chunk.pos.zi-1);
+        int xi = x-(chunk.GetPos().xi-1);
+        int zi = z-(chunk.GetPos().zi-1);
 
         float y = yi*Chunk.voxelSize;        
 

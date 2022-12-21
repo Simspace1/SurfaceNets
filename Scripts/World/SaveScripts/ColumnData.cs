@@ -32,7 +32,7 @@ public class ColumnData
     public void Revert2(ChunkColumn col){
         foreach(ChunkData data in chunks){
             foreach(Chunk chunk in col.chunks){
-                if(WorldPos.Equals(chunk.pos, data.pos)){
+                if(WorldPos.Equals(chunk.GetPos(), data.pos)){
                     data.Revert(chunk);
                     break;
                 }

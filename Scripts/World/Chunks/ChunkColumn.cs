@@ -197,7 +197,7 @@ public class ChunkColumn
 
     public Chunk GetChunk(WorldPos pos){
         foreach(Chunk chunk in chunks){
-            if(chunk.pos.Equals(pos)){
+            if(chunk.GetPos().Equals(pos)){
                 return chunk;
             }
         }
