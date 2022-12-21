@@ -8,7 +8,7 @@ using System.Threading;
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
 
-
+[System.Serializable]
 
 public class Chunk : MonoBehaviour
 {
@@ -19,25 +19,33 @@ public class Chunk : MonoBehaviour
     public const int chunkVoxels = 16;
     public const float sDistLimit = 3f*voxelSize;  // 10000000;
     
+    [SerializeField]
     private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
 
     [HideInInspector]
+    // [System.NonSerialized]
     public bool update = false ;
     [HideInInspector]
+    [System.NonSerialized]
     public bool rendered = false;
+    [System.NonSerialized]
     public MyMesh meshData;
     [HideInInspector]
+    [System.NonSerialized]
     public bool modified = false;
 
     // private ChunkThread chunkthread;
     [HideInInspector]
+    [System.NonSerialized]
     public bool updating = false;
     [HideInInspector]
+    [System.NonSerialized]
     public bool destoying = false;
 
     [HideInInspector]
+    [System.NonSerialized]
     public bool updateThread = false;
 
     private MeshFilter filter;
@@ -85,6 +93,8 @@ public class Chunk : MonoBehaviour
         updating = false;
         // chunkthread = null;
         RenderMesh(meshData);
+
+        // print(JsonUtility.ToJson(this));
     }
 
     
