@@ -25,7 +25,7 @@ public class Chunk : MonoBehaviour
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
 
     [HideInInspector]
-    // [System.NonSerialized]
+    [System.NonSerialized]
     public bool update = false ;
     [HideInInspector]
     [System.NonSerialized]
@@ -53,10 +53,10 @@ public class Chunk : MonoBehaviour
 
     public World world {get; private set;}
     [SerializeField]
-    private WorldPos pos;
+    private WorldPos chunkPos;
 
     static bool splatter = false;
-    
+
 
 
     // Start is called before the first frame update
@@ -121,7 +121,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxel(pos.x+x,pos.y+y,pos.z+z);
+            return world.GetVoxel(chunkPos.x+x,chunkPos.y+y,chunkPos.z+z);
         }        
     } 
 
@@ -132,7 +132,7 @@ public class Chunk : MonoBehaviour
             int yi = Mathf.FloorToInt(y/voxelSize);
             int zi = Mathf.FloorToInt(z/voxelSize);
 
-            print("Pos x:"+(pos.x+x)+" y:"+(pos.y+y)+" z:"+(pos.z+z));
+            print("Pos x:"+(chunkPos.x+x)+" y:"+(chunkPos.y+y)+" z:"+(chunkPos.z+z));
             print("xi:"+xi+" yi:"+yi+" zi:"+zi);
 
 
@@ -147,7 +147,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxelDb(pos.x+x,pos.y+y,pos.z+z);
+            return world.GetVoxelDb(chunkPos.x+x,chunkPos.y+y,chunkPos.z+z);
         }        
     }
 
@@ -156,7 +156,7 @@ public class Chunk : MonoBehaviour
             return voxels[pos.xi,pos.yi,pos.zi];
         }
         else{
-            return world.GetVoxel(WorldPos.Add(this.pos,pos));
+            return world.GetVoxel(WorldPos.Add(this.chunkPos,pos));
         }
     }
 
@@ -166,7 +166,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxel(pos.xi+xi,pos.yi+yi,pos.zi+zi);
+            return world.GetVoxel(chunkPos.xi+xi,chunkPos.yi+yi,chunkPos.zi+zi);
         }
     }
 
@@ -175,7 +175,7 @@ public class Chunk : MonoBehaviour
             voxels[xi,yi,zi] = voxel;
         }
         else{
-            world.SetVoxel(WorldPos.Add(new WorldPos(xi,yi,zi),this.pos), voxel);
+            world.SetVoxel(WorldPos.Add(new WorldPos(xi,yi,zi),this.chunkPos), voxel);
         }
     }
 
@@ -184,7 +184,7 @@ public class Chunk : MonoBehaviour
             voxels[pos.xi,pos.yi,pos.zi] = voxel;
         }
         else{
-            world.SetVoxel(WorldPos.Add(this.pos,pos),voxel);
+            world.SetVoxel(WorldPos.Add(this.chunkPos,pos),voxel);
         }
     }
 
@@ -193,7 +193,7 @@ public class Chunk : MonoBehaviour
             voxels[pos.xi,pos.yi,pos.zi].sDistF = sDistf;
         }
         else{
-            world.SetSDistF(WorldPos.Add(this.pos,pos),voxel,sDistf);
+            world.SetSDistF(WorldPos.Add(this.chunkPos,pos),voxel,sDistf);
         }
     }
 
@@ -769,11 +769,11 @@ public class Chunk : MonoBehaviour
 
 
     public WorldPos GetPos(){
-        return pos;
+        return chunkPos;
     }
 
     public void SetPos(WorldPos pos){
-        this.pos = pos;
+        this.chunkPos = pos;
     }
 
     public void SetWorld(World world){

@@ -8,9 +8,16 @@ public class WorldPos
     public float x {get; private set;}
     public float y {get; private set;}
     public float z {get; private set;}
-    public int xi {get; private set;}
-    public int yi {get; private set;}
-    public int zi {get; private set;}
+    public int xi {get => Xi; private set => Xi = value;}
+    public int yi {get => Yi; private set => Yi = value;}
+    public int zi {get => Zi; private set => Zi = value;}
+
+    [SerializeField]
+    private int Xi;
+    [SerializeField]
+    private int Yi;
+    [SerializeField]
+    private int Zi;
 
 
     public WorldPos(float x, float y, float z){
