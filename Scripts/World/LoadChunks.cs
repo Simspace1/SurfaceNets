@@ -83,193 +83,21 @@ public class LoadChunks : MonoBehaviour
     void FindLoadCreateRenderColumns(){
         
 
-        List<Columns> createListRemover = new List<Columns>();
-        List<Columns> renderListRemover = new List<Columns>();
-        List<Columns> farCreateListRemover = new List<Columns>();
+        CreateFarChunksManager();
 
-        
-        //Creates and Render the FarChunkCols
-        if(farCreateList.Count <= 0){
-
-        }
-        else if(farChunkColThread == null || (!farChunkColThread.CreateCheck() && farChunkColThread.rendered)){
-            List<FarChunkCol> farChunkCols = new List<FarChunkCol>();
-            foreach(Columns column in farCreateList){
-                column.farChunkCol = world.CreateFarChunkColumn(column);
-                farChunkCols.Add(column.farChunkCol);
-                column.farChunkCol.SetCreating();
-                farCreateListRemover.Add(column);
-            }
-            farChunkColThread = new FarChunkColThread(farChunkCols);
-        }
-        else if(!farChunkColThread.CreateCheck() && !farChunkColThread.rendered){
-            foreach(FarChunkCol farCol in farChunkColThread.farChunkCols){
-                farCreateListRemover.Add(farCol.col);
-            }
-            farChunkColThread.Render();
-        }
-
-        foreach(Columns column in farCreateListRemover){
-            farCreateList.Remove(column);
-        }
-        
-
-
-        int i = 0;
-        int j = 0;
-
-        //Check for create ChunkColumn
-        // int count = 0;
-        foreach(Columns column in createList){
-            if(column.chunkColumn == null){
-                createListRemover.Add(column);
-                continue;
-            }
-            if(column.chunkColumn.creating){
-                if (column.chunkColumn.CreateCheck1()){
-                    i++;
-                    continue;
-                }
-                else{
-                    if(column.chunkColumn.creating2){
-                        if(column.chunkColumn.CreateCheck2()){
-                            i++;
-                            continue;
-                        }
-                        else{
-                            column.chunkColumn.CreateEnd();
-                            createListRemover.Add(column);
-                        } 
-                    }
-                    else{
-                        if(j > 0){
-                            continue;
-                        }
-                        column.chunkColumn.CreateStart2();
-                        i++;
-                        j++;
-                    }
-                }
-            }
-            else{
-                if(j > 0){
-                    continue;
-                }
-                column.chunkColumn.CreateStart();
-                j++;
-                i++;
-            }
-        }
-
-
-        //remove ChunkColumns from create list if they are done creating
-        foreach(Columns column in createListRemover){
-            createList.Remove(column);
-        }
-        //If there are any chunksColumns still creating wait for them to finish
-        if(i > 0){
-            // if(stopWatch.ElapsedMilliseconds > 10){
-            //     print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
-            // } 
-            // print("Chunk create check count: "+ count);
-            // print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
-            
+        //Check for create ChunkColumn, if true there are more chunks creating thus we wait
+        if(CreateChunksManager()){
             return;
         }
-        
-
-        //Check for render ChunkColumn
-        foreach(Columns column in renderList){
-            if(column.chunkColumn == null){
-                renderListRemover.Add(column);
-                continue;
-            }
-            if(world.GetChunkUpdateCount() >= World.maxChunkUpdates){
-                break;
-            }
-            else if(!column.chunkColumn.rendered){
-                column.chunkColumn.Render();
-            }
-            else if(column.chunkColumn.CheckRendered()){
-                column.RenderEndChunkColumn();
-                renderListRemover.Add(column);
-            }
-        }
-
-        //remove ChunkColumns from render list if they are done rendering
-        foreach(Columns column in renderListRemover){
-            renderList.Remove(column);
-        }
-
-        //If there are any chunksColumns still rendering wait for them to finish
-        if(renderList.Count > 0 ){
-            // if(stopWatch.ElapsedMilliseconds > 10){
-            //     print("Render Return: "+ stopWatch.ElapsedMilliseconds);
-            // }
+        //Check for render ChunkColumn, if true there are more chunks rendering thus we wait
+        else if(RenderChunksManager()){
             return;
         }
-
-
-        
-
-        float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
-        float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
-        float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
-        WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
-        i = 0;
-
-        foreach(WorldPos chunkColumnPos in farChunkPositions){
-            if(chunkColumnPos == null){
-                break;
-            }
-
-            // //Check end of farChunk Loading
-            // if(farChunkPositions[5168].Equals(chunkColumnPos)){
-            //     // stopWatch.Stop();
-            //     print("FarChunk Loading Time:  " + stopWatch.ElapsedMilliseconds);
-            // }
-
-            //Create Pos for checking chunks
-            WorldPos newChunkColumnPos = new WorldPos(chunkColumnPos.x+playerPos.x,0,chunkColumnPos.z+playerPos.z);
-
-            Columns column;
-            //Check if Column exists
-            column = world.TryGetColumn(newChunkColumnPos);
-            if(column != null){
-                //Check if close enough to do close Generation
-                if(i < 1 && WorldPos.Distance(playerPos, newChunkColumnPos) < loadDistance){
-                    if(column.chunkColumn == null){
-                        CreateAdjChunkColumns(newChunkColumnPos);
-                        column.CreateChunkColumn();
-                        createList.Add(column);
-                        renderList.Add(column);
-                        i++;
-
-                        // //Check how long to load "all" chunks
-                        // if(WorldPos.Distance(playerPos, newChunkColumnPos) < loadDistance && WorldPos.Distance(playerPos, newChunkColumnPos) >= loadDistance-Chunk.chunkSize){
-                        //     // stopWatch.Stop();
-                        //     print("Chunk Loading:  " + stopWatch.ElapsedMilliseconds);
-                        // }
-                        
-                    }
-                    else if(column.chunkColumn.created && !column.chunkColumn.rendered){
-                        CreateAdjChunkColumns(newChunkColumnPos);
-                        renderList.Add(column);
-                        i++;
-                    }
-                }
-            }
-            //Creates far chunks and Columns
-            else if(farCreateList.Count < farChunkupdates){
-                Columns col = new Columns(world, newChunkColumnPos, world.gen.GenerateColumnGen(newChunkColumnPos));
-                world.AddColumns(newChunkColumnPos, col);
-                farCreateList.Add(col);
-            }
-            //If chunkColumn is not created and farChunkUpdates is exceeded stop generating
-            else{
-                break;
-            }
+        else{
+            //Creates the columns and populate the create lists
+            CreateColumnManager();
         }
+        
     }
 
     private void CreateFarChunksManager(){
