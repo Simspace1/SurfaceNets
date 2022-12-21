@@ -8,6 +8,8 @@ using Unity.Collections;
 
 public class World : MonoBehaviour
 {
+    private static World world;
+
     private string worldName = "world";
     private long worldSeed = 0;
 
@@ -43,6 +45,8 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        world = this;
+
         gen = new TerrainGen2(worldSeed);
         if(StaticWorld.worldName != null){
             worldName = StaticWorld.worldName;
@@ -95,6 +99,10 @@ public class World : MonoBehaviour
             }  
         }
         SaveManager.SaveWorld(this);
+    }
+
+    public World GetWorld(){
+        return world;
     }
 
     
