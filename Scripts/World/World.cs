@@ -17,6 +17,8 @@ public class World : MonoBehaviour
     private GameObject chunkPrefab;
     [SerializeField]
     private GameObject farChunkColumnPrefab;
+    [SerializeField]
+    private GameObject chunksContainer;
 
 
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
@@ -297,8 +299,9 @@ public class World : MonoBehaviour
 
 
     public void CreateChunk(WorldPos pos, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
+        
 
         newChunk.SetPos(pos);
         newChunk.SetWorld(this);
@@ -314,7 +317,7 @@ public class World : MonoBehaviour
 
     //Creates chunk at chunkData location
     public void CreateChunkInst(ChunkData chunkData, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero), chunksContainer.transform) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
         newChunk.SetPos(chunkData.pos);
@@ -329,7 +332,7 @@ public class World : MonoBehaviour
         List<Chunk> chunkList = new List<Chunk>();
 
         foreach(WorldPos pos in column){
-            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero), chunksContainer.transform) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
             
             newChunk.SetPos(pos);
@@ -342,7 +345,7 @@ public class World : MonoBehaviour
 
 
     public FarChunkCol CreateFarChunkColumn(Columns col){
-        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
         FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
 
         newFarChunkColumn.SetPos(col.pos);

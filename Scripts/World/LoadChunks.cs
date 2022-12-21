@@ -103,6 +103,9 @@ public class LoadChunks : MonoBehaviour
             farChunkColThread = new FarChunkColThread(farChunkCols);
         }
         else if(!farChunkColThread.CreateCheck() && !farChunkColThread.rendered){
+            foreach(FarChunkCol farCol in farChunkColThread.farChunkCols){
+                farCreateListRemover.Add(farCol.col);
+            }
             farChunkColThread.Render();
         }
 
@@ -315,8 +318,7 @@ public class LoadChunks : MonoBehaviour
             toDestroy = world.CheckDestroyColumn(ppos,chunkDistance,columnDistance);
 
             foreach(Columns column in toDestroy){
-                if(column.farChunkCol != null && column.farChunkCol.creating){
-                    column.farChunkCol.GetType();
+                if(farCreateList.Contains(column)){
                     continue;
                 }
                 column.DestroyChunkColumn();
