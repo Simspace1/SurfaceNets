@@ -635,9 +635,9 @@ public class World : MonoBehaviour
         foreach (var entry in chunkColumns){
             distance = Vector3.Distance(new Vector3(entry.Key.x,0,entry.Key.z), ppos);
 
-            // if (entry.Value.chunkColumn != null && distance >= chunkDistance){
-            //     entry.Value.DestroyChunkColumn();
-            // }
+            if (entry.Value.chunkColumn != null && distance >= chunkDistance){
+                entry.Value.DestroyChunkColumn();
+            }
 
             if(distance >= columnDistance && !entry.Value.updating){
                 toDestroy.Add(entry.Value);
