@@ -10,8 +10,8 @@ public class LoadChunks : MonoBehaviour
     private World world;
 
     static List<Columns> farCreateList = new List<Columns>();
-    static List<Columns> createList1 = new List<Columns>();
-    static List<Columns> renderList1 = new List<Columns>();
+    static List<Columns> createList = new List<Columns>();
+    static List<Columns> renderList = new List<Columns>();
 
     FarChunkColThread farChunkColThread;
 
@@ -120,7 +120,7 @@ public class LoadChunks : MonoBehaviour
 
         //Check for create ChunkColumn
         // int count = 0;
-        foreach(Columns column in createList1){
+        foreach(Columns column in createList){
             if(column.chunkColumn == null){
                 createListRemover.Add(column);
                 continue;
@@ -164,7 +164,7 @@ public class LoadChunks : MonoBehaviour
 
         //remove ChunkColumns from create list if they are done creating
         foreach(Columns column in createListRemover){
-            createList1.Remove(column);
+            createList.Remove(column);
         }
         //If there are any chunksColumns still creating wait for them to finish
         if(i > 0){
@@ -179,7 +179,7 @@ public class LoadChunks : MonoBehaviour
         
 
         //Check for render ChunkColumn
-        foreach(Columns column in renderList1){
+        foreach(Columns column in renderList){
             if(column.chunkColumn == null){
                 renderListRemover.Add(column);
                 continue;
@@ -198,11 +198,11 @@ public class LoadChunks : MonoBehaviour
 
         //remove ChunkColumns from render list if they are done rendering
         foreach(Columns column in renderListRemover){
-            renderList1.Remove(column);
+            renderList.Remove(column);
         }
 
         //If there are any chunksColumns still rendering wait for them to finish
-        if(renderList1.Count > 0 ){
+        if(renderList.Count > 0 ){
             // if(stopWatch.ElapsedMilliseconds > 10){
             //     print("Render Return: "+ stopWatch.ElapsedMilliseconds);
             // }
@@ -241,8 +241,8 @@ public class LoadChunks : MonoBehaviour
                     if(column.chunkColumn == null){
                         CreateAdjChunkColumns(newChunkColumnPos);
                         column.CreateChunkColumn();
-                        createList1.Add(column);
-                        renderList1.Add(column);
+                        createList.Add(column);
+                        renderList.Add(column);
                         i++;
 
                         // //Check how long to load "all" chunks
@@ -254,7 +254,7 @@ public class LoadChunks : MonoBehaviour
                     }
                     else if(column.chunkColumn.created && !column.chunkColumn.rendered){
                         CreateAdjChunkColumns(newChunkColumnPos);
-                        renderList1.Add(column);
+                        renderList.Add(column);
                         i++;
                     }
                 }
@@ -288,7 +288,7 @@ public class LoadChunks : MonoBehaviour
             if(columnAdj != null){
                 if(columnAdj.chunkColumn == null){
                     columnAdj.chunkColumn = new ChunkColumn(columnAdj);
-                    createList1.Add(columnAdj);
+                    createList.Add(columnAdj);
                 }
             }
             else{
@@ -296,7 +296,7 @@ public class LoadChunks : MonoBehaviour
                 world.AddColumns(posAdj, col);
                 farCreateList.Add(col);
                 col.CreateChunkColumn();
-                createList1.Add(col);
+                createList.Add(col);
             }
         }
     }
@@ -332,7 +332,7 @@ public class LoadChunks : MonoBehaviour
 
     public static void CreateChunkColumn(Columns column){
         column.CreateChunkColumn();
-        createList1.Add(column);
+        createList.Add(column);
     }
 
     public static void RemoveColumnFLists(Columns column){
@@ -340,8 +340,8 @@ public class LoadChunks : MonoBehaviour
             farCreateList.Remove(column);
         }
         if(column.chunkColumn != null){
-            createList1.Remove(column);
-            renderList1.Remove(column);
+            createList.Remove(column);
+            renderList.Remove(column);
         }
     }
 
