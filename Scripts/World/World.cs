@@ -32,7 +32,7 @@ public class World : MonoBehaviour
 
     public static int maxChunkUpdates = 4;
 
-    private List<ChunkThread> chunkThreads = new List<ChunkThread>();
+    // private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
     [SerializeField]
     private bool purgeSave = false;

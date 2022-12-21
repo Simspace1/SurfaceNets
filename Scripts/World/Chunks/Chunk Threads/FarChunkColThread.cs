@@ -7,7 +7,7 @@ using System;
 public class FarChunkColThread
 {
     public List<FarChunkCol> farChunkCols;
-    public Thread createThread;
+    // public Thread createThread;
     public bool rendered = false;
     public bool updateThread = false;
 
