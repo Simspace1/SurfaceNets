@@ -76,11 +76,6 @@ public class Chunk : MonoBehaviour
         ThreadPool.QueueUserWorkItem(UpdateChunk2, this);
     }
 
-    // private void UpdateChunk2(object state)
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-
     public bool CheckUpdateTh(){
         // return chunkthread.IsAlive();
         return updateThread;
@@ -443,6 +438,7 @@ public class Chunk : MonoBehaviour
         this.meshData = meshData;
     }
 
+    // Main code for updating and calculating surface of the Chunk
     private void UpdateChunk2(object stateIn){
 
         Chunk state = (Chunk) stateIn;
@@ -695,42 +691,9 @@ public class Chunk : MonoBehaviour
         }
     }
 
-    // bool Contunity(int x1, int y1, int z1, int x2, int y2, int z2){
-    //     Vector3 surfPt = new Vector3(0,0,0); 
-    //     if(surfPts2.TryGetValue(new WorldPos(x1,y1,z1), out surfPt) && surfPts2.TryGetValue(new WorldPos(x2,y2,z2), out surfPt)){
-    //         return true;
-    //     }
-    //     else if(x1 == 0 || x1 == chunkSize || y1 == 0 || y1 == chunkSize || z1 == 0 || z1 == chunkSize){
-    //         return true;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
-
     public static bool SameSignsDistF(float v1, float v2){
         return ((v1 >= 0 && v2 >= 0)  || (v1 < 0 && v2 < 0));
     }
-
-    // Vector3 Normals(int xi,int yi,int zi){
-    //     return GetVoxel(xi,yi,zi).SurfGrad(this,xi,yi,zi);
-    // }
-
-    //Calculates Surface points Dictionary
-    // void SurfacePoints(){
-    //     SurfPt surfPt = null;
-    //     surfPts = new Dictionary<Vector3, SurfPt>();
-    //     for(float y = 0;y <= chunkSize; y = y+voxelSize){
-    //         for(float x = 0; x<= chunkSize; x = x+voxelSize){
-    //             for(float z = 0; z<=chunkSize; z = z+voxelSize){
-    //                 surfPt = GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
-    //                 if (surfPt != null){
-    //                     surfPts.Add(new Vector3(x,y,z), surfPt);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     //Calculates Surface points Dictionary
     void SurfacePoints(){
