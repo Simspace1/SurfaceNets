@@ -31,7 +31,7 @@ public class Chunk : MonoBehaviour
     [HideInInspector]
     public bool modified = false;
 
-    private ChunkThread chunkthread;
+    // private ChunkThread chunkthread;
     [HideInInspector]
     public bool updating = false;
     [HideInInspector]
@@ -216,6 +216,7 @@ public class Chunk : MonoBehaviour
         return true;
     }
 
+    // Currently not in use because thread pool
     public void UpdateChunk(){
         //Updates surface points                   
         SurfacePoints();
