@@ -13,9 +13,9 @@ public class VoxelAir : Voxel
       this.id = BlockID;
    }
 
-   public VoxelAir(float sDistF) : base(){
+   public VoxelAir(float sDistF) : base(sDistF){
       this.air = true;
-      this.sDistF = sDistF;
+      // this.sDistF = sDistF;
       this.id = BlockID;
    }
 

@@ -433,7 +433,7 @@ public class World : MonoBehaviour
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
@@ -445,7 +445,7 @@ public class World : MonoBehaviour
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
@@ -456,7 +456,7 @@ public class World : MonoBehaviour
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
@@ -468,7 +468,7 @@ public class World : MonoBehaviour
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 

@@ -27,7 +27,16 @@ public class Voxel
 
     public Voxel(float sDistF){
         this.id = BlockID;
-        this.sDistF = sDistF;
+        if(sDistF < Chunk.sDistLimit && sDistF > -Chunk.sDistLimit ){
+            this.sDistF = sDistF;
+        }
+        else if(sDistF < 0){
+            this.sDistF = -Chunk.sDistLimit;
+        }
+        else{
+            this.sDistF = Chunk.sDistLimit;
+        }
+        
     }
 
     public struct VoxelData{

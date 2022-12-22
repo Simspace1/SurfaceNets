@@ -5,18 +5,18 @@ using UnityEngine;
 public static class VoxelFactory
 {
     
-    public static Voxel Create(string input){
+    public static Voxel Create(string input, int sDist){
         switch(input){
             case "air":
-                return new VoxelAir();
+                return new VoxelAir(sDist);
             case "stone":
-                return new Voxel();
+                return new Voxel(sDist);
             case "grass":
-                return new VoxelGrass();
+                return new VoxelGrass(sDist);
 
 
             default:
-                return new Voxel();
+                return new Voxel(sDist);
         }
     }
 
@@ -31,7 +31,7 @@ public static class VoxelFactory
             
 
             default:
-                return new Voxel();
+                return new Voxel(sDist);
         }
     }
 
@@ -47,7 +47,7 @@ public static class VoxelFactory
             
 
             default:
-                return new Voxel();
+                return new Voxel(sDist);
         }
     }
 }

@@ -11,8 +11,8 @@ public class VoxelGrass : Voxel
       this.id = BlockID;
    }
 
-   public VoxelGrass(float sDistF) : base(){
-      this.sDistF = sDistF;
+   public VoxelGrass(float sDistF) : base(sDistF){
+      // this.sDistF = sDistF;
       this.id = BlockID;
    }
 
