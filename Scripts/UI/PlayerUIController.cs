@@ -27,7 +27,7 @@ public class PlayerUIController : MonoBehaviour
             escMenu.enabled = true;
             if(!gen){
                 gen = true;
-                map.texture = world.gen.GenTexture2D(world.gen.GenerateWorldHeight());
+                // map.texture = world.gen.GenTexture2D(world.gen.GenerateWorldHeight());
             }
         }
     }
