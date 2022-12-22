@@ -8,16 +8,25 @@ public class Voxel
 {
     const float tileSizex = 1f;
     const float tileSizey = 0.25f;
+    private static uint BlockID = 1;
+
+    [SerializeField]
+    protected uint id = 1;
     public float sDistF = 1;
+    [System.NonSerialized]
     public bool air = false;
+    [System.NonSerialized]
     public bool resource = false;
 
     public enum Direction{north, east, south, west, up, down}
     public enum Axis{x,y,z}
 
-    public Voxel(){}
+    public Voxel(){
+        this.id = BlockID;
+    }
 
     public Voxel(float sDistF){
+        this.id = BlockID;
         this.sDistF = sDistF;
     }
 
@@ -396,28 +405,41 @@ public class Voxel
 
     public struct Tile {public int x; public int y;}
 
-     public virtual Tile TexturePosition(){
-         Tile tile = new Tile();
-         tile.x = 0;
-         tile.y = 2;
-         return tile;
-     }
+    public virtual Tile TexturePosition(){
+        Tile tile = new Tile();
+        tile.x = 0;
+        tile.y = 2;
+        return tile;
+    }
 
-     public virtual Vector2[] FaceUVs(){
-         Vector2[] UVs = new Vector2[4];
-         Tile tilePos = TexturePosition();
-         var tileSizey = 0.249f;
-        //  UVs[0] = new Vector2(tileSizex*tilePos.x+tileSizex,tileSizey*(tilePos.y+0.01f));
-        //  UVs[1] = new Vector2(tileSizex*tilePos.x+tileSizex,tileSizey*(tilePos.y+0.01f)+tileSizey);
-        //  UVs[2] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f)+tileSizey);
-        //  UVs[3] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
+    public virtual Vector2[] FaceUVs(){
+        Vector2[] UVs = new Vector2[4];
+        Tile tilePos = TexturePosition();
+        var tileSizey = 0.249f;
+    //  UVs[0] = new Vector2(tileSizex*tilePos.x+tileSizex,tileSizey*(tilePos.y+0.01f));
+    //  UVs[1] = new Vector2(tileSizex*tilePos.x+tileSizex,tileSizey*(tilePos.y+0.01f)+tileSizey);
+    //  UVs[2] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f)+tileSizey);
+    //  UVs[3] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
 
 
-         UVs[0] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
-         UVs[1] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
-         UVs[2] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
-         UVs[3] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
-         return UVs;
-     }
+        UVs[0] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
+        UVs[1] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
+        UVs[2] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
+        UVs[3] = new Vector2(tileSizex*tilePos.x,tileSizey*(tilePos.y+0.01f));
+        return UVs;
+    }
+
+    public uint GetID(){
+        return id;
+    }
+
+    public static bool Equals(Voxel v1, Voxel v2){
+        if(v1.GetID() == v2.GetID() && v1.sDistF == v2.sDistF){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 }

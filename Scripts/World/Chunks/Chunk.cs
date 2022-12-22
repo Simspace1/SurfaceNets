@@ -19,7 +19,7 @@ public class Chunk : MonoBehaviour
     public const int chunkVoxels = 16;
     public const float sDistLimit = 3f*voxelSize;  // 10000000;
     
-    [SerializeField]
+    // [SerializeField]
     private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
@@ -56,6 +56,14 @@ public class Chunk : MonoBehaviour
     private WorldPos chunkPos;
 
     static bool splatter = false;
+
+    [System.Serializable]
+    private struct VoxelList{
+        public List<Voxel> voxels;
+    }
+
+    [SerializeField]
+    private VoxelList voxelList = new VoxelList();
 
 
 
@@ -95,7 +103,33 @@ public class Chunk : MonoBehaviour
         // chunkthread = null;
         RenderMesh(meshData);
 
-        // print(JsonUtility.ToJson(this));
+        // VoxelsToList();
+        // string save = JsonUtility.ToJson(this);
+        // SaveManager.SaveChunkJSON(save);
+        // print(save);
+
+        // voxelList.voxels = null;
+
+        // JsonUtility.FromJsonOverwrite(save, this);
+
+        // Voxel[,,] voxelsTest = ListToVoxels();
+
+        // bool equals = true;
+        // for(int i =0; i < chunkVoxels; i++){
+        //     for(int j =0; j < chunkVoxels; j++){
+        //         for(int k =0; k < chunkVoxels; k++){
+        //             if(Voxel.Equals(voxels[i,j,k], voxelsTest[i,j,k])){
+        //                 continue;
+        //             }
+        //             else{
+        //                 equals = false;
+        //             }
+        //         }
+        //     }
+        // }
+        // print(equals);
+
+
     }
 
     
@@ -788,6 +822,65 @@ public class Chunk : MonoBehaviour
 
     public Voxel[, ,] GetVoxels(){
         return voxels;
+    }
+
+    private void VoxelsToList(){
+        voxelList.voxels = new List<Voxel>();
+
+        for(int i =0; i < chunkVoxels; i++){
+            for(int j =0; j < chunkVoxels; j++){
+                for(int k =0; k < chunkVoxels; k++){
+                    voxelList.voxels.Add(voxels[i,j,k]);
+                }
+            }
+        }
+    }
+
+    // private Voxel[,,]  ListToVoxels(){
+    //     int i = 0,j = 0,k = 0;
+
+    //     Voxel[,,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
+    //     foreach(Voxel voxel in voxelList.voxels){
+    //         voxels[i,j,k] = VoxelFactory.Create(voxel);
+    //         if(k >= 15){
+    //             if(j >= 15){
+    //                 i++;
+    //                 j = 0;
+    //                 k = 0;
+    //             }
+    //             else{
+    //                 j++;
+    //                 k = 0;
+    //             }
+    //         }
+    //         else{
+    //             k++;
+    //         }
+    //     }
+    //     return voxels;
+    // }
+
+    private void  ListToVoxels(){
+        int i = 0,j = 0,k = 0;
+
+        foreach(Voxel voxel in voxelList.voxels){
+            voxels[i,j,k] = VoxelFactory.Create(voxel);
+            if(k >= 15){
+                if(j >= 15){
+                    i++;
+                    j = 0;
+                    k = 0;
+                }
+                else{
+                    j++;
+                    k = 0;
+                }
+            }
+            else{
+                k++;
+            }
+        }
+        voxelList.voxels = null;
     }
 
 }

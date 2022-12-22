@@ -76,7 +76,7 @@ public static class SaveManager
         }
     }
 
-     public static ColumnData LoadChunkColumn(ChunkColumn col){
+    public static ColumnData LoadChunkColumn(ChunkColumn col){
         string path = col.path + "/saves/" + col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
@@ -90,6 +90,11 @@ public static class SaveManager
             Debug.LogError("ChunkColumn File not found in "+ path);
             return null;
         }
+    }
+
+    public static void SaveChunkJSON(string save){
+        string path = Application.persistentDataPath + "/saves/" + "CHUNK_TEST.sav";
+        File.WriteAllText(path,save);
     }
 
     // // Probably broken Deprecated
