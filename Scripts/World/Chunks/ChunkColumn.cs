@@ -4,23 +4,40 @@ using UnityEngine;
 using System.Threading;
 
 public class ChunkColumn
-{
+{   
+    [System.NonSerialized]
     public World world;
+    [System.NonSerialized]
     public WorldPos pos;
+    
+
     public List<WorldPos> chunkColumn = new List<WorldPos>();
+
     public List<Chunk> chunks;
+    [System.NonSerialized]
     public bool rendered = false;
+    [System.NonSerialized]
     public bool created = false;
+    [System.NonSerialized]
     public bool creating = false;
+    [System.NonSerialized]
     public bool rendering = false;
+    [System.NonSerialized]
     public bool destroying = false;
+    [System.NonSerialized]
     public bool creating2 = false;
+    [System.NonSerialized]
     public bool loaded = false;
+    [System.NonSerialized]
     public bool modified = false;
+    [System.NonSerialized]
     private bool createTh1 = false;
+    [System.NonSerialized]
     private bool createTh2 = false;
     private ColumnData data;
+    [System.NonSerialized]
     public string path = Application.persistentDataPath;
+    [System.NonSerialized]
     public Columns col;
 
 
@@ -167,7 +184,9 @@ public class ChunkColumn
                 chunk.update = true;
             }
             rendered = true;
-        }    
+        }
+
+        
     }
 
     public bool CheckRendered(){
