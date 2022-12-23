@@ -9,7 +9,7 @@ public class ColumnData
     public List<ChunkData> chunks;
 
     public ColumnData(ChunkColumn chunkColumn){
-        pos = chunkColumn.pos;
+        pos = chunkColumn.columnPos;
 
         chunks = new List<ChunkData>();
         foreach(Chunk chunk in chunkColumn.chunks){
@@ -18,7 +18,7 @@ public class ColumnData
     }
 
     public void Revert1(ChunkColumn col){
-        col.pos = pos;
+        col.columnPos = pos;
         col.loaded = true;
         col.chunks = new List<Chunk>();
     }

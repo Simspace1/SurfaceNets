@@ -62,7 +62,7 @@ public static class SaveManager
             return;
         }
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Application.persistentDataPath + "/saves/"+col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
+        string path = Application.persistentDataPath + "/saves/"+col.world.GetWorldName()+"/Chunks/Column_"+col.columnPos.x+"_"+col.columnPos.z+".sav";
         FileStream stream = new FileStream(path, FileMode.Create);
 
         ColumnData data = new ColumnData(col);
@@ -71,13 +71,13 @@ public static class SaveManager
 
         WorldData wData = col.world.GetWorldData();
 
-        if(!wData.columns.Contains(col.pos)){
-            wData.columns.Add(col.pos);
+        if(!wData.columns.Contains(col.columnPos)){
+            wData.columns.Add(col.columnPos);
         }
     }
 
     public static ColumnData LoadChunkColumn(ChunkColumn col){
-        string path = col.path + "/saves/" + col.world.GetWorldName()+"/Chunks/Column_"+col.pos.x+"_"+col.pos.z+".sav";
+        string path = col.path + "/saves/" + col.world.GetWorldName()+"/Chunks/Column_"+col.columnPos.x+"_"+col.columnPos.z+".sav";
         if(File.Exists(path)){
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);

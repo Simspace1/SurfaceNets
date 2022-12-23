@@ -891,4 +891,9 @@ public class Chunk : MonoBehaviour
         voxelList.voxels = null;
     }
 
+    public string ChunkToJSON(){
+        VoxelsToList();
+        return JsonUtility.ToJson(this);
+    }
+
 }

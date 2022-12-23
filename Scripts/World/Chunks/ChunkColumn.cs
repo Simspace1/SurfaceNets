@@ -7,13 +7,19 @@ public class ChunkColumn
 {   
     [System.NonSerialized]
     public World world;
-    [System.NonSerialized]
-    public WorldPos pos;
     
-
+    public WorldPos columnPos;
+    
     public List<WorldPos> chunkColumn = new List<WorldPos>();
 
+    [System.NonSerialized]
     public List<Chunk> chunks;
+
+    [SerializeField]
+    private List<string> saveChunks;
+
+    
+
     [System.NonSerialized]
     public bool rendered = false;
     [System.NonSerialized]
@@ -54,7 +60,7 @@ public class ChunkColumn
 
     public ChunkColumn(Columns column){
         this.world = column.world;
-        this.pos = column.pos;
+        this.columnPos = column.pos;
         this.col = column;
         // CreateThread = new Thread(new ThreadStart(() => Create()));
         // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
@@ -125,17 +131,17 @@ public class ChunkColumn
 
     private void Create(object state){
         
-        if(world.GetWorldData().Contains(pos)){
+        if(world.GetWorldData().Contains(columnPos)){
             loaded = true;
             if(col.gen == null){
-                col.SetGen(world.gen.GenerateColumnGen(pos));
+                col.SetGen(world.gen.GenerateColumnGen(columnPos));
             }
             data = SaveManager.LoadChunkColumn(this);
             data.Revert1(this);
         }
         else{
             if(col.gen == null){
-                col.SetGen(world.gen.GenerateColumnGen(pos));
+                col.SetGen(world.gen.GenerateColumnGen(columnPos));
             }
             float [] minMax = col.gen.minMax;
 
@@ -144,7 +150,7 @@ public class ChunkColumn
 
             WorldPos chunkPos;
             for(float y = min; y <= max; y +=Chunk.chunkSize){
-                chunkPos = new WorldPos(pos.x,y,pos.z);
+                chunkPos = new WorldPos(columnPos.x,y,columnPos.z);
                 chunkColumn.Add(chunkPos);
             }
         }
@@ -185,8 +191,6 @@ public class ChunkColumn
             }
             rendered = true;
         }
-
-        
     }
 
     public bool CheckRendered(){
@@ -239,6 +243,26 @@ public class ChunkColumn
             }
         }
         return false;
+    }
+
+    private void ChunksToJSON(){
+        saveChunks = new List<string>();
+
+        foreach(Chunk chunk in chunks){
+            saveChunks.Add(chunk.ChunkToJSON());
+        }
+    }
+
+    public string ChunkColumnToJSON(){
+        ChunksToJSON();
+        string save = JsonUtility.ToJson(this);
+        return save;
+    }
+
+    public static ChunkColumn JsonToChunkColumn(string save){
+        ChunkColumn col = JsonUtility.FromJson<ChunkColumn>(save);
+        col.loaded = true;
+        return col;
     }
 
 }
