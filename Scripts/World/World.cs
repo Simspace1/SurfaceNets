@@ -30,6 +30,8 @@ public class World : MonoBehaviour
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
+    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>();
+
     // private static float bottomWorldHeight = -1600;
 
     public static int maxChunkUpdates = 4;
@@ -37,7 +39,7 @@ public class World : MonoBehaviour
     // private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
     [SerializeField]
-    private bool purgeSave = false;
+    public bool purgeSave  = false ;
 
     public TerrainGen2 gen {get; private set;}
 
@@ -101,7 +103,7 @@ public class World : MonoBehaviour
         SaveManager.SaveWorld(this);
     }
 
-    public World GetWorld(){
+    public static World GetWorld(){
         return world;
     }
 
@@ -668,5 +670,15 @@ public class World : MonoBehaviour
 
     public void RemoveColumns(WorldPos pos){
         chunkColumns.Remove(pos);
+    }
+
+    public ChunkRegions GetChunkRegions(WorldPos pos){
+        ChunkRegions region = null;
+        chunkRegions.TryGetValue(pos, out region);
+        return region;
+    }
+
+    public void AddChunkRegions(ChunkRegions region){
+        chunkRegions.Add(region.GetPos(), region);
     }
 }

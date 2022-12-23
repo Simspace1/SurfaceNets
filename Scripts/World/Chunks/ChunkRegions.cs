@@ -24,6 +24,7 @@ public class ChunkRegions
         regionPos = pos;
         columnsPos = new List<WorldPos>();
         chunkColumnsSave = new List<string>();
+        chunkColumns = new List<ChunkColumn>();
     }
 
     public static ChunkRegions JsonToRegion(string save){
@@ -49,6 +50,35 @@ public class ChunkRegions
         foreach(string save in chunkColumnsSave){
             chunkColumns.Add(ChunkColumn.JsonToChunkColumn(save));
         }
+    }
+
+    public WorldPos GetPos(){
+        return regionPos;
+    }
+
+    public static WorldPos GetRegionPos(WorldPos chunkPos){
+        
+
+        int x = chunkPos.xi;
+        int z = chunkPos.zi;
+
+        int xi = x / regionSize;
+        int zi = z / regionSize;
+
+        int Xi = xi * regionSize;
+        int Zi = zi * regionSize;
+
+        return new WorldPos(Xi, 0, Zi);
+    }
+
+    public ChunkColumn GetChunkColumn(WorldPos pos){
+        foreach(ChunkColumn col in chunkColumns){
+            if(col.columnPos.Equals(pos)){
+                col.loaded = true;
+                return col;
+            }
+        }
+        return null;
     }
 
     

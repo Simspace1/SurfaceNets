@@ -54,7 +54,16 @@ public class Columns
     }
 
     public void CreateChunkColumn(){
-        chunkColumn = new ChunkColumn(this);
+        ChunkColumn col = GetChunkColumnFromRegion(pos);
+        if(col != null && col.columnPos.Equals(pos)){
+            col.world = world;
+            col.col = this;
+            chunkColumn = col;
+        }
+        else{
+            chunkColumn = new ChunkColumn(this);
+        }
+        
     }
 
     public void RenderEndChunkColumn(){
@@ -110,5 +119,30 @@ public class Columns
         if(this.gen == null){
             this.gen = gen;
         }
+    }
+
+
+    private ChunkRegions GetRegions(WorldPos pos){
+        WorldPos regionPos = ChunkRegions.GetRegionPos(pos);
+        ChunkRegions chunkRegion = null;
+
+        if(!world.purgeSave){
+            chunkRegion = world.GetChunkRegions(regionPos);
+        }
+        
+        if(chunkRegion == null){
+            chunkRegion = SaveManager.LoadChunkRegion(regionPos);
+            if(chunkRegion == null){
+                chunkRegion = new ChunkRegions(regionPos);
+            }
+            world.AddChunkRegions(chunkRegion);
+        }
+
+        return chunkRegion;
+    }
+
+    private ChunkColumn GetChunkColumnFromRegion(WorldPos pos){
+        ChunkRegions region = GetRegions(pos);
+        return region.GetChunkColumn(pos);
     }
 }
