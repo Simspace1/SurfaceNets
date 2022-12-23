@@ -57,6 +57,14 @@ public class Chunk : MonoBehaviour
 
     static bool splatter = false;
 
+    // [HideInInspector]
+    // [System.NonSerialized]
+    // public bool created = false;
+
+    // [HideInInspector]
+    // [System.NonSerialized]
+    // public bool creating = false;
+
     [System.Serializable]
     private struct VoxelList{
         public List<Voxel> voxels;

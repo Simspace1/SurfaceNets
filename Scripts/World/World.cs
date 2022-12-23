@@ -245,7 +245,10 @@ public class World : MonoBehaviour
                 chunkUpdateRemove.Add(chunk);
                 continue;
             }
-            if(chunk.updating && i <= maxChunkUpdates){
+            // else if(){
+
+            // }
+            else if(chunk.updating && i <= maxChunkUpdates){
                 if(chunk.CheckUpdateTh()){
                     i++;
                     continue;
@@ -316,6 +319,9 @@ public class World : MonoBehaviour
 
         chunkColumn.chunks.Add(newChunk);
 
+        if(chunkColumn.rendered || chunkColumn.created){
+            chunkColumn.col.gen.ChunkGenC2(newChunk);
+        }
         // newChunk = chunkColumn.col.gen.ChunkGenC2(newChunk);
 
         newChunk.update = true;
