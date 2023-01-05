@@ -142,6 +142,10 @@ public class WorldPos
         this.yi = Mathf.FloorToInt(y/Chunk.voxelSize);
         this.zi = Mathf.FloorToInt(z/Chunk.voxelSize);
     }
+
+    public RegionPos GetRegion(){
+        return new RegionPos(xi/RegionCol.regionVoxels,yi/RegionCol.regionVoxels,zi/RegionCol.regionVoxels);
+    }
     
 }
 

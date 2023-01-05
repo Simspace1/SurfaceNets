@@ -23,14 +23,18 @@ public class World : MonoBehaviour
     private GameObject chunksContainer;
 
 
-    static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
+    public static WorldPosEqualityComparer worldPosEqC = new WorldPosEqualityComparer();
+    public static RegionPosEqualityComparer regionPosEqualityComparer = new RegionPosEqualityComparer();
+    public static RegionPosColumnEqualityComparer regionPosColumnEqualityComparer = new RegionPosColumnEqualityComparer();
+
+    private Dictionary<RegionPos, RegionCol> regionsColumns = new Dictionary<RegionPos, RegionCol>(regionPosColumnEqualityComparer);
 
 
-    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
+    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(worldPosEqC);
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
-    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>(WorldPosEqC);
+    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>(worldPosEqC);
 
     // private static float bottomWorldHeight = -1600;
 
@@ -43,6 +47,10 @@ public class World : MonoBehaviour
 
     public TerrainGen2 gen {get; private set;}
 
+
+
+    // TEST VARS
+    RegionCol regionCol;
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +70,9 @@ public class World : MonoBehaviour
         }
 
 
+        //TEST CODE
+        regionCol = new RegionCol(new RegionPos(0,0,0));
+        
         
 
         // Stopwatch stopwatch = new Stopwatch();
@@ -76,6 +87,10 @@ public class World : MonoBehaviour
     {
         if (chunkUpdates.Count == 0){
             return;
+        }
+
+        if(regionCol.generated){
+            print("test");
         }
 
 
