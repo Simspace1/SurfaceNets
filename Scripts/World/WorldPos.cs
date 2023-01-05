@@ -146,6 +146,14 @@ public class WorldPos
     public RegionPos GetRegion(){
         return new RegionPos(xi/RegionCol.regionVoxels,yi/RegionCol.regionVoxels,zi/RegionCol.regionVoxels);
     }
+
+    new public string ToString(){
+        return x+"-"+y+"-"+z;
+    }
+
+    public string ToIntString(){
+        return xi+"-"+yi+"-"+zi;
+    }
     
 }
 

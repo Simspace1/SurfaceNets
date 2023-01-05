@@ -52,6 +52,8 @@ public class World : MonoBehaviour
     // TEST VARS
     RegionCol regionCol;
 
+    // Stopwatch stopwatch;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,8 +73,11 @@ public class World : MonoBehaviour
 
 
         //TEST CODE
+        // stopwatch = new Stopwatch();
+        // stopwatch.Start();
         regionCol = new RegionCol(new RegionPos(0,0,0));
-        
+        // stopwatch.Stop();
+        // print("test " + stopwatch.ElapsedMilliseconds);
         
 
         // Stopwatch stopwatch = new Stopwatch();
@@ -90,7 +95,7 @@ public class World : MonoBehaviour
         }
 
         if(regionCol.generated){
-            print("test");
+            print("test ");
         }
 
 

@@ -37,6 +37,23 @@ public class RegionPos
         return this;
     }
 
+    public bool InColumn(RegionPos pos){
+        if(x == pos.x && z == pos.z){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public string ToColString(){
+        return x+"_"+z;
+    }
+
+    new public string ToString(){
+        return x+"_"+y+"_"+z;
+    }
+
 }
 
 public class RegionPosEqualityComparer : IEqualityComparer<RegionPos>

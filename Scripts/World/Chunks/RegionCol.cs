@@ -21,19 +21,22 @@ public class RegionCol
     public bool generated {get; private set;} = false;
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
+    public bool loaded {get; private set;} = false;
+
 
     public RegionCol(RegionPos pos){
         regionPos = pos.GetColumn();
-        GenerateHeights();
+        GenerateRegion();
     }
 
     public RegionCol(WorldPos pos){
         regionPos = pos.GetRegion().GetColumn();
-        GenerateHeights();
+        GenerateRegion();
     }
 
-    private void GenerateHeights(){
+    private void GenerateRegion(){
         ThreadPool.QueueUserWorkItem(Generate, this);
+        // Generate(this);
     }
 
     private void Generate(object state){
@@ -56,8 +59,10 @@ public class RegionCol
             }
         }
 
-        Debug.Assert(gens.Count == regionChunks* regionChunks, "RegionColumn "+ regionPos.x + "_"+ regionPos.z+ "has generated " + gens.Count + "ColumnGens instead of " + regionChunks*regionChunks);
-        Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+ regionPos.x + "_"+ regionPos.z+ "has not generated minMax heights");
+        Debug.Assert(gens.Count == regionChunks* regionChunks, "RegionColumn "+ regionPos.ToColString()+ "has generated " + gens.Count + " ColumnGens instead of " + regionChunks*regionChunks);
+        Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+regionPos.ToColString()+ "has not generated minMax heights");
+
+        CreateGenRegions();
 
         generated = true;
     }
@@ -80,16 +85,36 @@ public class RegionCol
     }
 
     public ChunkRegion2 GetRegion(RegionPos pos){
+        if(!regionPos.InColumn(pos) || !regionPos.InColumn(pos)){
+            return null;
+        }
         ChunkRegion2 region = null;
         regions.TryGetValue(pos,out region);
         return region;
     }
 
     public void AddRegion(ChunkRegion2 region){
-        if(destroying || destroyed)
+        if(destroying || destroyed || !regionPos.InColumn(region.regionPos))
             return;
         regionList.Add(region.regionPos);
         regions.Add(region.regionPos,region);
+    }
+
+    private void CreateGenRegions(){
+        if(!loaded){
+            int yMin = Mathf.FloorToInt(minMax[0]/regionSize);
+            int yMax = Mathf.FloorToInt(minMax[1]/regionSize);
+
+            RegionPos pos = null;
+            for(int i = yMin; i <= yMax; i++){
+                pos = new RegionPos(regionPos.x,i,regionPos.z);
+                ChunkRegion2 region = new ChunkRegion2(pos, this);
+                AddRegion(region);
+            }
+        }
+        else{
+            throw new NotImplementedException("Loaded generation of regions not yet implemented");
+        }
     }
 
 
