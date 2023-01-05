@@ -109,6 +109,7 @@ public class RegionCol
             for(int i = yMin; i <= yMax; i++){
                 pos = new RegionPos(regionPos.x,i,regionPos.z);
                 ChunkRegion2 region = new ChunkRegion2(pos, this);
+                region.SetGenTerrain(true);
                 AddRegion(region);
             }
         }

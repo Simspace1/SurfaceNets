@@ -14,6 +14,7 @@ public class ChunkRegion2
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
+    public bool GenTerrain {get; private set;} = false;
 
     public ChunkRegion2(RegionPos pos, RegionCol regionCol){
         Debug.Assert(regionCol.regionPos.InColumn(pos), "Created a region "+ pos.ToString() +" in the Wrong RegionColumn " + regionCol.regionPos.ToColString());
@@ -58,6 +59,10 @@ public class ChunkRegion2
         if(destroying || destroyed || !col.columnPos.GetRegion().Equals(regionPos))
             return;
         columns.Add(col.columnPos,col);
+    }
+
+    public void SetGenTerrain(bool val){
+        GenTerrain = val;
     }
 
    
