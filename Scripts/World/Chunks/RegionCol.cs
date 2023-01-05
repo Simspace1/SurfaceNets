@@ -56,6 +56,9 @@ public class RegionCol
             }
         }
 
+        Debug.Assert(gens.Count == regionChunks* regionChunks, "RegionColumn "+ regionPos.x + "_"+ regionPos.z+ "has generated " + gens.Count + "ColumnGens instead of " + regionChunks*regionChunks);
+        Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+ regionPos.x + "_"+ regionPos.z+ "has not generated minMax heights");
+
         generated = true;
     }
 
