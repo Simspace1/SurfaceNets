@@ -108,12 +108,12 @@ public static class SaveManager
     // }
 
     public static bool CheckChunkRegionExist(WorldPos regionPos){
-        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks" + "Region_"+regionPos.xi/ChunkRegions.regionSize+"_"+regionPos.zi/ChunkRegions.regionSize+".sav";
+        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks/" + "Region_"+regionPos.xi/ChunkRegions.regionSize+"_"+regionPos.zi/ChunkRegions.regionSize+".sav";
         return File.Exists(path);
     }
 
     public static ChunkRegions LoadChunkRegion(WorldPos regionPos){
-        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks" + "Region_"+regionPos.xi/ChunkRegions.regionSize+"_"+regionPos.zi/ChunkRegions.regionSize+".sav";
+        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks/" + "Region_"+regionPos.xi/ChunkRegions.regionSize+"_"+regionPos.zi/ChunkRegions.regionSize+".sav";
         if(File.Exists(path)){
             return ChunkRegions.JsonToRegion(File.ReadAllText(path));
         }
@@ -123,7 +123,11 @@ public static class SaveManager
     }
 
     public static void SaveChunkRegion(ChunkRegions region){
-        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks" + "Region_"+region.GetPos().xi/ChunkRegions.regionSize+"_"+region.GetPos().zi/ChunkRegions.regionSize+".sav";
+        string path = Application.persistentDataPath + "/saves/" + World.GetWorld().GetWorldName() + "/Dim1/Chunks/" ;
+        if(!Directory.Exists(path)){
+            Directory.CreateDirectory(path);
+        }
+        path += "Region_"+region.GetPos().xi/ChunkRegions.regionSize+"_"+region.GetPos().zi/ChunkRegions.regionSize+".sav";
         string save = region.RegionToJson();
         File.WriteAllText(path,save);
     }

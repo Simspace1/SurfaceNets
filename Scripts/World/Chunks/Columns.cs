@@ -12,6 +12,8 @@ public class Columns
 
     public bool updating = false;
 
+    public ChunkRegions region;
+
     public Columns(World world, WorldPos pos, ColumnGen gen){
         this.world = world;
         this.pos = pos;
@@ -123,22 +125,7 @@ public class Columns
 
 
     private ChunkRegions GetRegions(WorldPos pos){
-        WorldPos regionPos = ChunkRegions.GetRegionPos(pos);
-        ChunkRegions chunkRegion = null;
-
-        if(!world.purgeSave){
-            chunkRegion = world.GetChunkRegions(regionPos);
-        }
-        
-        if(chunkRegion == null){
-            chunkRegion = SaveManager.LoadChunkRegion(regionPos);
-            if(chunkRegion == null){
-                chunkRegion = new ChunkRegions(regionPos);
-            }
-            world.AddChunkRegions(chunkRegion);
-        }
-
-        return chunkRegion;
+        return ChunkRegions.GetRegions(pos);
     }
 
     private ChunkColumn GetChunkColumnFromRegion(WorldPos pos){

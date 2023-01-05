@@ -29,20 +29,34 @@ public class ChunkRegions
 
     public static ChunkRegions JsonToRegion(string save){
         ChunkRegions region = JsonUtility.FromJson<ChunkRegions>(save);
+        region = FixPos(region);
         region.RevertColumns();
 
         return region;
     }
 
+    private static ChunkRegions FixPos(ChunkRegions region){
+        region.regionPos.FixfloatPos();
+        foreach(WorldPos pos in region.columnsPos){
+            pos.FixfloatPos();
+        }
+        return region;
+    }
+
     public string RegionToJson(){
+        foreach(ChunkColumn col in chunkColumns){
+            chunkColumnsSave.Add(col.ChunkColumnToJSON());
+        }
         return JsonUtility.ToJson(this);
     }
 
     public void AddChunkColumn(ChunkColumn col){
         columnsPos.Add(col.columnPos);
-        chunkColumnsSave.Add(col.ChunkColumnToJSON());
+        chunkColumns.Add(col);
+        // chunkColumnsSave.Add(col.ChunkColumnToJSON());
         modified = true;
     }
+
 
     private void RevertColumns(){
         chunkColumns = new List<ChunkColumn>();
@@ -74,12 +88,42 @@ public class ChunkRegions
     public ChunkColumn GetChunkColumn(WorldPos pos){
         foreach(ChunkColumn col in chunkColumns){
             if(col.columnPos.Equals(pos)){
-                col.loaded = true;
                 return col;
             }
         }
         return null;
     }
+
+    public static ChunkRegions GetRegions(WorldPos pos){
+        WorldPos regionPos = ChunkRegions.GetRegionPos(pos);
+        ChunkRegions chunkRegion = null;
+
+        World world = World.GetWorld();
+
+        chunkRegion = world.GetChunkRegions(regionPos);
+        
+        if(chunkRegion == null){
+            if(!world.purgeSave){
+                chunkRegion = SaveManager.LoadChunkRegion(regionPos);
+            }
+            if(chunkRegion == null){
+                chunkRegion = new ChunkRegions(regionPos);
+            }
+            world.AddChunkRegions(chunkRegion);
+        }
+
+        return chunkRegion;
+    }
+
+    public bool CheckChunkColumns(WorldPos pos){
+        foreach(WorldPos colPos in columnsPos){
+            if(colPos.Equals(pos)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     
 

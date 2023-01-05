@@ -76,12 +76,17 @@ public class ChunkColumn
     }
 
     public void CreateStart2(){
-        if(loaded){
-            data.ReCreateChunks(this);
-        }
-        else{
-            chunks = world.CreateChunkColumn(chunkColumn);
-        }
+        // if(loaded){
+        //     data.ReCreateChunks(this);
+
+        // }
+        // else{
+        chunks = world.CreateChunkColumn(this);
+        
+        // if(loaded){
+        //     JSONToChunk();
+        // }
+        // }
         // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
         creating2 = true;
         createTh2 = true;
@@ -131,13 +136,19 @@ public class ChunkColumn
 
     private void Create(object state){
         
-        if(world.GetWorldData().Contains(columnPos)){
-            loaded = true;
+        // if(world.GetWorldData().Contains(columnPos)){
+        //     loaded = true;
+        //     if(col.gen == null){
+        //         col.SetGen(world.gen.GenerateColumnGen(columnPos));
+        //     }
+        //     data = SaveManager.LoadChunkColumn(this);
+        //     data.Revert1(this);
+        // }
+        
+        if(loaded){
             if(col.gen == null){
                 col.SetGen(world.gen.GenerateColumnGen(columnPos));
             }
-            data = SaveManager.LoadChunkColumn(this);
-            data.Revert1(this);
         }
         else{
             if(col.gen == null){
@@ -159,7 +170,8 @@ public class ChunkColumn
 
     private void Create2(object state){
         if(loaded){
-            data.Revert2(this);
+            // data.Revert2(this);
+            JSONToChunk();
         }
         else{
             foreach(Chunk chunk in chunks){
@@ -171,26 +183,26 @@ public class ChunkColumn
 
 
     public void Render(){
-        if(loaded){
-            foreach(Chunk chunk in chunks){
-                if(chunk.meshData !=null){
-                    chunk.RenderMesh(chunk.meshData);
-                }
-                else{
-                    world.AddChunkUpdate(chunk);
-                    chunk.update = true;
-                }
-            }
-            rendered = true;
-            loaded = false;
-        }        
-        else{
+        // if(loaded){
+        //     foreach(Chunk chunk in chunks){
+        //         if(chunk.meshData !=null){
+        //             chunk.RenderMesh(chunk.meshData);
+        //         }
+        //         else{
+        //             world.AddChunkUpdate(chunk);
+        //             chunk.update = true;
+        //         }
+        //     }
+        //     rendered = true;
+        //     loaded = false;
+        // }        
+        // else{
             foreach(Chunk chunk in chunks){
                 world.AddChunkUpdate(chunk);
                 chunk.update = true;
             }
             rendered = true;
-        }
+        // }
     }
 
     public bool CheckRendered(){
@@ -262,7 +274,27 @@ public class ChunkColumn
     public static ChunkColumn JsonToChunkColumn(string save){
         ChunkColumn col = JsonUtility.FromJson<ChunkColumn>(save);
         col.loaded = true;
+        col = FixPos(col);
         return col;
+    }
+
+    private static ChunkColumn FixPos(ChunkColumn col){
+        col.columnPos.FixfloatPos();
+        foreach(WorldPos pos in col.chunkColumn){
+            pos.FixfloatPos();
+        }
+        return col;
+    }
+
+    private void JSONToChunk(){
+        string[] save = saveChunks.ToArray();
+
+        int i = 0;
+        foreach(Chunk chunk in chunks){
+            chunk.JSONToChunk(save[i]);
+            i++;
+        }
+
     }
 
 }

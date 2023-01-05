@@ -30,7 +30,7 @@ public class World : MonoBehaviour
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
 
-    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>();
+    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>(WorldPosEqC);
 
     // private static float bottomWorldHeight = -1600;
 
@@ -91,7 +91,7 @@ public class World : MonoBehaviour
     }
 
     void OnDestroy(){
-        SaveAll();
+        // SaveAndQuit();
     }
 
     public void SaveAll(){
@@ -101,6 +101,24 @@ public class World : MonoBehaviour
             }  
         }
         SaveManager.SaveWorld(this);
+    }
+
+    public void SaveAndQuit(){
+        foreach(var regions in chunkRegions){
+            if(regions.Value.modified){
+                SaveManager.SaveChunkRegion(regions.Value);
+                regions.Value.modified = false;
+            }
+        }
+    }
+
+    public void Save(){
+        foreach(var regions in chunkRegions){
+            if(regions.Value.modified){
+                SaveManager.SaveChunkRegion(regions.Value);
+                regions.Value.modified = false;                
+            }
+        }
     }
 
     public static World GetWorld(){
@@ -320,6 +338,7 @@ public class World : MonoBehaviour
         newChunk.SetWorld(this);
 
         chunkColumn.chunks.Add(newChunk);
+        newChunk.col = chunkColumn;
 
         if(chunkColumn.rendered || chunkColumn.created){
             chunkColumn.col.gen.ChunkGenC2(newChunk);
@@ -339,20 +358,23 @@ public class World : MonoBehaviour
         newChunk.SetPos(chunkData.pos);
         newChunk.SetWorld(this);
 
+        newChunk.col = chunkColumn;
+
         chunkColumn.chunks.Add(newChunk);
     }
 
 
 
-    public List<Chunk> CreateChunkColumn(List<WorldPos> column){
+    public List<Chunk> CreateChunkColumn(ChunkColumn col){
         List<Chunk> chunkList = new List<Chunk>();
 
-        foreach(WorldPos pos in column){
+        foreach(WorldPos pos in col.chunkColumn){
             GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero), chunksContainer.transform) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
             
             newChunk.SetPos(pos);
             newChunk.SetWorld(this);
+            newChunk.col = col;
 
             chunkList.Add(newChunk);
         }
@@ -508,7 +530,11 @@ public class World : MonoBehaviour
             int yi = pos.yi - chunkPos.yi;
             int zi = pos.zi - chunkPos.zi;
             chunk.SetVoxel(new WorldPos(xi,yi,zi), voxel);
+            if(!chunk.col.modified && !chunk.col.col.region.CheckChunkColumns(chunk.GetPos())){
+                chunk.col.col.region.AddChunkColumn(chunk.col);
+            }
             chunk.modified = true;
+            chunk.col.modified = true;
             if(!chunk.update){
                 chunk.update = true;
                 chunkUpdates.Add(chunk);
@@ -532,7 +558,11 @@ public class World : MonoBehaviour
             int yi = pos.yi - chunkPos.yi;
             int zi = pos.zi - chunkPos.zi;
             chunk.SetSDistF(new WorldPos(xi,yi,zi), voxel, sDistf);
+            if(!chunk.col.modified && !chunk.col.col.region.CheckChunkColumns(chunk.GetPos())){
+                chunk.col.col.region.AddChunkColumn(chunk.col);
+            }
             chunk.modified = true;
+            chunk.col.modified = true;
             if(!chunk.update){
                 chunk.update = true;
                 chunkUpdates.Add(chunk);
@@ -635,6 +665,7 @@ public class World : MonoBehaviour
 
     public void AddColumns(WorldPos pos, Columns col){
         chunkColumns.Add(pos, col);
+        col.region = ChunkRegions.GetRegions(pos);
     }
 
     public Columns TryGetColumn(WorldPos pos){

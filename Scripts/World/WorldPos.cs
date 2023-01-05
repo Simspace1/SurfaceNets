@@ -130,6 +130,18 @@ public class WorldPos
     public static float Distance(WorldPos pos1, WorldPos pos2){
         return Mathf.Sqrt(Mathf.Pow(pos1.x-pos2.x,2) + Mathf.Pow(pos1.y-pos2.y,2) + Mathf.Pow(pos1.z-pos2.z,2));
     }
+
+    public void FixfloatPos(){
+        this.x = xi*Chunk.voxelSize;
+        this.y = yi*Chunk.voxelSize;
+        this.z = zi*Chunk.voxelSize;
+    }
+
+    public void FixIntPos(){
+        this.xi = Mathf.FloorToInt(x/Chunk.voxelSize);
+        this.yi = Mathf.FloorToInt(y/Chunk.voxelSize);
+        this.zi = Mathf.FloorToInt(z/Chunk.voxelSize);
+    }
     
 }
 

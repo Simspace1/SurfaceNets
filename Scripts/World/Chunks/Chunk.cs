@@ -57,6 +57,9 @@ public class Chunk : MonoBehaviour
 
     static bool splatter = false;
 
+    [System.NonSerialized]
+    public ChunkColumn col;
+
     // [HideInInspector]
     // [System.NonSerialized]
     // public bool created = false;
@@ -894,6 +897,13 @@ public class Chunk : MonoBehaviour
     public string ChunkToJSON(){
         VoxelsToList();
         return JsonUtility.ToJson(this);
+    }
+
+    public void JSONToChunk(string save){
+        WorldPos pos = this.chunkPos;
+        JsonUtility.FromJsonOverwrite(save,this);
+        this.chunkPos = pos;
+        ListToVoxels();
     }
 
 }
