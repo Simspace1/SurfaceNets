@@ -8,6 +8,8 @@ public class Columns2
 
     public ChunkRegion2 region {get; private set;}
 
+    private Dictionary<WorldPos,Chunk2> chunks = new Dictionary<WorldPos, Chunk2>(World.worldPosEqC);
+
 
 
     public Columns2(WorldPos pos, ChunkRegion2 region){
@@ -16,4 +18,12 @@ public class Columns2
         this.columnPos = pos;
         this.region = region;
     }
+
+
+    
+
+
+
+
+
 }
