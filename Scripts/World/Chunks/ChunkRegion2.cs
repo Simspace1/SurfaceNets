@@ -33,8 +33,8 @@ public class ChunkRegion2
             int z = pos.zi;
 
             WorldPos temp = null;
-            for(int i = x; i < x+RegionCol.regionVoxels; i+= Chunk.chunkVoxels){
-                for(int j = z; j < z+RegionCol.regionVoxels; j+= Chunk.chunkVoxels){
+            for(int i = x; i < x+RegionCol.regionVoxels; i+= Chunk2.chunkVoxels){
+                for(int j = z; j < z+RegionCol.regionVoxels; j+= Chunk2.chunkVoxels){
                     temp = new WorldPos(i,y,j);
                     Columns2 col = new Columns2(temp, this);
                     AddColumns(col);

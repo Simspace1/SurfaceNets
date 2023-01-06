@@ -9,7 +9,9 @@ public class Chunk2 : MonoBehaviour
     public const int chunkVoxels = 16;
     public const float sDistLimit =  1 ;//3f*voxelSize;  // 10000000;
 
-    public WorldPos chunkPos {get; private set;}
+    [SerializeField]
+    private WorldPos pos;
+    public WorldPos chunkPos {get => pos; private set => pos = value;}
 
     public Columns2 column {get; private set;}
 

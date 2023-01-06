@@ -18,6 +18,8 @@ public class World : MonoBehaviour
     [SerializeField]
     private GameObject chunkPrefab;
     [SerializeField]
+    private GameObject chunkPrefab2;
+    [SerializeField]
     private GameObject farChunkColumnPrefab;
     [SerializeField]
     private GameObject chunksContainer;
@@ -367,6 +369,13 @@ public class World : MonoBehaviour
 
         newChunk.update = true;
         chunkUpdates.Add(newChunk);
+    }
+
+    public Chunk2 CreateChunk(WorldPos pos){
+        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
+        Chunk2 newChunk = newChunkObject.GetComponent<Chunk2>();
+
+        return newChunk;
     }
 
 

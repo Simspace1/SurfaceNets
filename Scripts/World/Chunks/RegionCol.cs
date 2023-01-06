@@ -50,8 +50,8 @@ public class RegionCol
         minMax[1] = 0;
 
         WorldPos temp = null;
-        for(int i = x; i < (x+regionVoxels); i += Chunk.chunkVoxels){
-            for(int j = z; j < (z+regionVoxels); j += Chunk.chunkVoxels){
+        for(int i = x; i < (x+regionVoxels); i += Chunk2.chunkVoxels){
+            for(int j = z; j < (z+regionVoxels); j += Chunk2.chunkVoxels){
                 temp = new WorldPos(i,0,j);
                 ColumnGen colGen = gen.GenerateColumnGen(temp);
                 gens.Add(temp,colGen);
