@@ -39,7 +39,7 @@ public class ColumnGen
         x -=chunkPos.xi;
         y -=chunkPos.yi;
         z -=chunkPos.zi;
-        if(Chunk.InRange(x,y,z)){
+        if(Chunk2.InRange(x,y,z)){
             if(replaceBlocks || chunk.GetVoxel(x,y,z) == null){
                 chunk.SetVoxel(x,y,z,voxel);
                 // chunk.sDists[x,y,z] = sDistF;
@@ -62,8 +62,8 @@ public class ColumnGen
     //Start Chunk Gen here Chunk2 version
     public Chunk2 ChunkGenC2(Chunk2 chunk){
         WorldPos chunkPos = chunk.chunkPos;
-        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels; x++){
-            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels; z++){
+        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels+1; x++){
+            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels+1; z++){
                 chunk = ChunkColumnGen(chunk,x,z);
             }
         }

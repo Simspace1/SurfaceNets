@@ -15,7 +15,7 @@ public class Chunk2 : MonoBehaviour
 
     public Columns2 column {get; private set;}
 
-    private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
+    private Voxel [, ,] voxels = new Voxel[chunkVoxels+1,chunkVoxels+1,chunkVoxels+1];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
 
     private MeshFilter filter;
@@ -101,7 +101,7 @@ public class Chunk2 : MonoBehaviour
 
     //Checks if coordinate is in chunk
     public static bool InRange(float x,float y, float z){
-        if(x < 0 || x >= chunkSize || y < 0 || y >= chunkSize || z < 0 || z >= chunkSize){
+        if(x < 0 || x >= chunkSize+voxelSize || y < 0 || y >= chunkSize+voxelSize  || z < 0 || z >= chunkSize+voxelSize ){
             return false;
         }
         return true;
@@ -109,7 +109,7 @@ public class Chunk2 : MonoBehaviour
 
     //WorldPos version of InRange
     public static bool InRange(WorldPos pos){
-        if(pos.xi < 0 || pos.xi >= chunkVoxels || pos.yi < 0 || pos.yi >= chunkVoxels || pos.zi < 0 || pos.zi >= chunkVoxels){
+        if(pos.xi < 0 || pos.xi >= chunkVoxels+1 || pos.yi < 0 || pos.yi >= chunkVoxels+1 || pos.zi < 0 || pos.zi >= chunkVoxels+1){
             return false;
         }
         return true;
@@ -117,7 +117,7 @@ public class Chunk2 : MonoBehaviour
 
     //int version of InRange
     public static bool InRange(int xi,int yi, int zi){
-        if(xi < 0 || xi >= chunkVoxels || yi < 0 || yi >= chunkVoxels || zi < 0 || zi >= chunkVoxels){
+        if(xi < 0 || xi >= chunkVoxels+1 || yi < 0 || yi >= chunkVoxels+1 || zi < 0 || zi >= chunkVoxels+1){
             return false;
         }
         return true;
@@ -384,9 +384,9 @@ public class Chunk2 : MonoBehaviour
     void SurfacePoints(){
         SurfPt surfPt = null;
         surfPts = new Dictionary<Vector3, SurfPt>();
-        for(int y = 0;y <= chunkVoxels; y++){
-            for(int x = 0; x<= chunkVoxels; x++){
-                for(int z = 0; z<=chunkVoxels; z++){
+        for(int y = 0;y < chunkVoxels; y++){
+            for(int x = 0; x< chunkVoxels; x++){
+                for(int z = 0; z<chunkVoxels; z++){
                     surfPt = GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
                     if (surfPt != null){
                         surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);

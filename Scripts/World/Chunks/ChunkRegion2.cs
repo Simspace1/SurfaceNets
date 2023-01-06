@@ -80,8 +80,8 @@ public class ChunkRegion2
 
     //test code for chunk generation
     public void GenerateAllChunks(){
-        ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
-        // GenerateAllChunks(this);
+        // ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
+        GenerateAllChunks(this);
     }
 
     private void GenerateAllChunks(object state){

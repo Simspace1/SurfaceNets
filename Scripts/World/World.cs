@@ -54,6 +54,7 @@ public class World : MonoBehaviour
     // TEST VARS
     RegionCol regionCol;
     bool test = false;
+    bool test1 = false;
 
     Stopwatch stopwatch;
 
@@ -107,9 +108,12 @@ public class World : MonoBehaviour
 
             regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
 
-            // regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
 
             print("test 2 " );
+        }
+        else if(test && !test1){
+            test1 = true;
+            regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
         }
 
 
@@ -384,7 +388,7 @@ public class World : MonoBehaviour
     }
 
     public Chunk2 CreateChunk(WorldPos pos){
-        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
+        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
         Chunk2 newChunk = newChunkObject.GetComponent<Chunk2>();
 
         return newChunk;
