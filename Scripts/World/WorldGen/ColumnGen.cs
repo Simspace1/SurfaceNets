@@ -33,10 +33,35 @@ public class ColumnGen
         }
     }
 
+    // Local code to set voxels Chunk2 version
+    private static void SetVoxel(int x, int y, int z, Voxel voxel, Chunk2 chunk, float sDistF, bool replaceBlocks = false){
+        WorldPos chunkPos = chunk.chunkPos;
+        x -=chunkPos.xi;
+        y -=chunkPos.yi;
+        z -=chunkPos.zi;
+        if(Chunk.InRange(x,y,z)){
+            if(replaceBlocks || chunk.GetVoxel(x,y,z) == null){
+                chunk.SetVoxel(x,y,z,voxel);
+                // chunk.sDists[x,y,z] = sDistF;
+            }
+        }
+    }
+
 
     //Start Chunk Gen here
     public Chunk ChunkGenC2(Chunk chunk){
         WorldPos chunkPos = chunk.GetPos();
+        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels; x++){
+            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels; z++){
+                chunk = ChunkColumnGen(chunk,x,z);
+            }
+        }
+        return chunk;
+    }
+
+    //Start Chunk Gen here Chunk2 version
+    public Chunk2 ChunkGenC2(Chunk2 chunk){
+        WorldPos chunkPos = chunk.chunkPos;
         for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels; x++){
             for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels; z++){
                 chunk = ChunkColumnGen(chunk,x,z);
@@ -71,11 +96,85 @@ public class ColumnGen
 
     }
 
+    //Int version of Chunk Column gen Chunk2 version
+    private Chunk2 ChunkColumnGen(Chunk2 chunk, int xi, int zi){
+
+        // float stoneheight = stoneHeight[xi,zi];
+        // // float MountainsBiome = GetNoise(x,0,z,MountainsBiomeFrequency,MountainsBiomeSize);
+        // float dirtHeight = terrainHeight[xi,zi];
+
+        WorldPos chunkPos = chunk.chunkPos;
+
+        for(int yi = chunkPos.yi+Chunk.chunkVoxels; yi>=chunkPos.yi; yi--){
+            float sDistF = sDistFGen(chunk,xi,yi,zi);
+
+            if (sDistF >0){
+                SetVoxel(xi,yi,zi,new VoxelAir(sDistF),chunk,sDistF);
+            }
+            else{
+                if(chunkPos.y >= 8){
+                     SetVoxel(xi,yi,zi,new VoxelGrass(sDistF),chunk,sDistF);
+                }
+                SetVoxel(xi,yi,zi,new Voxel(sDistF),chunk,sDistF);
+            }
+        }
+        return chunk;
+
+    }
+
     //Main function to generate a Signed distance field at location
     private float sDistFGen(Chunk chunk, int x, int yi, int z){
         float sDistF = 0;
         int xi = x-(chunk.GetPos().xi-1);
         int zi = z-(chunk.GetPos().zi-1);
+
+        float y = yi*Chunk.voxelSize;        
+
+        bool posit = y >=terrainHeight[xi,zi];
+        float height = terrainHeight[xi,zi];
+        float offset = Chunk.voxelSize/2;
+
+        if(!HeightCheck(y,xi,zi,posit,height,offset)){
+            sDistF = y - terrainHeight[xi,zi];
+        }
+        else{
+            List<float> dists= new List<float>();
+            float dely = Mathf.Abs(y - terrainHeight[xi,zi]);
+            
+            for(int xj = xi-1; xj<= xi+1; xj++){
+                for(int zj = zi-1; zj<=zi+1; zj++){
+                    if(xj == xi && zj == zi){
+                        dists.Add(Mathf.Abs(y-terrainHeight[xi,zi]));
+                        continue;
+                    }
+
+                    // if(SingleHeightCheck(y,xj,zj,posit,height,offset)){
+                        dists.Add(Intercept2(dely, y,xi,zi,xj,zj));
+                    // }
+                }
+            }
+
+            float min = 1000;
+            foreach(float dist in dists){
+                if(Mathf.Abs(dist) < min){
+                    min = dist;
+                }
+            }
+ 
+            sDistF = min;
+            if (!posit){
+                sDistF = -sDistF;
+            }
+        }
+
+        return sDistF;
+    }
+
+    //Main function to generate a Signed distance field at location Chunk2 version
+    private float sDistFGen(Chunk2 chunk, int x, int yi, int z){
+        float sDistF = 0;
+        int xi = x-(chunk.chunkPos.xi-1);
+        int zi = z-(chunk.chunkPos.zi-1);
 
         float y = yi*Chunk.voxelSize;        
 

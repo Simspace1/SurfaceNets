@@ -253,6 +253,114 @@ public class Voxel
         return surfPt;
     }
 
+    //int version
+    public SurfPt FindSurfacePoint(Chunk2 chunk,int xi, int yi, int zi){       
+        if(Mathf.Abs(sDistF) >= Chunk.sDistLimit){
+            return null;
+        }
+
+        List<SurfPt> edgePts = new List<SurfPt>();
+
+        //Fetch each of the 8 voxels that limits this cube
+        Voxel voxel000 = this;
+        Voxel voxel100 = chunk.GetVoxel(xi+1,yi,zi);
+        Voxel voxel010 = chunk.GetVoxel(xi,yi+1,zi);
+        Voxel voxel001 = chunk.GetVoxel(xi,yi,zi+1);
+
+        Voxel voxel110 = chunk.GetVoxel(xi+1,yi+1,zi);
+        Voxel voxel101 = chunk.GetVoxel(xi+1,yi,zi+1);
+        Voxel voxel011 = chunk.GetVoxel(xi,yi+1,zi+1);
+        Voxel voxel111 = chunk.GetVoxel(xi+1,yi+1,zi+1);
+
+        // Stopwatch stopWatch = new Stopwatch();
+        // stopWatch.Start();
+
+        // Calculates each of the edges intercept points
+        SurfPt temp;
+        if(!SameSignsDistF(voxel000,voxel100)){
+            temp = SurfaceEdgeIntercept(voxel000,voxel100,xi,yi,zi,Axis.x);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel000,voxel010)){
+            temp = SurfaceEdgeIntercept(voxel000,voxel010,xi,yi,zi,Axis.y);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel000,voxel001)){
+            temp = SurfaceEdgeIntercept(voxel000,voxel001,xi,yi,zi,Axis.z);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel100,voxel110)){
+            temp = SurfaceEdgeIntercept(voxel100,voxel110,xi+1,yi,zi,Axis.y);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel100,voxel101)){
+            temp = SurfaceEdgeIntercept(voxel100,voxel101,xi+1,yi,zi,Axis.z);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel010,voxel110)){
+            temp = SurfaceEdgeIntercept(voxel010,voxel110,xi,yi+1,zi,Axis.x);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel010,voxel011)){
+            temp = SurfaceEdgeIntercept(voxel010,voxel011,xi,yi+1,zi,Axis.z);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel001,voxel101)){
+            temp = SurfaceEdgeIntercept(voxel001,voxel101,xi,yi,zi+1,Axis.x);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel001,voxel011)){
+            temp = SurfaceEdgeIntercept(voxel001,voxel011,xi,yi,zi+1,Axis.y);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel011,voxel111)){
+            temp = SurfaceEdgeIntercept(voxel011,voxel111,xi,yi+1,zi+1,Axis.x);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel110,voxel111)){
+            temp = SurfaceEdgeIntercept(voxel110,voxel111,xi+1,yi+1,zi,Axis.z);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+        if(!SameSignsDistF(voxel101,voxel111)){
+            temp = SurfaceEdgeIntercept(voxel101,voxel111,xi+1,yi,zi+1,Axis.y);
+            if (temp != null)
+                edgePts.Add(temp);
+        }
+
+
+        
+        
+        // stopWatch.Stop();
+        // float temp2 = stopWatch.ElapsedTicks;
+
+        //Variable to count average
+        int edgePtN = edgePts.Count;
+        //if there is no surface point returns null
+        if(edgePtN == 0){
+            return null;
+        }
+
+        //calculates surface point
+        SurfPt surfPt = new SurfPt(0,0,0);
+        for(int i = 0; i < edgePtN; i++){
+            surfPt.Add(edgePts[0]);
+            edgePts.RemoveAt(0);
+        }
+        surfPt.Divide(edgePtN);
+        return surfPt;
+    }
+
     // public SurfPt FindSurfacePoint(Chunkv2 chunk,int xi, int yi, int zi){        
     //     List<SurfPt> edgePts = new List<SurfPt>();
 

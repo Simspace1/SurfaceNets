@@ -53,8 +53,9 @@ public class World : MonoBehaviour
 
     // TEST VARS
     RegionCol regionCol;
+    bool test = false;
 
-    // Stopwatch stopwatch;
+    Stopwatch stopwatch;
 
     // Start is called before the first frame update
     void Start()
@@ -96,8 +97,19 @@ public class World : MonoBehaviour
             return;
         }
 
-        if(regionCol.generated){
+        if(regionCol.generated && !test){
+            test = true;
             print("test ");
+
+            regionCol.GetRegion(new RegionPos(0,0,0)).CreateAllChunks();
+
+            regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
+
+            regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
+
+            // regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
+
+            print("test 2 " );
         }
 
 

@@ -118,5 +118,18 @@ public class RegionCol
         }
     }
 
+    public void CreateRegion(RegionPos pos){
+        if(destroying || destroyed || !regionPos.InColumn(pos))
+            return;
+        ChunkRegion2 region = new ChunkRegion2(pos,this);
+        AddRegion(region);
+    }
+
+    public ColumnGen GetColumnGen(WorldPos pos){
+        ColumnGen gen = null;
+        gens.TryGetValue(pos,out gen);
+        return gen;
+    }
+
 
 }

@@ -20,15 +20,38 @@ public class Columns2
         this.region = region;
     }
 
-
+    // Must be performed in main thread
     public void CreateChunks(){
         int y = columnPos.yi;
 
         WorldPos pos = null;
-        for(int i = y; i < y+RegionCol.regionVoxels; y+=Chunk2.chunkVoxels){
+        for(int i = y; i < y+RegionCol.regionVoxels; i+=Chunk2.chunkVoxels){
             pos = new WorldPos(columnPos.xi,i,columnPos.zi);
             Chunk2 chunk = World.GetWorld().CreateChunk(pos);
+            chunk.SetPos(pos);
+            chunk.SetColumn(this);
             AddChunk(chunk);
+        }
+    }
+
+    public void GenerateChunks(){
+        ColumnGen gen = region.regionCol.GetColumnGen(columnPos);
+        Debug.Assert(gen != null, "Column gen at " + columnPos.ToString() + " is unexpêctedly null");
+
+        foreach(var chunkEntry in chunks){
+            gen.ChunkGenC2(chunkEntry.Value);
+        }
+    }
+
+    public void UpdateChunks(){
+        foreach(var chunkEntry in chunks){
+            chunkEntry.Value.UpdateChunk2(chunkEntry.Value);
+        }
+    }
+
+    public void RenderChunks(){
+        foreach(var chunkEntry in chunks){
+            chunkEntry.Value.RenderMesh();
         }
     }
 
@@ -46,7 +69,7 @@ public class Columns2
         return false;
     }
 
-
+    
 
 
 

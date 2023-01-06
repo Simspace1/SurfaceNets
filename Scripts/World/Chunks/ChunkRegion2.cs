@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
+using System;
 
 public class ChunkRegion2
 {
@@ -15,6 +17,9 @@ public class ChunkRegion2
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
     public bool GenTerrain {get; private set;} = false;
+
+    public bool chunksCreated {get; private set;} = false;
+    public bool chunksGenerated {get; private set;} = false;
 
     public ChunkRegion2(RegionPos pos, RegionCol regionCol){
         Debug.Assert(regionCol.regionPos.InColumn(pos), "Created a region "+ pos.ToString() +" in the Wrong RegionColumn " + regionCol.regionPos.ToColString());
@@ -65,14 +70,42 @@ public class ChunkRegion2
         GenTerrain = val;
     }
 
-   
+    //test code for chunk generation
+    public void CreateAllChunks(){
+        foreach(var colEntry in columns){
+            colEntry.Value.CreateChunks();
+        }
+        chunksCreated = true;
+    }
 
-   
+    //test code for chunk generation
+    public void GenerateAllChunks(){
+        ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
+        // GenerateAllChunks(this);
+    }
 
+    private void GenerateAllChunks(object state){
+        foreach(var colEntry in columns){
+            colEntry.Value.GenerateChunks();
+        }
+        chunksGenerated = true;
+    }
 
-   
-   
+    //test code for chunk updates
+    public void UpdateAllChunks(){
+        // ThreadPool.QueueUserWorkItem(UpdateAllChunks,this);
+        UpdateAllChunks(this);
+    }
 
-   
+    private void UpdateAllChunks(object state){
+        foreach(var colEntry in columns){
+            colEntry.Value.UpdateChunks();
+        }
+    }
 
+    public void RenderAllChunks(){
+        foreach(var colEntry in columns){
+            colEntry.Value.RenderChunks();
+        }
+    }
 }
