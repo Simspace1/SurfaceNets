@@ -62,8 +62,8 @@ public class ColumnGen
     //Start Chunk Gen here Chunk2 version
     public Chunk2 ChunkGenC2(Chunk2 chunk){
         WorldPos chunkPos = chunk.chunkPos;
-        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels+1; x++){
-            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels+1; z++){
+        for (int x = chunkPos.xi ; x<chunkPos.xi+Chunk.chunkVoxels+2; x++){
+            for (int z = chunkPos.zi ; z<chunkPos.zi+Chunk.chunkVoxels+2; z++){
                 chunk = ChunkColumnGen(chunk,x,z);
             }
         }
@@ -105,7 +105,7 @@ public class ColumnGen
 
         WorldPos chunkPos = chunk.chunkPos;
 
-        for(int yi = chunkPos.yi+Chunk.chunkVoxels; yi>=chunkPos.yi; yi--){
+        for(int yi = chunkPos.yi+Chunk.chunkVoxels+1; yi>=chunkPos.yi; yi--){
             float sDistF = sDistFGen(chunk,xi,yi,zi);
 
             if (sDistF >0){
