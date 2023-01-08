@@ -255,7 +255,7 @@ public class Voxel
 
     //int version
     public SurfPt FindSurfacePoint(Chunk2 chunk,int xi, int yi, int zi, int scale = 1){       
-        if(Mathf.Abs(sDistF) >= Chunk2.sDistLimit){
+        if(Mathf.Abs(sDistF) >= Chunk2.sDistLimit*scale){
             return null;
         }
 
@@ -274,66 +274,66 @@ public class Voxel
 
         // Stopwatch stopWatch = new Stopwatch();
         // stopWatch.Start();
-
+        // scale = 1;
         // Calculates each of the edges intercept points
         SurfPt temp;
         if(!SameSignsDistF(voxel000,voxel100)){
-            temp = SurfaceEdgeIntercept(voxel000,voxel100,xi,yi,zi,Axis.x);
+            temp = SurfaceEdgeIntercept(voxel000,voxel100,xi,yi,zi,Axis.x,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel000,voxel010)){
-            temp = SurfaceEdgeIntercept(voxel000,voxel010,xi,yi,zi,Axis.y);
+            temp = SurfaceEdgeIntercept(voxel000,voxel010,xi,yi,zi,Axis.y,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel000,voxel001)){
-            temp = SurfaceEdgeIntercept(voxel000,voxel001,xi,yi,zi,Axis.z);
+            temp = SurfaceEdgeIntercept(voxel000,voxel001,xi,yi,zi,Axis.z,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel100,voxel110)){
-            temp = SurfaceEdgeIntercept(voxel100,voxel110,xi+1,yi,zi,Axis.y);
+            temp = SurfaceEdgeIntercept(voxel100,voxel110,xi+scale,yi,zi,Axis.y,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel100,voxel101)){
-            temp = SurfaceEdgeIntercept(voxel100,voxel101,xi+1,yi,zi,Axis.z);
+            temp = SurfaceEdgeIntercept(voxel100,voxel101,xi+scale,yi,zi,Axis.z,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel010,voxel110)){
-            temp = SurfaceEdgeIntercept(voxel010,voxel110,xi,yi+1,zi,Axis.x);
+            temp = SurfaceEdgeIntercept(voxel010,voxel110,xi,yi+scale,zi,Axis.x,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel010,voxel011)){
-            temp = SurfaceEdgeIntercept(voxel010,voxel011,xi,yi+1,zi,Axis.z);
+            temp = SurfaceEdgeIntercept(voxel010,voxel011,xi,yi+scale,zi,Axis.z,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel001,voxel101)){
-            temp = SurfaceEdgeIntercept(voxel001,voxel101,xi,yi,zi+1,Axis.x);
+            temp = SurfaceEdgeIntercept(voxel001,voxel101,xi,yi,zi+scale,Axis.x,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel001,voxel011)){
-            temp = SurfaceEdgeIntercept(voxel001,voxel011,xi,yi,zi+1,Axis.y);
+            temp = SurfaceEdgeIntercept(voxel001,voxel011,xi,yi,zi+scale,Axis.y,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel011,voxel111)){
-            temp = SurfaceEdgeIntercept(voxel011,voxel111,xi,yi+1,zi+1,Axis.x);
+            temp = SurfaceEdgeIntercept(voxel011,voxel111,xi,yi+scale,zi+scale,Axis.x,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel110,voxel111)){
-            temp = SurfaceEdgeIntercept(voxel110,voxel111,xi+1,yi+1,zi,Axis.z);
+            temp = SurfaceEdgeIntercept(voxel110,voxel111,xi+scale,yi+scale,zi,Axis.z,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
         if(!SameSignsDistF(voxel101,voxel111)){
-            temp = SurfaceEdgeIntercept(voxel101,voxel111,xi+1,yi,zi+1,Axis.y);
+            temp = SurfaceEdgeIntercept(voxel101,voxel111,xi+scale,yi,zi+scale,Axis.y,scale);
             if (temp != null)
                 edgePts.Add(temp);
         }
@@ -471,14 +471,14 @@ public class Voxel
         return null;
     }
 
-    SurfPt SurfaceEdgeIntercept(Voxel v1, Voxel v2, int xi, int yi, int zi, Axis axis){
+    SurfPt SurfaceEdgeIntercept(Voxel v1, Voxel v2, int xi, int yi, int zi, Axis axis, int scale = 1){
         switch(axis){
             case Axis.x:
-                return new SurfPt((1-v1.sDistF/(v1.sDistF-v2.sDistF))*(xi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((xi+1 )*Chunk.voxelSize),yi*Chunk.voxelSize,zi*Chunk.voxelSize);
+                return new SurfPt((1-v1.sDistF/(v1.sDistF-v2.sDistF))*(xi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((xi+scale )*Chunk.voxelSize),yi*Chunk.voxelSize,zi*Chunk.voxelSize);
             case Axis.y:
-                return new SurfPt(xi*Chunk.voxelSize,(1-v1.sDistF/(v1.sDistF-v2.sDistF))*(yi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((yi+1)*Chunk.voxelSize),zi*Chunk.voxelSize);
+                return new SurfPt(xi*Chunk.voxelSize,(1-v1.sDistF/(v1.sDistF-v2.sDistF))*(yi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((yi+scale)*Chunk.voxelSize),zi*Chunk.voxelSize);
             case Axis.z:
-                return new SurfPt(xi*Chunk.voxelSize,yi*Chunk.voxelSize,(1-v1.sDistF/(v1.sDistF-v2.sDistF))*(zi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((zi+1)*Chunk.voxelSize));
+                return new SurfPt(xi*Chunk.voxelSize,yi*Chunk.voxelSize,(1-v1.sDistF/(v1.sDistF-v2.sDistF))*(zi*Chunk.voxelSize)+(v1.sDistF/(v1.sDistF-v2.sDistF))*((zi+scale)*Chunk.voxelSize));
         }
         return null;
     }

@@ -106,10 +106,13 @@ public class World : MonoBehaviour
 
             regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
+            stopwatch.Stop();
 
 
-            print("test 2 " );
+            print("test 2 " + stopwatch.ElapsedMilliseconds + " ms, " +stopwatch.ElapsedTicks + " ticks" );
         }
         else if(test && !test1){
             test1 = true;

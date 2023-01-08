@@ -144,6 +144,14 @@ public class Chunk2 : MonoBehaviour
         chunk.UpdateChunk(chunk, voxelSize*2);
     }
 
+    public void UpdateThird(object stateIn){
+        Chunk2 chunk = (Chunk2) stateIn;
+        //Updates surface points 
+        chunk.SurfacePointsThird(chunk);
+        //Makes mesh
+        chunk.UpdateChunk(chunk, voxelSize*3);
+    }
+
      // Main code for updating and calculating surface of the Chunk
     private void UpdateChunk(Chunk2 chunk, float voxelSize1){
         float voxelSize = voxelSize1;
@@ -421,6 +429,22 @@ public class Chunk2 : MonoBehaviour
             for(int x = 0; x< chunkVoxels; x+=2){
                 for(int z = 0; z< chunkVoxels; z+=2){
                     surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,2);
+                    if (surfPt != null){
+                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+                    }
+                }
+            }
+        }
+    }
+
+    //Calculates Surface points Dictionary
+    void SurfacePointsThird(Chunk2 chunk){
+        SurfPt surfPt = null;
+        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
+        for(int y = 0;y < chunkVoxels-1; y+=3){
+            for(int x = 0; x< chunkVoxels-1; x+=3){
+                for(int z = 0; z< chunkVoxels-1; z+=3){
+                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,3);
                     if (surfPt != null){
                         chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
                     }
