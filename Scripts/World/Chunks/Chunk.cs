@@ -17,7 +17,7 @@ public class Chunk : MonoBehaviour
     public const int chunkSize = 8;
     public const float voxelSize = 0.5f;
     public const int chunkVoxels = 16;
-    public const float sDistLimit =  1 ;//3f*voxelSize;  // 10000000;
+    public const float sDistLimit =  2 ;//3f*voxelSize;  // 10000000;
     
     // [SerializeField]
     private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];

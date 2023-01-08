@@ -254,8 +254,8 @@ public class Voxel
     }
 
     //int version
-    public SurfPt FindSurfacePoint(Chunk2 chunk,int xi, int yi, int zi){       
-        if(Mathf.Abs(sDistF) >= Chunk.sDistLimit){
+    public SurfPt FindSurfacePoint(Chunk2 chunk,int xi, int yi, int zi, int scale = 1){       
+        if(Mathf.Abs(sDistF) >= Chunk2.sDistLimit){
             return null;
         }
 
@@ -263,14 +263,14 @@ public class Voxel
 
         //Fetch each of the 8 voxels that limits this cube
         Voxel voxel000 = this;
-        Voxel voxel100 = chunk.GetVoxel(xi+1,yi,zi);
-        Voxel voxel010 = chunk.GetVoxel(xi,yi+1,zi);
-        Voxel voxel001 = chunk.GetVoxel(xi,yi,zi+1);
+        Voxel voxel100 = chunk.GetVoxel(xi+scale,yi,zi);
+        Voxel voxel010 = chunk.GetVoxel(xi,yi+scale,zi);
+        Voxel voxel001 = chunk.GetVoxel(xi,yi,zi+scale);
 
-        Voxel voxel110 = chunk.GetVoxel(xi+1,yi+1,zi);
-        Voxel voxel101 = chunk.GetVoxel(xi+1,yi,zi+1);
-        Voxel voxel011 = chunk.GetVoxel(xi,yi+1,zi+1);
-        Voxel voxel111 = chunk.GetVoxel(xi+1,yi+1,zi+1);
+        Voxel voxel110 = chunk.GetVoxel(xi+scale,yi+scale,zi);
+        Voxel voxel101 = chunk.GetVoxel(xi+scale,yi,zi+scale);
+        Voxel voxel011 = chunk.GetVoxel(xi,yi+scale,zi+scale);
+        Voxel voxel111 = chunk.GetVoxel(xi+scale,yi+scale,zi+scale);
 
         // Stopwatch stopWatch = new Stopwatch();
         // stopWatch.Start();

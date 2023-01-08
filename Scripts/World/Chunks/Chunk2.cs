@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Chunk2 : MonoBehaviour
 {
     public const int chunkSize = 8;
     public const float voxelSize = 0.5f;
     public const int chunkVoxels = 16;
-    public const float sDistLimit =  1 ;//3f*voxelSize;  // 10000000;
+    public const float sDistLimit =  2 ;//3f*voxelSize;  // 10000000;
 
     [SerializeField]
     private WorldPos pos;
@@ -123,13 +124,25 @@ public class Chunk2 : MonoBehaviour
         return true;
     }
 
-     // Main code for updating and calculating surface of the Chunk
-    public void UpdateChunk2(object stateIn){
+    public void UpdateFull(object stateIn){
+        Chunk2 chunk = (Chunk2) stateIn;
+        //Updates surface points 
+        chunk.SurfacePoints(chunk);
+        //Makes mesh
+        chunk.UpdateChunk(chunk,voxelSize);
+    }
 
-        Chunk2 state = (Chunk2) stateIn;
-        //Updates surface points                   
-        state.SurfacePoints();
-        
+    public void UpdateHalf(object stateIn){
+        Chunk2 chunk = (Chunk2) stateIn;
+        //Updates surface points 
+        chunk.SurfacePointsHalf(chunk);
+        //Makes mesh
+        chunk.UpdateChunk(chunk, voxelSize*2);
+    }
+
+     // Main code for updating and calculating surface of the Chunk
+    private void UpdateChunk(Chunk2 chunk, float voxelSize1){
+        float voxelSize = voxelSize1;
         MyMesh meshData = new MyMesh();
         meshData.useRenderDataForCol = true;
 
@@ -140,19 +153,19 @@ public class Chunk2 : MonoBehaviour
         Voxel voxel0, voxel1, voxel2, temp, temp2;
         // float vS = voxelSize;
         SurfPt surfpt1,surfpt2,surfpt3;
-        foreach (KeyValuePair<Vector3, SurfPt> entry in state.surfPts){
+        foreach (KeyValuePair<Vector3, SurfPt> entry in chunk.surfPts){
             //Veryfy there is a value at the Key location in dictionary
             if(entry.Value != null){
                 //Sets values for key and a voxel for easier access and reuse
                 float x = entry.Key.x, y = entry.Key.y, z = entry.Key.z;
-                voxel0 = state.GetVoxel(x,y,z);
-                voxel2 = state.GetVoxel(x+voxelSize,y+voxelSize,z+voxelSize);
+                voxel0 = chunk.GetVoxel(x,y,z);
+                voxel2 = chunk.GetVoxel(x+voxelSize,y+voxelSize,z+voxelSize);
 
                 //Verifys if the mesh is supposed to be formed in case of close surface points
-                voxel1 = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                voxel1 = chunk.GetVoxel(x+voxelSize,y,z+voxelSize);
                 if(!Voxel.SameSignsDistF(voxel1,voxel2)){
                     //Checks if there are more surface points to form an mesh on the xz plane
-                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z+voxelSize),out surfpt3)){
+                    if(chunk.surfPts.TryGetValue(new Vector3(x+voxelSize1,y,z),out surfpt1) && chunk.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize1),out surfpt2) && chunk.surfPts.TryGetValue(new Vector3(x+voxelSize1,y,z+voxelSize1),out surfpt3)){
                         //Calculates the booleans to check weather there are connecting meshes on all sides
                         // side1 = Contunity(x-vS,y,z, x-vS,y,z+vS) || Contunity(x,y+vS,z, x,y+vS,z+vS) || Contunity(x,y-vS,z, x,y-vS,z+vS);
                         // side2 = Contunity(x,y,z+2*vS, x+vS,y,z+2*vS) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y-vS,z+vS, x+vS,y-vS,z+vS);
@@ -178,14 +191,14 @@ public class Chunk2 : MonoBehaviour
                             meshData.uv.AddRange(voxel0.FaceUVs());
 
                             if(splatter){
-                                temp = state.GetVoxel(x+voxelSize,y,z);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y,z+voxelSize);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv4);
                             }
                         }
                         else{
@@ -204,22 +217,22 @@ public class Chunk2 : MonoBehaviour
                             
 
                             if(splatter){
-                                temp = state.GetVoxel(x+voxelSize,y,z);
-                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y,z+voxelSize);
-                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
-                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv4);
                             }
                         }
                     }
                 }
                 //Repeat same code but for xy plane mesh
-                voxel1 = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                voxel1 = chunk.GetVoxel(x+voxelSize,y+voxelSize,z);
                 if(!Voxel.SameSignsDistF(voxel1,voxel2)){
-                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y+voxelSize,z),out surfpt3)){
+                    if(chunk.surfPts.TryGetValue(new Vector3(x+voxelSize1,y,z),out surfpt1) && chunk.surfPts.TryGetValue(new Vector3(x,y+voxelSize1,z),out surfpt2) && chunk.surfPts.TryGetValue(new Vector3(x+voxelSize1,y+voxelSize1,z),out surfpt3)){
                         // side1 = Contunity(x-vS,y,z, x-vS,y+vS,z) || Contunity(x,y,z+vS, x,y+vS,z+vS) || Contunity(x,y,z-vS, x,y+vS,z-vS);
                         // side2 = Contunity(x,y+2*vS,z, x+vS,y+2*vS,z) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y+vS,z-vS, x+vS,y+vS,z-vS);
                         // side3 = Contunity(x+2*vS,y,z, x+2*vS,y+vS,z) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x+vS,y,z-vS, x+vS,y+vS,z-vS);
@@ -243,14 +256,14 @@ public class Chunk2 : MonoBehaviour
                             meshData.uv.AddRange(voxel0.FaceUVs());
 
                             if(splatter){
-                                temp = state.GetVoxel(x+voxelSize,y,z);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y+voxelSize,z);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                                temp = chunk.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv4);
                             }
                         }
                         else{
@@ -269,22 +282,22 @@ public class Chunk2 : MonoBehaviour
                             
 
                             if(splatter){
-                                temp = state.GetVoxel(x+voxelSize,y,z);
-                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+                                temp = chunk.GetVoxel(x+voxelSize,y,z);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y+voxelSize,z);
-                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
-                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                                temp = chunk.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv4);
                             }
                         }
                     }
                 }
                 //Repeat same code but for yz plane mesh
-                voxel1 = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                voxel1 = chunk.GetVoxel(x,y+voxelSize,z+voxelSize);
                 if(!Voxel.SameSignsDistF(voxel1,voxel2)){  
-                    if(state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z+voxelSize),out surfpt3)){                    
+                    if(chunk.surfPts.TryGetValue(new Vector3(x,y+voxelSize1,z),out surfpt1) && chunk.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize1),out surfpt2) && chunk.surfPts.TryGetValue(new Vector3(x,y+voxelSize1,z+voxelSize1),out surfpt3)){                    
                         // side1 = Contunity(x,y-vS,z, x,y-vS,z+vS) || Contunity(x+vS,y,z, x+vS,y,z+vS) || Contunity(x-vS,y,z, x-vS,y,z+vS);
                         // side2 = Contunity(x,y,z+2*vS, x,y+vS,z+2*vS) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x-vS,y,z+vS, x-vS,y+vS,z+vS);
                         // side3 = Contunity(x,y+2*vS,z, x,y+2*vS,z+vS) || Contunity(x+vS,y+vS,z, x+vS,y+vS,z+vS) || Contunity(x-vS,y+vS,z, x-vS,y+vS,z+vS);
@@ -308,14 +321,14 @@ public class Chunk2 : MonoBehaviour
                             meshData.uv.AddRange(voxel0.FaceUVs());
 
                             if(splatter){
-                                temp = state.GetVoxel(x,y+voxelSize,z);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y,z+voxelSize);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
-                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                chunk.AirVoxelFace(temp, voxel0, meshData.uv4);
                             }
                         }
                         else{
@@ -334,14 +347,14 @@ public class Chunk2 : MonoBehaviour
                             
 
                             if(splatter){
-                                temp = state.GetVoxel(x,y+voxelSize,z);
-                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv2);
 
-                                temp = state.GetVoxel(x,y,z+voxelSize);
-                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                temp = chunk.GetVoxel(x,y,z+voxelSize);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv3);
                                 
-                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
-                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                                temp = chunk.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                chunk.AirVoxelFace(temp, temp2, meshData.uv4);
                             }
                         }                 
                     }
@@ -349,8 +362,8 @@ public class Chunk2 : MonoBehaviour
             }
         }
         // RenderMesh(meshData);
-        state.meshData = meshData;
-        state.updating = false;
+        chunk.meshData = meshData;
+        chunk.updating = false;
     }
 
     void AirVoxelFace(Voxel temp, Voxel voxel0, List<Vector2> uv){
@@ -381,15 +394,31 @@ public class Chunk2 : MonoBehaviour
     }
 
     //Calculates Surface points Dictionary
-    void SurfacePoints(){
+    void SurfacePoints(Chunk2 chunk){
         SurfPt surfPt = null;
-        surfPts = new Dictionary<Vector3, SurfPt>();
+        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
         for(int y = 0;y <= chunkVoxels; y++){
             for(int x = 0; x<= chunkVoxels; x++){
                 for(int z = 0; z<= chunkVoxels; z++){
-                    surfPt = GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
+                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
                     if (surfPt != null){
-                        surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+                    }
+                }
+            }
+        }
+    }
+
+    //Calculates Surface points Dictionary
+    void SurfacePointsHalf(Chunk2 chunk){
+        SurfPt surfPt = null;
+        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
+        for(int y = 0;y < chunkVoxels; y+=2){
+            for(int x = 0; x< chunkVoxels; x+=2){
+                for(int z = 0; z< chunkVoxels; z+=2){
+                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,2);
+                    if (surfPt != null){
+                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
                     }
                 }
             }

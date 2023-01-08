@@ -36,7 +36,7 @@ public class Columns2
 
     public void GenerateChunks(){
         ColumnGen gen = region.regionCol.GetColumnGen(columnPos);
-        Debug.Assert(gen != null, "Column gen at " + columnPos.ToString() + " is unexpêctedly null");
+        Debug.Assert(gen != null, "Column gen at " + columnPos.ToString() + " is unexpectedly null");
 
         foreach(var chunkEntry in chunks){
             gen.ChunkGenC2(chunkEntry.Value);
@@ -45,7 +45,7 @@ public class Columns2
 
     public void UpdateChunks(){
         foreach(var chunkEntry in chunks){
-            chunkEntry.Value.UpdateChunk2(chunkEntry.Value);
+            chunkEntry.Value.UpdateHalf(chunkEntry.Value);
         }
     }
 
