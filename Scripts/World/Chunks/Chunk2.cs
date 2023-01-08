@@ -20,7 +20,7 @@ public class Chunk2 : MonoBehaviour
 
     public Columns2 column {get; private set;}
 
-    private Voxel [, ,] voxels = new Voxel[chunkVoxels+2,chunkVoxels+2,chunkVoxels+2];
+    private Voxel [, ,] voxels = new Voxel[chunkVoxels+3,chunkVoxels+3,chunkVoxels+3];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
 
     private MeshFilter filter;
@@ -106,7 +106,7 @@ public class Chunk2 : MonoBehaviour
 
     //Checks if coordinate is in chunk
     public static bool InRange(float x,float y, float z){
-        if(x < 0 || x >= chunkSize+voxelSize*2 || y < 0 || y >= chunkSize+voxelSize*2  || z < 0 || z >= chunkSize+voxelSize*2 ){
+        if(x < 0 || x >= chunkSize+voxelSize*3 || y < 0 || y >= chunkSize+voxelSize*3  || z < 0 || z >= chunkSize+voxelSize*3 ){
             return false;
         }
         return true;
@@ -114,7 +114,7 @@ public class Chunk2 : MonoBehaviour
 
     //WorldPos version of InRange
     public static bool InRange(WorldPos pos){
-        if(pos.xi < 0 || pos.xi >= chunkVoxels+2 || pos.yi < 0 || pos.yi >= chunkVoxels+2 || pos.zi < 0 || pos.zi >= chunkVoxels+2){
+        if(pos.xi < 0 || pos.xi >= chunkVoxels+3 || pos.yi < 0 || pos.yi >= chunkVoxels+3 || pos.zi < 0 || pos.zi >= chunkVoxels+3){
             return false;
         }
         return true;
@@ -122,7 +122,7 @@ public class Chunk2 : MonoBehaviour
 
     //int version of InRange
     public static bool InRange(int xi,int yi, int zi){
-        if(xi < 0 || xi >= chunkVoxels+2 || yi < 0 || yi >= chunkVoxels+2 || zi < 0 || zi >= chunkVoxels+2){
+        if(xi < 0 || xi >= chunkVoxels+3 || yi < 0 || yi >= chunkVoxels+3 || zi < 0 || zi >= chunkVoxels+3){
             return false;
         }
         return true;
@@ -405,56 +405,56 @@ public class Chunk2 : MonoBehaviour
         return ((v1 >= 0 && v2 >= 0)  || (v1 < 0 && v2 < 0));
     }
 
-    //Calculates Surface points Dictionary
-    void SurfacePoints(Chunk2 chunk){
-        SurfPt surfPt = null;
-        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
-        for(int y = 0;y <= chunkVoxels; y++){
-            for(int x = 0; x<= chunkVoxels; x++){
-                for(int z = 0; z<= chunkVoxels; z++){
-                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
-                    if (surfPt != null){
-                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
-                    }
-                }
-            }
-        }
-    }
+    // //Calculates Surface points Dictionary
+    // void SurfacePoints(Chunk2 chunk){
+    //     SurfPt surfPt = null;
+    //     chunk.surfPts = new Dictionary<Vector3, SurfPt>();
+    //     for(int y = 0;y <= chunkVoxels; y++){
+    //         for(int x = 0; x<= chunkVoxels; x++){
+    //             for(int z = 0; z<= chunkVoxels; z++){
+    //                 surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
+    //                 if (surfPt != null){
+    //                     chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // //Calculates Surface points Dictionary
+    // void SurfacePointsHalf(Chunk2 chunk){
+    //     SurfPt surfPt = null;
+    //     chunk.surfPts = new Dictionary<Vector3, SurfPt>();
+    //     for(int y = 0;y <= chunkVoxels; y+=2){
+    //         for(int x = 0; x<= chunkVoxels; x+=2){
+    //             for(int z = 0; z<= chunkVoxels; z+=2){
+    //                 surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,2);
+    //                 if (surfPt != null){
+    //                     chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // //Calculates Surface points Dictionary
+    // void SurfacePointsThird(Chunk2 chunk){
+    //     SurfPt surfPt = null;
+    //     chunk.surfPts = new Dictionary<Vector3, SurfPt>();
+    //     for(int y = 0;y < chunkVoxels-1; y+=3){
+    //         for(int x = 0; x< chunkVoxels-1; x+=3){
+    //             for(int z = 0; z< chunkVoxels-1; z+=3){
+    //                 surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,3);
+    //                 if (surfPt != null){
+    //                     chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     //Calculates Surface points Dictionary
-    void SurfacePointsHalf(Chunk2 chunk){
-        SurfPt surfPt = null;
-        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
-        for(int y = 0;y < chunkVoxels; y+=2){
-            for(int x = 0; x< chunkVoxels; x+=2){
-                for(int z = 0; z< chunkVoxels; z+=2){
-                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,2);
-                    if (surfPt != null){
-                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
-                    }
-                }
-            }
-        }
-    }
-
-    //Calculates Surface points Dictionary
-    void SurfacePointsThird(Chunk2 chunk){
-        SurfPt surfPt = null;
-        chunk.surfPts = new Dictionary<Vector3, SurfPt>();
-        for(int y = 0;y < chunkVoxels-1; y+=3){
-            for(int x = 0; x< chunkVoxels-1; x+=3){
-                for(int z = 0; z< chunkVoxels-1; z+=3){
-                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,3);
-                    if (surfPt != null){
-                        chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
-                    }
-                }
-            }
-        }
-    }
-
-    //Calculates Surface points Dictionary
-    void SurfacePoints(Chunk2 chunk, int scale){
+    void SurfacePoints(Chunk2 chunk, int scale = 1){
         SurfPt surfPt = null;
         chunk.surfPts = new Dictionary<Vector3, SurfPt>();
         float scaleSize = scale * voxelSize;;
