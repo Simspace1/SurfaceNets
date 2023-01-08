@@ -45,7 +45,7 @@ public class Columns2
 
     public void UpdateChunks(){
         foreach(var chunkEntry in chunks){
-            chunkEntry.Value.UpdateThird(chunkEntry.Value);
+            chunkEntry.Value.UpdateHalf(chunkEntry.Value);
         }
     }
 

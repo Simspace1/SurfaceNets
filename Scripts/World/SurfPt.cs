@@ -5,6 +5,7 @@ using UnityEngine;
 public class SurfPt 
 {
     public float x,y,z;
+    public float scale = Chunk2.voxelSize;
 
     public SurfPt(float x, float y, float z){
         this.x = x;
