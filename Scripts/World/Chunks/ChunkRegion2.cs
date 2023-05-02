@@ -92,7 +92,7 @@ public class ChunkRegion2
 
     //test code for chunk generation
     public void CreateAllChunks(){
-        regionObject = World.GetWorld().CreateRegion(regionPos.ToWorldPos());
+        regionObject = World.GetWorld().CreateRegion(regionPos);
 
         foreach(var colEntry in columns){
             colEntry.Value.CreateChunks();
@@ -115,6 +115,7 @@ public class ChunkRegion2
 
     //test code for chunk updates
     public void UpdateAllChunks(){
+        Debug.Assert(chunksCreated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
         // ThreadPool.QueueUserWorkItem(UpdateAllChunks,this);
         UpdateAllChunks(this);
     }
