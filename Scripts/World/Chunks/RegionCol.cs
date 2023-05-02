@@ -12,6 +12,7 @@ public class RegionCol
 
     public RegionPos regionPos {get; private set;}
 
+    private List<RegionPos> savedRegionList = new List<RegionPos>();
     private List<RegionPos> regionList = new List<RegionPos>();
     private Dictionary<RegionPos, ChunkRegion2> regions = new Dictionary<RegionPos, ChunkRegion2>(World.regionPosEqualityComparer);
 
@@ -101,21 +102,33 @@ public class RegionCol
     }
 
     private void CreateGenRegions(){
-        if(!loaded){
-            int yMin = Mathf.FloorToInt(minMax[0]/regionSize);
-            int yMax = Mathf.FloorToInt(minMax[1]/regionSize);
+        int yMin = Mathf.FloorToInt(minMax[0]/regionSize);
+        int yMax = Mathf.FloorToInt(minMax[1]/regionSize);
 
-            RegionPos pos = null;
-            for(int i = yMin; i <= yMax; i++){
-                pos = new RegionPos(regionPos.x,i,regionPos.z);
-                ChunkRegion2 region = new ChunkRegion2(pos, this);
-                region.SetGenTerrain(true);
-                AddRegion(region);
+        RegionPos pos = null;
+        for(int i = yMin; i <= yMax; i++){
+            pos = new RegionPos(regionPos.x,i,regionPos.z);
+            if(WasSavedRegion(pos)){
+                throw new NotImplementedException("Loading of regions not implemented yet");
+            }
+
+            ChunkRegion2 region = new ChunkRegion2(pos, this);
+            region.SetGenTerrain(true);
+            AddRegion(region);
+        }
+    }
+
+    private bool WasSavedRegion(RegionPos pos){
+        if(savedRegionList.Count == 0){
+            return false;
+        }
+
+        foreach(RegionPos sPos in savedRegionList){
+            if(sPos.Equals(pos)){
+                return true;
             }
         }
-        else{
-            throw new NotImplementedException("Loaded generation of regions not yet implemented");
-        }
+        return false;
     }
 
     public void CreateRegion(RegionPos pos){
