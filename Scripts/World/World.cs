@@ -22,6 +22,8 @@ public class World : MonoBehaviour
     [SerializeField]
     private GameObject farChunkColumnPrefab;
     [SerializeField]
+    private GameObject regionsPrefab;
+    [SerializeField]
     private GameObject chunksContainer;
     [SerializeField]
     private GameObject regionsContainer;

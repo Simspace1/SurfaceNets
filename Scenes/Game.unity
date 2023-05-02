@@ -155,6 +155,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 7561224247468771875, guid: 36c62fa6a09b40d4cb58d490f7102d13, type: 3}
   chunkPrefab2: {fileID: 7561224247468771875, guid: 6bd78efada085694e8cbbf67e5fd5221, type: 3}
   farChunkColumnPrefab: {fileID: 4384561503284327496, guid: cf86e8689ae2adf46acfc0f459dc52d7, type: 3}
+  regionsPrefab: {fileID: 7060879863874781149, guid: cb18dd32d6b2d4a40807ea16ffa4fcbf, type: 3}
   chunksContainer: {fileID: 1597841677}
   regionsContainer: {fileID: 2025010613}
   purgeSave: 1
