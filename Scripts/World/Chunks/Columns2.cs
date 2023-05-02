@@ -44,9 +44,15 @@ public class Columns2
         }
     }
 
-    public void UpdateChunks(){
+    public void UpdateChunksFull(){
         foreach(var chunkEntry in chunks){
             chunkEntry.Value.UpdateFull(chunkEntry.Value);
+        }
+    }
+
+    public void UpdateChunksHalf(){
+        foreach(var chunkEntry in chunks){
+            chunkEntry.Value.UpdateHalf(chunkEntry.Value);
         }
     }
 

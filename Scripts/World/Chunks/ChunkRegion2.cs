@@ -115,15 +115,28 @@ public class ChunkRegion2
     }
 
     //test code for chunk updates
-    public void UpdateAllChunks(){
+    public void UpdateAllChunks(bool half = false){
         Debug.Assert(chunksGenerated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
-        // ThreadPool.QueueUserWorkItem(UpdateAllChunks,this);
-        UpdateAllChunks(this);
+        if(!half){
+            // ThreadPool.QueueUserWorkItem(UpdateAllChunksFull,this);
+            UpdateAllChunksFull(this);
+        }
+        else{
+            // ThreadPool.QueueUserWorkItem(UpdateAllChunksHalf,this);
+            UpdateAllChunksHalf(this);
+        }
+        
     }
 
-    private void UpdateAllChunks(object state){
+    private void UpdateAllChunksFull(object state){
         foreach(var colEntry in columns){
-            colEntry.Value.UpdateChunks();
+            colEntry.Value.UpdateChunksFull();
+        }
+    }
+
+    private void UpdateAllChunksHalf(object state){
+        foreach(var colEntry in columns){
+            colEntry.Value.UpdateChunksHalf();
         }
     }
 
