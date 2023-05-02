@@ -28,7 +28,7 @@ public class Columns2
         WorldPos pos = null;
         for(int i = y; i < y+RegionCol.regionVoxels; i+=Chunk2.chunkVoxels){
             pos = new WorldPos(columnPos.xi,i,columnPos.zi);
-            Chunk2 chunk = world.CreateChunk(pos);
+            Chunk2 chunk = world.CreateChunk(pos, region.regionObject);
             chunk.SetPos(pos);
             chunk.SetColumn(this);
             AddChunk(chunk);

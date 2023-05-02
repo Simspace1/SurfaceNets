@@ -394,8 +394,8 @@ public class World : MonoBehaviour
         chunkUpdates.Add(newChunk);
     }
 
-    public Chunk2 CreateChunk(WorldPos pos){
-        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+    public Chunk2 CreateChunk(WorldPos pos, GameObject regionObject){
+        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero), regionObject.transform) as GameObject;
         Chunk2 newChunk = newChunkObject.GetComponent<Chunk2>();
 
         return newChunk;

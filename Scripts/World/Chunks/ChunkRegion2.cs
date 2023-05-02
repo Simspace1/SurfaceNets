@@ -13,7 +13,7 @@ public class ChunkRegion2
     private List<WorldPos> savedColumnsList = new List<WorldPos>();
     private Dictionary<WorldPos, Columns2> columns = new Dictionary<WorldPos, Columns2>(World.worldPosEqC);
 
-    private GameObject region;
+    public GameObject regionObject {get; private set;}
 
     public bool generated {get; private set;} = false;
     public bool destroying {get; private set;} = false;
@@ -92,7 +92,7 @@ public class ChunkRegion2
 
     //test code for chunk generation
     public void CreateAllChunks(){
-        region = World.GetWorld().CreateRegion(regionPos.ToWorldPos());
+        regionObject = World.GetWorld().CreateRegion(regionPos.ToWorldPos());
 
         foreach(var colEntry in columns){
             colEntry.Value.CreateChunks();
