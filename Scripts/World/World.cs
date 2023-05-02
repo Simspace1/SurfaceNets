@@ -23,6 +23,8 @@ public class World : MonoBehaviour
     private GameObject farChunkColumnPrefab;
     [SerializeField]
     private GameObject chunksContainer;
+    [SerializeField]
+    private GameObject regionsContainer;
 
 
     public static WorldPosEqualityComparer worldPosEqC = new WorldPosEqualityComparer();

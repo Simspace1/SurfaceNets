@@ -23,11 +23,12 @@ public class Columns2
     // Must be performed in main thread
     public void CreateChunks(){
         int y = columnPos.yi;
+        World world = World.GetWorld();
 
         WorldPos pos = null;
         for(int i = y; i < y+RegionCol.regionVoxels; i+=Chunk2.chunkVoxels){
             pos = new WorldPos(columnPos.xi,i,columnPos.zi);
-            Chunk2 chunk = World.GetWorld().CreateChunk(pos);
+            Chunk2 chunk = world.CreateChunk(pos);
             chunk.SetPos(pos);
             chunk.SetColumn(this);
             AddChunk(chunk);
