@@ -433,6 +433,8 @@ public class World : MonoBehaviour
         return chunkList;
     }
 
+
+    //Creates the "holder" gameobject for all chunks in a region
     public GameObject CreateRegion(WorldPos pos){
         return Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
     }
