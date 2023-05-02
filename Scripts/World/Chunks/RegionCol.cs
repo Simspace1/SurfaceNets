@@ -86,7 +86,7 @@ public class RegionCol
     }
 
     public ChunkRegion2 GetRegion(RegionPos pos){
-        if(!regionPos.InColumn(pos) || !regionPos.InColumn(pos)){
+        if(!regionPos.InColumn(pos)){
             return null;
         }
         ChunkRegion2 region = null;
