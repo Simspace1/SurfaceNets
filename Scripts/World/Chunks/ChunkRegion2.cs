@@ -10,6 +10,7 @@ public class ChunkRegion2
 
     public RegionCol regionCol {get; private set;}
 
+    private List<WorldPos> savedColumnsList = new List<WorldPos>();
     private Dictionary<WorldPos, Columns2> columns = new Dictionary<WorldPos, Columns2>(World.worldPosEqC);
 
     public bool generated {get; private set;} = false;
@@ -31,24 +32,41 @@ public class ChunkRegion2
     }
 
     private void GenColumns(){
-        if(!loaded){
-            WorldPos pos = regionPos.ToWorldPos();
-            int x = pos.xi;
-            int y = pos.yi;
-            int z = pos.zi;
+        WorldPos pos = regionPos.ToWorldPos();
+        int x = pos.xi;
+        int y = pos.yi;
+        int z = pos.zi;
 
-            WorldPos temp = null;
-            for(int i = x; i < x+RegionCol.regionVoxels; i+= Chunk2.chunkVoxels){
-                for(int j = z; j < z+RegionCol.regionVoxels; j+= Chunk2.chunkVoxels){
-                    temp = new WorldPos(i,y,j);
+        WorldPos temp = null;
+        for(int i = x; i < x+RegionCol.regionVoxels; i+= Chunk2.chunkVoxels){
+            for(int j = z; j < z+RegionCol.regionVoxels; j+= Chunk2.chunkVoxels){
+                temp = new WorldPos(i,y,j);
+                if(WasSavedColumn(temp)){
+                    throw new NotImplementedException("Chunk Columns loading not implemented yet");
+                }
+                else{
                     Columns2 col = new Columns2(temp, this);
                     AddColumns(col);
                 }
             }
-
-            Debug.Assert(columns.Count == RegionCol.regionChunks* RegionCol.regionChunks,"ChunkRegion "+ regionPos.ToString()+ "has generated " + columns.Count + " Columns instead of " +RegionCol.regionChunks* RegionCol.regionChunks);
-            generated = true;
         }
+
+        Debug.Assert(columns.Count == RegionCol.regionChunks* RegionCol.regionChunks,"ChunkRegion "+ regionPos.ToString()+ "has generated " + columns.Count + " Columns instead of " +RegionCol.regionChunks* RegionCol.regionChunks);
+        generated = true;
+    
+    }
+
+    private bool WasSavedColumn(WorldPos pos){
+        if(savedColumnsList.Count == 0){
+            return false;
+        }
+
+        foreach(WorldPos sPos in savedColumnsList){
+            if(sPos.Equals(pos)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Columns2 GetColumn(WorldPos pos){
