@@ -433,6 +433,10 @@ public class World : MonoBehaviour
         return chunkList;
     }
 
+    public GameObject CreateRegion(WorldPos pos){
+        return Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
+    }
+
 
     public FarChunkCol CreateFarChunkColumn(Columns col){
         GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
