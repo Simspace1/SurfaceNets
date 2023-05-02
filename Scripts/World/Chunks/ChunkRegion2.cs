@@ -102,6 +102,7 @@ public class ChunkRegion2
 
     //test code for chunk generation
     public void GenerateAllChunks(){
+        Debug.Assert(chunksCreated,"Chunks of region:" + regionPos.ToString()+ " have not been created" );
         // ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
         GenerateAllChunks(this);
     }
@@ -115,7 +116,7 @@ public class ChunkRegion2
 
     //test code for chunk updates
     public void UpdateAllChunks(){
-        Debug.Assert(chunksCreated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
+        Debug.Assert(chunksGenerated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
         // ThreadPool.QueueUserWorkItem(UpdateAllChunks,this);
         UpdateAllChunks(this);
     }
