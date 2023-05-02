@@ -111,10 +111,9 @@ public class RegionCol
             if(WasSavedRegion(pos)){
                 throw new NotImplementedException("Loading of regions not implemented yet");
             }
-
-            ChunkRegion2 region = new ChunkRegion2(pos, this);
-            region.SetGenTerrain(true);
-            AddRegion(region);
+            else{
+                CreateRegion(pos,true);
+            }
         }
     }
 
@@ -131,7 +130,7 @@ public class RegionCol
         return false;
     }
 
-    public void CreateRegion(RegionPos pos){
+    public void CreateRegion(RegionPos pos, bool genTerrain = false){
         if(destroying || destroyed || !regionPos.InColumn(pos))
             return;
         ChunkRegion2 region = new ChunkRegion2(pos,this);
