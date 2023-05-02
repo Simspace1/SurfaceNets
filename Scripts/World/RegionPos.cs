@@ -15,7 +15,7 @@ public class RegionPos
     }
 
     public WorldPos ToWorldPos(){
-        return new WorldPos(x*RegionCol.regionVoxels,y*RegionCol.regionVoxels,z*RegionCol.regionVoxels);
+        return new WorldPos(x*RegionCol.regionVoxels - RegionCol.regionVoxels/2,y*RegionCol.regionVoxels - RegionCol.regionVoxels/2,z*RegionCol.regionVoxels - RegionCol.regionVoxels/2);
     }
 
     public static bool Equals(RegionPos w1,RegionPos w2){
@@ -47,11 +47,11 @@ public class RegionPos
     }
 
     public string ToColString(){
-        return x+"_"+z;
+        return "rpos:"+x+"_"+z;
     }
 
     new public string ToString(){
-        return x+"_"+y+"_"+z;
+        return "rpos:"+x+"_"+y+"_"+z;
     }
 
 }

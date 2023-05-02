@@ -144,15 +144,19 @@ public class WorldPos
     }
 
     public RegionPos GetRegion(){
-        return new RegionPos(xi/RegionCol.regionVoxels,yi/RegionCol.regionVoxels,zi/RegionCol.regionVoxels);
+        return new RegionPos((xi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(yi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(zi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels);
     }
 
     new public string ToString(){
-        return x+"-"+y+"-"+z;
+        return "pos:"+x+"_"+y+"_"+z;
     }
 
     public string ToIntString(){
-        return xi+"-"+yi+"-"+zi;
+        return "posI:"+xi+"_"+yi+"_"+zi;
+    }
+
+    public WorldPos ToColumn(){
+        return new WorldPos(xi,0,zi);
     }
     
 }

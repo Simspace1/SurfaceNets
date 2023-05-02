@@ -107,12 +107,15 @@ public class World : MonoBehaviour
             print("test ");
 
             regionCol.GetRegion(new RegionPos(0,0,0)).CreateAllChunks();
+            regionCol.GetRegion(new RegionPos(0,1,0)).CreateAllChunks();
 
             regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
+            regionCol.GetRegion(new RegionPos(0,1,0)).GenerateAllChunks();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
+            regionCol.GetRegion(new RegionPos(0,1,0)).UpdateAllChunks();
             stopwatch.Stop();
 
 
@@ -121,6 +124,7 @@ public class World : MonoBehaviour
         else if(test && !test1){
             test1 = true;
             regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
+            regionCol.GetRegion(new RegionPos(0,1,0)).RenderAllChunks();
         }
 
 

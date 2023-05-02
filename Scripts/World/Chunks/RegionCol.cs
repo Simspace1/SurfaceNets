@@ -102,8 +102,8 @@ public class RegionCol
     }
 
     private void CreateGenRegions(){
-        int yMin = Mathf.FloorToInt(minMax[0]/regionSize);
-        int yMax = Mathf.FloorToInt(minMax[1]/regionSize);
+        int yMin = Mathf.FloorToInt((minMax[0]+regionSize/2)/regionSize);
+        int yMax = Mathf.FloorToInt((minMax[1]+regionSize/2)/regionSize);
 
         RegionPos pos = null;
         for(int i = yMin; i <= yMax; i++){
@@ -139,7 +139,7 @@ public class RegionCol
 
     public ColumnGen GetColumnGen(WorldPos pos){
         ColumnGen gen = null;
-        gens.TryGetValue(pos,out gen);
+        gens.TryGetValue(pos.ToColumn(),out gen);
         return gen;
     }
 
