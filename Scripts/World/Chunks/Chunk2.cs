@@ -144,13 +144,14 @@ public class Chunk2 : MonoBehaviour
         chunk.UpdateChunk(chunk);
     }
 
-    public void UpdateThird(object stateIn){
-        Chunk2 chunk = (Chunk2) stateIn;
-        //Updates surface points 
-        chunk.SurfacePoints(chunk,3);
-        //Makes mesh
-        chunk.UpdateChunk(chunk);
-    }
+    //NOT FUNCTIONAL
+    // public void UpdateThird(object stateIn){
+    //     Chunk2 chunk = (Chunk2) stateIn;
+    //     //Updates surface points 
+    //     chunk.SurfacePoints(chunk,3);
+    //     //Makes mesh
+    //     chunk.UpdateChunk(chunk);
+    // }
 
      // Main code for updating and calculating surface of the Chunk
     private void UpdateChunk(Chunk2 chunk){
