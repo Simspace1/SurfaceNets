@@ -22,6 +22,9 @@ public class ChunkRegion2
 
     public bool chunksCreated {get; private set;} = false;
     public bool chunksGenerated {get; private set;} = false;
+    public bool chunksUpdatedFull {get; private set;} = false;
+    public bool chunksUpdatedHalf {get; private set;} = false;
+    public bool chunksRendered {get; private set;} = false;
 
     public ChunkRegion2(RegionPos pos, RegionCol regionCol){
         Debug.Assert(regionCol.regionPos.InColumn(pos), "Created a region "+ pos.ToString() +" in the Wrong RegionColumn " + regionCol.regionPos.ToColString());
@@ -127,17 +130,20 @@ public class ChunkRegion2
         foreach(var colEntry in columns){
             colEntry.Value.UpdateChunksFull();
         }
+        chunksUpdatedFull = true;
     }
 
     private void UpdateAllChunksHalf(object state){
         foreach(var colEntry in columns){
             colEntry.Value.UpdateChunksHalf();
         }
+        chunksUpdatedHalf = true;
     }
 
     public void RenderAllChunks(){
         foreach(var colEntry in columns){
             colEntry.Value.RenderChunks();
         }
+        chunksRendered = true;
     }
 }
