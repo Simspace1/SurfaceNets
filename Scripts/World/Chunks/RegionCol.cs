@@ -110,6 +110,7 @@ public class RegionCol
         if(destroying || destroyed || !regionPos.InColumn(region.regionPos))
             return;
         regionList.Add(new RegionSurfacePos(region.regionPos,genTerrain));
+        region.SetSurface(genTerrain);
         regions.Add(region.regionPos,region);
     }
 

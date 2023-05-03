@@ -20,6 +20,7 @@ public class Region
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
     public bool modified {get; private set;} = false;
+    public bool surface {get; private set;} = false;
 
     public bool chunksCreated {get; private set;} = false;
     public bool chunksGenerated {get; private set;} = false;
@@ -146,5 +147,9 @@ public class Region
             colEntry.Value.RenderChunks();
         }
         chunksRendered = true;
+    }
+
+    public void SetSurface(bool surface){
+        this.surface = surface;
     }
 }

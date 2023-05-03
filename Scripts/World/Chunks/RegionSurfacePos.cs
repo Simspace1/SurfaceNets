@@ -32,7 +32,7 @@ public class RegionSurfacePos
         }
         
         RegionSurfacePos objPos = (RegionSurfacePos) obj;
-        if(regionPos.Equals(objPos.regionPos) && surface == objPos.surface){
+        if(regionPos.Equals(objPos.regionPos)){
             return true;
         }
         else{
@@ -44,9 +44,6 @@ public class RegionSurfacePos
     public override int GetHashCode()
     {
         int hash = regionPos.GetHashCode();
-        if(surface){
-            hash *= 26;
-        }
         return hash;
     }
 }
