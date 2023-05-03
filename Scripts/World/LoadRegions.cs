@@ -44,11 +44,24 @@ public class LoadRegions : MonoBehaviour
     void Update()
     {
         UpdatePlayerPos();
+        if(LoadWaitList()){
+            return;
+        }
+
         if(Unload()){
             return;
         }
 
         Load();
+    }
+
+    //Load/Create regions with priority, mostly from terrain modifications
+    private bool LoadWaitList()
+    {
+        if(newRegionWaitList.Count == 0){
+            return false;
+        }
+        return false;
     }
 
     private void UpdatePlayerPos()
