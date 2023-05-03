@@ -103,8 +103,8 @@ public class Region
     //test code for chunk generation
     public void GenerateAllChunks(){
         Debug.Assert(chunksCreated,"Chunks of region:" + regionPos.ToString()+ " have not been created" );
-        // ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
-        GenerateAllChunks(this);
+        ThreadPool.QueueUserWorkItem(GenerateAllChunks,this);
+        // GenerateAllChunks(this);
     }
 
     private void GenerateAllChunks(object state){
@@ -118,12 +118,12 @@ public class Region
     public void UpdateAllChunks(bool half = false){
         Debug.Assert(chunksGenerated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
         if(!half){
-            // ThreadPool.QueueUserWorkItem(UpdateAllChunksFull,this);
-            UpdateAllChunksFull(this);
+            ThreadPool.QueueUserWorkItem(UpdateAllChunksFull,this);
+            // UpdateAllChunksFull(this);
         }
         else{
-            // ThreadPool.QueueUserWorkItem(UpdateAllChunksHalf,this);
-            UpdateAllChunksHalf(this);
+            ThreadPool.QueueUserWorkItem(UpdateAllChunksHalf,this);
+            // UpdateAllChunksHalf(this);
         }
         
     }

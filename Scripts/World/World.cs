@@ -83,7 +83,7 @@ public class World : MonoBehaviour
         //TEST CODE
         // stopwatch = new Stopwatch();
         // stopwatch.Start();
-        regionCol = new RegionCol(new RegionPos(0,0,0));
+        //regionCol = new RegionCol(new RegionPos(0,0,0));
         // stopwatch.Stop();
         // print("test " + stopwatch.ElapsedMilliseconds);
         
@@ -102,30 +102,30 @@ public class World : MonoBehaviour
             return;
         }
 
-        if(regionCol.generated && !test){
-            test = true;
-            print("test ");
+        // if(regionCol.generated && !test){
+        //     test = true;
+        //     print("test ");
 
-            regionCol.GetRegion(new RegionPos(0,0,0)).CreateAllChunks();
-            regionCol.GetRegion(new RegionPos(0,1,0)).CreateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).CreateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).CreateAllChunks();
 
-            regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
-            regionCol.GetRegion(new RegionPos(0,1,0)).GenerateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).GenerateAllChunks();
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
-            regionCol.GetRegion(new RegionPos(0,1,0)).UpdateAllChunks();
-            stopwatch.Stop();
+        //     var stopwatch = new Stopwatch();
+        //     stopwatch.Start();
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).UpdateAllChunks();
+        //     stopwatch.Stop();
 
 
-            print("test 2 " + stopwatch.ElapsedMilliseconds + " ms, " +stopwatch.ElapsedTicks + " ticks" );
-        }
-        else if(test && !test1){
-            test1 = true;
-            regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
-            regionCol.GetRegion(new RegionPos(0,1,0)).RenderAllChunks();
-        }
+        //     print("test 2 " + stopwatch.ElapsedMilliseconds + " ms, " +stopwatch.ElapsedTicks + " ticks" );
+        // }
+        // else if(test && !test1){
+        //     test1 = true;
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).RenderAllChunks();
+        // }
 
 
         // Stopwatch stopwatch = new Stopwatch();

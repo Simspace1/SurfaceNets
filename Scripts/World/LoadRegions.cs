@@ -25,6 +25,7 @@ public class LoadRegions : MonoBehaviour
     private List<Region> renderList = new List<Region>();
 
     private RegionPos playerPos;
+    private bool chunksGenerating = false;
 
     // Start is called before the first frame update
     void Start()
@@ -139,7 +140,33 @@ public class LoadRegions : MonoBehaviour
 
     private bool GenerateRegions()
     {
-        throw new NotImplementedException();
+        if(generateList.Count == 0){
+            return false;
+        }
+        if(chunksGenerating){
+            int done = 0;
+            foreach(Region region in generateList){
+                if(region.chunksGenerated){
+                    done++;
+                }
+            }
+
+            if(done == generateList.Count){
+                foreach(Region region in generateList){
+                    updateList.Add(region);
+                }
+                generateList.Clear();
+                chunksGenerating = false;
+            }
+            return true;
+        }
+        else{
+            foreach(Region region in generateList){
+                region.GenerateAllChunks();
+            }
+            chunksGenerating = true;
+            return true;
+        }
     }
 
     private bool UpdateRegions()
