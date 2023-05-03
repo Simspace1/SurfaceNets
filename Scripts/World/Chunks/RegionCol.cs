@@ -14,7 +14,7 @@ public class RegionCol
 
     private List<RegionPos> savedRegionList = new List<RegionPos>();
     private List<RegionPos> regionList = new List<RegionPos>();
-    private Dictionary<RegionPos, ChunkRegion2> regions = new Dictionary<RegionPos, ChunkRegion2>(World.regionPosEqualityComparer);
+    private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
     public float [] minMax {get; private set;} = new float[2];
     private Dictionary<WorldPos, ColumnGen> gens = new Dictionary<WorldPos, ColumnGen>(World.worldPosEqC);
@@ -81,20 +81,20 @@ public class RegionCol
         }
     }
 
-    public ChunkRegion2 GetRegion(WorldPos pos){
+    public Region GetRegion(WorldPos pos){
         return GetRegion(pos.GetRegion());
     }
 
-    public ChunkRegion2 GetRegion(RegionPos pos){
+    public Region GetRegion(RegionPos pos){
         if(!regionPos.InColumn(pos)){
             return null;
         }
-        ChunkRegion2 region = null;
+        Region region = null;
         regions.TryGetValue(pos,out region);
         return region;
     }
 
-    public void AddRegion(ChunkRegion2 region){
+    public void AddRegion(Region region){
         if(destroying || destroyed || !regionPos.InColumn(region.regionPos))
             return;
         regionList.Add(region.regionPos);
@@ -133,7 +133,7 @@ public class RegionCol
     public void CreateRegion(RegionPos pos, bool genTerrain = false){
         if(destroying || destroyed || !regionPos.InColumn(pos))
             return;
-        ChunkRegion2 region = new ChunkRegion2(pos,this);
+        Region region = new Region(pos,this);
         AddRegion(region);
     }
 

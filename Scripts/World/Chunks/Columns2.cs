@@ -6,14 +6,14 @@ public class Columns2
 {
     public WorldPos columnPos {get; private set;}
 
-    public ChunkRegion2 region {get; private set;}
+    public Region region {get; private set;}
 
     private Dictionary<WorldPos,Chunk2> chunks = new Dictionary<WorldPos, Chunk2>(World.worldPosEqC);
 
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
 
-    public Columns2(WorldPos pos, ChunkRegion2 region){
+    public Columns2(WorldPos pos, Region region){
         Debug.Assert(region.regionPos.Equals(pos.GetRegion()), "Created a Column at "+ pos.ToIntString() +" in the Wrong Region " + region.regionPos.ToString());
 
         this.columnPos = pos;

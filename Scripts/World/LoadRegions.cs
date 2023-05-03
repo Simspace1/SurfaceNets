@@ -12,9 +12,9 @@ public class LoadRegions : MonoBehaviour
 
     private List<RegionPos> regionList = new List<RegionPos>();
 
-    private List<ChunkRegion2> generateList = new List<ChunkRegion2>();
-    private List<ChunkRegion2> updateList = new List<ChunkRegion2>();
-    private List<ChunkRegion2> renderList = new List<ChunkRegion2>();
+    private List<Region> generateList = new List<Region>();
+    private List<Region> updateList = new List<Region>();
+    private List<Region> renderList = new List<Region>();
 
     // Start is called before the first frame update
     void Start()

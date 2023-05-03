@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Threading;
 using System;
 
-public class ChunkRegion2
+public class Region
 {
     public RegionPos regionPos {get; private set;}
 
@@ -26,7 +26,7 @@ public class ChunkRegion2
     public bool chunksUpdatedHalf {get; private set;} = false;
     public bool chunksRendered {get; private set;} = false;
 
-    public ChunkRegion2(RegionPos pos, RegionCol regionCol){
+    public Region(RegionPos pos, RegionCol regionCol){
         Debug.Assert(regionCol.regionPos.InColumn(pos), "Created a region "+ pos.ToString() +" in the Wrong RegionColumn " + regionCol.regionPos.ToColString());
 
         this.regionPos = pos;
