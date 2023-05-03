@@ -54,6 +54,18 @@ public class RegionPos
         return "rpos:"+x+"_"+y+"_"+z;
     }
 
+    public override int GetHashCode(){
+        unchecked{
+            int hash = 47;
+            hash = hash * 227+x.GetHashCode();
+            hash = hash * 227+y.GetHashCode();
+            hash = hash * 227+z.GetHashCode();
+
+            // hash = w1.x.GetHashCode() ^ w1.y.GetHashCode() ^ w1.z.GetHashCode();
+            return hash;
+        }
+    }
+
 }
 
 public class RegionPosEqualityComparer : IEqualityComparer<RegionPos>

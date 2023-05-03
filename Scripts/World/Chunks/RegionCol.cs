@@ -10,11 +10,13 @@ public class RegionCol
     public const int regionSize = regionChunks*Chunk.chunkSize;
     public const int regionVoxels = regionChunks*Chunk.chunkVoxels;
 
+    //Saved vars
     public RegionPos regionPos {get; private set;}
+    private List<RegionSurfacePos> savedRegionList = new List<RegionSurfacePos>();
 
-    private List<RegionPos> savedRegionList = new List<RegionPos>();
-    private List<RegionPos> loadedRegionList = new List<RegionPos>();
-    private List<RegionPos> regionList = new List<RegionPos>();
+    private List<RegionSurfacePos> loadedRegionList = new List<RegionSurfacePos>();
+    private List<RegionSurfacePos> nonLoadedRegionsList = new List<RegionSurfacePos>();
+    private List<RegionSurfacePos> regionList = new List<RegionSurfacePos>();
     private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
     public float [] minMax {get; private set;} = new float[2];
@@ -26,6 +28,7 @@ public class RegionCol
     public bool loaded {get; private set;} = false;
     public bool complete {get; private set;} = false;
     public bool modified {get; private set;} = false;
+    public bool generating {get; private set;} = false;
 
 
     public RegionCol(RegionPos pos){
@@ -39,8 +42,13 @@ public class RegionCol
     }
 
     private void GenerateRegion(){
+        generating = true;
         ThreadPool.QueueUserWorkItem(Generate, this);
         // Generate(this);
+    }
+
+    private void GenerateSavedRegion(List<Region> regions){
+
     }
 
     private void Generate(object state){
@@ -69,6 +77,7 @@ public class RegionCol
         CreateGenRegions();
 
         generated = true;
+        generating = false;
     }
 
     private void MinMaxHeights(ColumnGen gen){
@@ -97,10 +106,10 @@ public class RegionCol
         return region;
     }
 
-    public void AddRegion(Region region){
+    public void AddRegion(Region region, bool genTerrain = false){
         if(destroying || destroyed || !regionPos.InColumn(region.regionPos))
             return;
-        regionList.Add(region.regionPos);
+        regionList.Add(new RegionSurfacePos(region.regionPos,genTerrain));
         regions.Add(region.regionPos,region);
     }
 
@@ -113,11 +122,40 @@ public class RegionCol
             pos = new RegionPos(regionPos.x,i,regionPos.z);
             if(WasSavedRegion(pos)){
                 throw new NotImplementedException("Loading of regions not implemented yet");
+                //Add region to loadedRegion list
             }
             else{
                 CreateRegion(pos,true);
             }
         }
+        if(!CheckComplete()){
+            CreateSurfaceRegions();
+        }
+    }
+
+    private void CreateSurfaceRegions(){
+        foreach(RegionSurfacePos surfacePos in savedRegionList){
+            if(surfacePos.surface && !AlreadyCreated(surfacePos)){
+                throw new NotImplementedException("Loading of regions not implemented yet");
+                //Add region to loadedRegion list
+            }
+            else{
+                nonLoadedRegionsList.Add(surfacePos);
+            }
+        }
+    }
+
+    private bool AlreadyCreated(RegionSurfacePos surfacePos){
+        if(regionList.Count == 0){
+            return false;
+        }
+        
+        foreach(RegionSurfacePos surfacePos1 in regionList){
+            if(surfacePos.Equals(surfacePos1)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private bool WasSavedRegion(RegionPos pos){
@@ -125,8 +163,8 @@ public class RegionCol
             return false;
         }
 
-        foreach(RegionPos sPos in savedRegionList){
-            if(sPos.Equals(pos)){
+        foreach(RegionSurfacePos sPos in savedRegionList){
+            if(sPos.regionPos.Equals(pos)){
                 return true;
             }
         }
@@ -137,7 +175,7 @@ public class RegionCol
         if(destroying || destroyed || !regionPos.InColumn(pos))
             return;
         Region region = new Region(pos,this);
-        AddRegion(region);
+        AddRegion(region , genTerrain);
     }
 
     public ColumnGen GetColumnGen(WorldPos pos){
@@ -146,16 +184,36 @@ public class RegionCol
         return gen;
     }
 
-    // public bool CheckComplete(){
-    //     int savedRegions = savedRegionList.Count;
-    //     int i = 0;
+    public List<RegionSurfacePos> GetRegionList(){
+        return regionList;
+    }
 
-    //     if(savedRegions == 0){
-    //         complete = true;
-    //         return true;
-    //     }
+    //checks before nonLoadedRegionsList were added
+    private bool CheckComplete(){
+        if(savedRegionList.Count == 0 || loadedRegionList.Count == savedRegionList.Count){
+            complete = true;
+            return complete;
+        }
+        else{
+            complete = false;
+            return complete;
+        }
+    }
 
-    // }
+    public bool IsComplete(){
+        if(nonLoadedRegionsList.Count > 0){
+            complete = false;
+            return complete;
+        }
+        else{
+            complete = true;
+            return complete;
+        }
+    }
+
+    public List<RegionSurfacePos> GetNonLoadedRegionsList(){
+        return nonLoadedRegionsList;
+    }
 
 
 }
