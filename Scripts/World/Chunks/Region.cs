@@ -19,6 +19,7 @@ public class Region
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
+    public bool modified {get; private set;} = false;
 
     public bool chunksCreated {get; private set;} = false;
     public bool chunksGenerated {get; private set;} = false;

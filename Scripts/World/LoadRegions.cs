@@ -85,7 +85,7 @@ public class LoadRegions : MonoBehaviour
                 return;
             }
             world.AddRegionCol(regionCol);
-
+            
         }
         else{
 

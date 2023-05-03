@@ -13,6 +13,7 @@ public class RegionCol
     public RegionPos regionPos {get; private set;}
 
     private List<RegionPos> savedRegionList = new List<RegionPos>();
+    private List<RegionPos> loadedRegionList = new List<RegionPos>();
     private List<RegionPos> regionList = new List<RegionPos>();
     private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
@@ -23,6 +24,8 @@ public class RegionCol
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
+    public bool complete {get; private set;} = false;
+    public bool modified {get; private set;} = false;
 
 
     public RegionCol(RegionPos pos){
@@ -142,6 +145,17 @@ public class RegionCol
         gens.TryGetValue(pos.ToColumn(),out gen);
         return gen;
     }
+
+    // public bool CheckComplete(){
+    //     int savedRegions = savedRegionList.Count;
+    //     int i = 0;
+
+    //     if(savedRegions == 0){
+    //         complete = true;
+    //         return true;
+    //     }
+
+    // }
 
 
 }
