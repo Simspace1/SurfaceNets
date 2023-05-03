@@ -21,6 +21,7 @@ public class Region
     public bool loaded {get; private set;} = false;
     public bool modified {get; private set;} = false;
     public bool surface {get; private set;} = false;
+    public bool fullRes {get; private set;} = false;
 
     public bool chunksCreated {get; private set;} = false;
     public bool chunksGenerated {get; private set;} = false;
@@ -115,9 +116,9 @@ public class Region
     }
 
     //test code for chunk updates
-    public void UpdateAllChunks(bool half = false){
+    public void UpdateAllChunks(){
         Debug.Assert(chunksGenerated,"Chunks of region:" + regionPos.ToString()+ " have not been generated");
-        if(!half){
+        if(fullRes){
             ThreadPool.QueueUserWorkItem(UpdateAllChunksFull,this);
             // UpdateAllChunksFull(this);
         }
