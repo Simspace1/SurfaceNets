@@ -144,7 +144,8 @@ public class WorldPos
     }
 
     public RegionPos GetRegion(){
-        return new RegionPos((xi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(yi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(zi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels);
+        // return new RegionPos((xi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(yi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(zi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels);
+        return new RegionPos(Mathf.FloorToInt(((float) xi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels), Mathf.FloorToInt(((float) yi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels), Mathf.FloorToInt(((float) zi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels));
     }
 
     new public string ToString(){
