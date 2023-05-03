@@ -16,11 +16,13 @@ public class LoadRegions : MonoBehaviour
 
     private List<RegionPos> regionList = new List<RegionPos>();
 
-    private RegionCol creating;
+    private RegionCol regionCol;
     private List<Region> createdList = new List<Region>();
     private List<Region> generateList = new List<Region>();
     private List<Region> updateList = new List<Region>();
     private List<Region> renderList = new List<Region>();
+
+    private RegionPos playerPos;
 
     // Start is called before the first frame update
     void Start()
@@ -39,11 +41,18 @@ public class LoadRegions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdatePlayerPos();
         if(Unload()){
             return;
         }
 
         Load();
+    }
+
+    private void UpdatePlayerPos()
+    {
+        WorldPos ppos = new WorldPos(transform.position.x, transform.position.y, transform.position.z);
+        playerPos = ppos.GetRegion();
     }
 
     private void Load(){
@@ -56,7 +65,15 @@ public class LoadRegions : MonoBehaviour
 
     private void CreateRegionColumn()
     {
-        throw new NotImplementedException();
+        if(regionCol != null){
+            if(!regionCol.generated){
+                return;
+            }
+
+        }
+        else{
+
+        }
     }
 
     private bool CreateRegions()
