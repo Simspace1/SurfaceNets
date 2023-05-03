@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoadChunks2 : MonoBehaviour
+public class LoadRegions : MonoBehaviour
 {
     [SerializeField]
     private World world;
+
+    List<RegionPos> region = new List<RegionPos>();
 
     // Start is called before the first frame update
     void Start()
