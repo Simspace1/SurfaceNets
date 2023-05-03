@@ -14,6 +14,8 @@ public class LoadRegions : MonoBehaviour
     public static int fullResRegionRadius = 2;
     public static int regionColUpdates = 1;
 
+    public static List<RegionPos> newRegionWaitList = new List<RegionPos>();
+
     private List<RegionPos> regionList = new List<RegionPos>();
 
     private RegionCol regionCol;
@@ -69,6 +71,7 @@ public class LoadRegions : MonoBehaviour
             if(!regionCol.generated){
                 return;
             }
+            world.AddRegionCol(regionCol);
 
         }
         else{
