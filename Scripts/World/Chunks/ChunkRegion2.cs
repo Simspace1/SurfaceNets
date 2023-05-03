@@ -19,7 +19,6 @@ public class ChunkRegion2
     public bool destroying {get; private set;} = false;
     public bool destroyed {get; private set;} = false;
     public bool loaded {get; private set;} = false;
-    public bool GenTerrain {get; private set;} = false;
 
     public bool chunksCreated {get; private set;} = false;
     public bool chunksGenerated {get; private set;} = false;
@@ -84,10 +83,6 @@ public class ChunkRegion2
         if(destroying || destroyed || !col.columnPos.GetRegion().Equals(regionPos))
             return;
         columns.Add(col.columnPos,col);
-    }
-
-    public void SetGenTerrain(bool val){
-        GenTerrain = val;
     }
 
     //test code for chunk generation
