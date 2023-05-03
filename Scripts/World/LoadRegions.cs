@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class LoadRegions : MonoBehaviour
 {
-    [SerializeField]
-    private World world;
 
     private int timer = 0;
 
@@ -32,8 +30,8 @@ public class LoadRegions : MonoBehaviour
     void Start()
     {
         for(int radius = 0; radius <= maxRegionRadius; radius++){
-            for(int x = 0; x <= radius; x++){
-                for(int z = 0; z <=radius; z++){
+            for(int x = -radius; x <= radius; x++){
+                for(int z = -radius; z <=radius; z++){
                     if((Mathf.Abs(x) == radius || Mathf.Abs(z) == radius) && MyMath.Hypothenuse(x,z) <= maxRegionRadius){
                         regionList.Add(new RegionPos(x,0,z));
                     }
@@ -78,7 +76,7 @@ public class LoadRegions : MonoBehaviour
         if(GenerateRegions()){return;}
         if(CreateRegions()){return;}
         if(CreateRegionColumn()){return;}
-        UpdateFullResRegions();
+        // UpdateFullResRegions();
     }
 
     private void UpdateFullResRegions(){
@@ -96,7 +94,7 @@ public class LoadRegions : MonoBehaviour
             if(regions.Count == 0){
                 regions = regionCol.GetRegionList();
                 loading = false;
-                world.AddRegionCol(regionCol);
+                World.GetWorld().AddRegionCol(regionCol);
             }
 
             foreach(RegionSurfacePos surfacePos in regions){
