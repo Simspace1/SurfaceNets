@@ -19,7 +19,7 @@ public class LoadRegions : MonoBehaviour
     private List<RegionPos> regionList = new List<RegionPos>();
 
     private RegionCol regionCol;
-    private List<Region> createdList = new List<Region>();
+    private List<Region> createList = new List<Region>();
     private List<Region> generateList = new List<Region>();
     private List<Region> updateList = new List<Region>();
     private List<Region> renderList = new List<Region>();
@@ -84,15 +84,39 @@ public class LoadRegions : MonoBehaviour
             if(regionCol.generating){
                 return;
             }
-            world.AddRegionCol(regionCol);
-            
+            List<RegionSurfacePos> regions = regionCol.GetLoadingRegions();
+            bool loading = true;
+            if(regions.Count == 0){
+                regions = regionCol.GetRegionList();
+                loading = false;
+                world.AddRegionCol(regionCol);
+            }
+
+            foreach(RegionSurfacePos surfacePos in regions){
+                createList.Add(regionCol.GetRegion(surfacePos.regionPos));
+            }
+
+            if(loading){
+                regionCol.clearLoadingList();
+            }
+            regionCol = null;
         }
         else{
             RegionCol col = null;
+            bool flag = false;
             foreach(RegionPos regionPos in regionList){
                 col = World.GetWorld().GetRegionCol(regionPos);
+
                 if(col != null && !col.IsComplete()){
-                    col.LoadRegions(playerPos);
+                    flag = col.LoadRegions(playerPos);
+                    if(flag){
+                        regionCol = col;
+                        break;
+                    }
+                }
+                else if(col == null){
+                    regionCol = new RegionCol(regionPos);
+                    break;
                 }
             }
         }

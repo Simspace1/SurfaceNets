@@ -244,5 +244,9 @@ public class RegionCol
         return loadingRegions;
     }
 
+    public void clearLoadingList(){
+        loadingRegions.Clear();
+    }
+
 
 }
