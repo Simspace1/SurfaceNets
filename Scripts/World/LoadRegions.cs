@@ -106,7 +106,8 @@ public class LoadRegions : MonoBehaviour
             RegionCol col = null;
             bool flag = false;
             foreach(RegionPos regionPos in regionList){
-                col = World.GetWorld().GetRegionCol(regionPos);
+                RegionPos pos = playerPos.GetColumn().Add(regionPos);
+                col = World.GetWorld().GetRegionCol(pos);
 
                 if(col != null && !col.IsComplete()){
                     flag = col.LoadRegions(playerPos);
@@ -116,7 +117,7 @@ public class LoadRegions : MonoBehaviour
                     }
                 }
                 else if(col == null){
-                    regionCol = new RegionCol(regionPos);
+                    regionCol = new RegionCol(pos);
                     break;
                 }
             }

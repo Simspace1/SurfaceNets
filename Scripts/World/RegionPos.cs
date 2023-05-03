@@ -66,6 +66,10 @@ public class RegionPos
         }
     }
 
+    public RegionPos Add(RegionPos pos){
+        return new RegionPos(x + pos.x, y + pos.y, z + pos.z);
+    }
+
 }
 
 public class RegionPosEqualityComparer : IEqualityComparer<RegionPos>
