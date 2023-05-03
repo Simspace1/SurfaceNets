@@ -33,7 +33,7 @@ public class LoadRegions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(DeleteRegions()){
+        if(Unload()){
             return;
         }
 
@@ -41,10 +41,16 @@ public class LoadRegions : MonoBehaviour
     }
 
     private void Load(){
-
+        
     }
 
-    private bool DeleteRegions(){
+    private bool Unload(){
         return false;
+    }
+
+    private void ListRemover<T>(List<T> mainList, List<T> removeList){
+        foreach(T obj in removeList){
+            mainList.Remove(obj);
+        }
     }
 }
