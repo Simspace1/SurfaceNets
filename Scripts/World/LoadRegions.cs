@@ -76,14 +76,19 @@ public class LoadRegions : MonoBehaviour
         if(UpdateRegions()){return;}
         if(GenerateRegions()){return;}
         if(CreateRegions()){return;}
-        CreateRegionColumn();
+        if(CreateRegionColumn()){return;}
+        UpdateFullResRegions();
     }
 
-    private void CreateRegionColumn()
+    private void UpdateFullResRegions(){
+        throw new NotImplementedException();
+    }
+
+    private bool CreateRegionColumn()
     {
         if(regionCol != null){
             if(regionCol.generating){
-                return;
+                return true;
             }
             List<RegionSurfacePos> regions = regionCol.GetLoadingRegions();
             bool loading = true;
@@ -101,6 +106,7 @@ public class LoadRegions : MonoBehaviour
                 regionCol.clearLoadingList();
             }
             regionCol = null;
+            return true;
         }
         else{
             RegionCol col = null;
@@ -113,14 +119,15 @@ public class LoadRegions : MonoBehaviour
                     flag = col.LoadRegions(playerPos);
                     if(flag){
                         regionCol = col;
-                        break;
+                        return true;
                     }
                 }
                 else if(col == null){
                     regionCol = new RegionCol(pos);
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
     }
 
