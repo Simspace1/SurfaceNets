@@ -215,7 +215,16 @@ public class LoadRegions : MonoBehaviour
 
     private bool RenderRegions()
     {
-        throw new NotImplementedException();
+        if(renderList.Count == 0){
+            return false;
+        }
+
+        foreach(Region region in renderList){
+            Debug.Assert(region.chunksUpdatedHalf || region.chunksUpdatedFull, "Chunks in region "+ region.regionPos.ToString() + " were not updated");
+            region.RenderAllChunks();
+        }
+        renderList.Clear();
+        return true;
     }
 
     private bool Unload(){
