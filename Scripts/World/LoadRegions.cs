@@ -10,7 +10,11 @@ public class LoadRegions : MonoBehaviour
     public static int maxRegionRadius = 10;
     public static int fullResRegionRadius = 2;
 
-    List<RegionPos> regionList = new List<RegionPos>();
+    private List<RegionPos> regionList = new List<RegionPos>();
+
+    private List<ChunkRegion2> generateList = new List<ChunkRegion2>();
+    private List<ChunkRegion2> updateList = new List<ChunkRegion2>();
+    private List<ChunkRegion2> renderList = new List<ChunkRegion2>();
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +33,18 @@ public class LoadRegions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(DeleteRegions()){
+            return;
+        }
+
+        Load();
+    }
+
+    private void Load(){
+
+    }
+
+    private bool DeleteRegions(){
+        return false;
     }
 }
