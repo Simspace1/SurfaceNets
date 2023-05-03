@@ -19,6 +19,8 @@ public class RegionCol
     private List<RegionSurfacePos> regionList = new List<RegionSurfacePos>();
     private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
+    private List<RegionSurfacePos> loadingRegions = new List<RegionSurfacePos>();
+
     public float [] minMax {get; private set;} = new float[2];
     private Dictionary<WorldPos, ColumnGen> gens = new Dictionary<WorldPos, ColumnGen>(World.worldPosEqC);
 
@@ -47,8 +49,11 @@ public class RegionCol
         // Generate(this);
     }
 
-    private void GenerateSavedRegion(List<Region> regions){
-
+    private void loadRegions(object state){
+        foreach(RegionSurfacePos surfacePos in loadingRegions){
+            throw new NotImplementedException("Loading of regions not implemented yet");
+        }
+        generating = false;
     }
 
     private void Generate(object state){
@@ -214,6 +219,29 @@ public class RegionCol
 
     public List<RegionSurfacePos> GetNonLoadedRegionsList(){
         return nonLoadedRegionsList;
+    }
+
+
+    //loads unloaded regions that are in range of player
+    public bool LoadRegions(RegionPos playerpos){
+        foreach (RegionSurfacePos surfacePos in nonLoadedRegionsList){
+            if(surfacePos.regionPos.y <= playerpos.y + 10 && surfacePos.regionPos.y >= playerpos.y -10){
+                loadingRegions.Add(surfacePos);
+            }
+        }
+
+        if(loadingRegions.Count > 0){
+            generating = true;
+            ThreadPool.QueueUserWorkItem(loadRegions,this);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public List<RegionSurfacePos> GetLoadingRegions(){
+        return loadingRegions;
     }
 
 

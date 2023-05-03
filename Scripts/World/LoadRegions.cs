@@ -81,14 +81,20 @@ public class LoadRegions : MonoBehaviour
     private void CreateRegionColumn()
     {
         if(regionCol != null){
-            if(!regionCol.generated){
+            if(regionCol.generating){
                 return;
             }
             world.AddRegionCol(regionCol);
             
         }
         else{
-
+            RegionCol col = null;
+            foreach(RegionPos regionPos in regionList){
+                col = World.GetWorld().GetRegionCol(regionPos);
+                if(col != null && !col.IsComplete()){
+                    col.LoadRegions(playerPos);
+                }
+            }
         }
     }
 
