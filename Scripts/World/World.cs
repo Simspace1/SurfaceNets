@@ -777,4 +777,14 @@ public class World : MonoBehaviour
     public void AddChunkRegions(ChunkRegions region){
         chunkRegions.Add(region.GetPos(), region);
     }
+
+    public void AddRegionCol(RegionCol regionCol){
+        regionsColumns.Add(regionCol.regionPos,regionCol);
+    }
+
+    public RegionCol GetRegionCol(RegionPos pos){
+        RegionCol regionCol = null;
+        regionsColumns.TryGetValue(pos,out regionCol);
+        return regionCol;
+    }
 }
