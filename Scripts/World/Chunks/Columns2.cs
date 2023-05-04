@@ -25,8 +25,18 @@ public class Columns2
         int y = columnPos.yi;
         World world = World.GetWorld();
 
+        int min = Mathf.FloorToInt((region.regionCol.minMax[0]-Chunk2.chunkSize)/Chunk2.chunkSize)*Chunk2.chunkVoxels;
+        int max = Mathf.CeilToInt((region.regionCol.minMax[1]+Chunk2.chunkSize)/Chunk2.chunkSize)*Chunk2.chunkVoxels;
+
+        if(min < y){
+            min = y;
+        }
+        if(max > y + RegionCol.regionVoxels){
+            max = y+ RegionCol.regionVoxels;
+        }
+
         WorldPos pos = null;
-        for(int i = y; i < y+RegionCol.regionVoxels; i+=Chunk2.chunkVoxels){
+        for(int i = min; i < max; i+=Chunk2.chunkVoxels){
             pos = new WorldPos(columnPos.xi,i,columnPos.zi);
             Chunk2 chunk = world.CreateChunk(pos, region.regionObject);
             chunk.SetPos(pos);

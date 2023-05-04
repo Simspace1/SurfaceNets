@@ -14,6 +14,7 @@ public class MyThreadPool : MonoBehaviour
     private Queue<ThreadJob> postJobQueue = new Queue<ThreadJob>();
 
     private readonly object syncLock = new object();
+    private readonly object syncLock1 = new object();
 
     private List<MyThread> threads = new List<MyThread>();
 
@@ -54,12 +55,14 @@ public class MyThreadPool : MonoBehaviour
     }
 
     public static void QueuePostProcess(ThreadJob job){
-        if(job is ThreadJobChunk){
-            myThreadPool.postChunkQueue.Enqueue((ThreadJobChunk) job);
-        }
-        else{
-            myThreadPool.postJobQueue.Enqueue(job);
-        }
+        lock(myThreadPool.syncLock1){
+            if(job is ThreadJobChunk){
+                myThreadPool.postChunkQueue.Enqueue((ThreadJobChunk) job);
+            }
+            else{
+                myThreadPool.postJobQueue.Enqueue(job);
+            }
+        } 
     }
 
     public static void QueueJob(ThreadJob job){
@@ -77,6 +80,9 @@ public class MyThreadPool : MonoBehaviour
             if(job.postProcess){
                 job.PostProcess();
             }
+        }
+        else{
+            LoadRegions.NotifyRegionCol();
         }
     }
 

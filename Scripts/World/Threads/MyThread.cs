@@ -16,6 +16,7 @@ public class MyThread
 
     private void Start(){
         thread = new Thread(new ThreadStart(Process));
+        thread.Start();
     }
 
     public void Destroy(){
