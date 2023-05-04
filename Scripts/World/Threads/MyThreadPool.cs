@@ -22,7 +22,7 @@ public class MyThreadPool : MonoBehaviour
     void Start(){
         myThreadPool = this;
         for(int i = 0; i < 4; i++){
-            MyThread newThread = new MyThread(this);
+            MyThread newThread = new MyThread();
             threads.Add(newThread);
         }
     }
@@ -39,13 +39,13 @@ public class MyThreadPool : MonoBehaviour
     }
 
 
-    public ThreadJob GetNextJob(){
-        lock(syncLock){
-            if(chunkQueue.Count > 0 ){
-                return chunkQueue.Dequeue();
+    public static ThreadJob GetNextJob(){
+        lock(myThreadPool.syncLock){
+            if(myThreadPool.chunkQueue.Count > 0 ){
+                return myThreadPool.chunkQueue.Dequeue();
             }
-            else if(jobQueue.Count > 0){
-                return jobQueue.Dequeue();
+            else if(myThreadPool.jobQueue.Count > 0){
+                return myThreadPool.jobQueue.Dequeue();
             }
             else{
                 return null;
@@ -53,26 +53,22 @@ public class MyThreadPool : MonoBehaviour
         }  
     }
 
-    public void QueuePostProcess(ThreadJob job){
+    public static void QueuePostProcess(ThreadJob job){
         if(job is ThreadJobChunk){
-            postChunkQueue.Enqueue((ThreadJobChunk) job);
+            myThreadPool.postChunkQueue.Enqueue((ThreadJobChunk) job);
         }
         else{
-            postJobQueue.Enqueue(job);
+            myThreadPool.postJobQueue.Enqueue(job);
         }
     }
 
-    public static MyThreadPool GetThreadPool(){
-        return myThreadPool;
+    public static void QueueJob(ThreadJob job){
+        myThreadPool.jobQueue.Enqueue(job);
     }
 
-    public void QueueJob(ThreadJob job){
-        jobQueue.Enqueue(job);
-    }
-
-    public void QueueJob(ThreadJobChunk job){
-        chunkQueue.Enqueue(job);
-        chunksUpdating++;
+    public static void QueueJob(ThreadJobChunk job){
+        myThreadPool.chunkQueue.Enqueue(job);
+        myThreadPool.chunksUpdating++;
     }
 
     private void PostProcessJob(){

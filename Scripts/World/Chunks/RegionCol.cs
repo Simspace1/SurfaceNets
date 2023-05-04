@@ -275,6 +275,23 @@ public class RegionCol
         }
     }
 
+    public bool LoadRegions2(RegionPos playerPos){
+        foreach (RegionSurfacePos surfacePos in nonLoadedRegionsList){
+            if(surfacePos.regionPos.y <= playerPos.y + 10 && surfacePos.regionPos.y >= playerPos.y -10){
+                loadingRegions.Add(surfacePos);
+            }
+        }
+
+        if(loadingRegions.Count > 0){
+            generating = true;
+            MyThreadPool.QueueJob();
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     public List<RegionSurfacePos> GetLoadingRegions(){
         return loadingRegions;
     }

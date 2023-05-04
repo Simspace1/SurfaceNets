@@ -5,14 +5,12 @@ using System.Threading;
 
 public class MyThread
 {
-    private MyThreadPool threadPool;
     private ThreadJob threadJob;
     private Thread thread;
 
     private bool destroy = false;
 
-    public MyThread(MyThreadPool threadPool){
-        this.threadPool = threadPool;
+    public MyThread(){
         Start();
     }
 
@@ -26,13 +24,13 @@ public class MyThread
 
     private void Process(){
         while(!destroy){
-            threadJob = threadPool.GetNextJob();
+            threadJob = MyThreadPool.GetNextJob();
             if(threadJob == null){
                 Thread.Sleep(10);
             }
             else{
                 threadJob.Process();
-                threadPool.QueuePostProcess(threadJob);
+                MyThreadPool.QueuePostProcess(threadJob);
             }
         }
     }

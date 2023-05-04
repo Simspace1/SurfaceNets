@@ -26,7 +26,8 @@ public class LoadRegions : MonoBehaviour
     private bool chunksGenerating = false;
     private bool chunksUpdating = false;
 
-    private bool nextRegionCol = false;
+    private bool nextRegionCol = true;
+    private bool newRegionCol = false;
 
     // Start is called before the first frame update
     void Start()
@@ -139,14 +140,14 @@ public class LoadRegions : MonoBehaviour
 
     private void CreateRegionColumn2()
     {
-        if(nextRegionCol){
+        if(nextRegionCol && newRegionCol){
             World.GetWorld().AddRegionCol(regionCol);
-            FindCreateRegionCol();
+            newRegionCol = false;
+            nextRegionCol = !FindCreateRegionCol();
         }
-        else if(regionCol == null){
-            FindCreateRegionCol();
-        }
-        
+        else if(nextRegionCol){
+            nextRegionCol = !FindCreateRegionCol();
+        }        
     }
 
     private bool FindCreateRegionCol(){
@@ -157,8 +158,14 @@ public class LoadRegions : MonoBehaviour
 
             if(col == null){
                 regionCol = new RegionCol(pos,false);
-                MyThreadPool.GetThreadPool().QueueJob(new ThreadJobRegionColGen(regionCol));
+                MyThreadPool.QueueJob(new ThreadJobRegionColGen(regionCol));
+                newRegionCol = true;
                 return true;
+            }
+            else if(!col.IsComplete()){
+                if(col.LoadRegions2(playerPos)){
+                    return true;
+                }
             }
         }
         return false;
