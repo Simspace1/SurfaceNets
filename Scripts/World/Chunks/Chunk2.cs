@@ -128,20 +128,20 @@ public class Chunk2 : MonoBehaviour
         return true;
     }
 
-    public void UpdateFull(object stateIn){
+    public static void UpdateFull(object stateIn){
         Chunk2 chunk = (Chunk2) stateIn;
         //Updates surface points 
-        chunk.SurfacePoints(chunk);
+        SurfacePoints(chunk);
         //Makes mesh
-        chunk.UpdateChunk(chunk);
+        UpdateChunk(chunk);
     }
 
-    public void UpdateHalf(object stateIn){
+    public static void UpdateHalf(object stateIn){
         Chunk2 chunk = (Chunk2) stateIn;
         //Updates surface points 
-        chunk.SurfacePoints(chunk,2);
+        SurfacePoints(chunk,2);
         //Makes mesh
-        chunk.UpdateChunk(chunk);
+        UpdateChunk(chunk);
     }
 
     //NOT FUNCTIONAL
@@ -154,7 +154,7 @@ public class Chunk2 : MonoBehaviour
     // }
 
      // Main code for updating and calculating surface of the Chunk
-    private void UpdateChunk(Chunk2 chunk){
+    private static void UpdateChunk(Chunk2 chunk){
         MyMesh meshData = new MyMesh();
         meshData.useRenderDataForCol = true;
 
@@ -455,14 +455,14 @@ public class Chunk2 : MonoBehaviour
     // }
 
     //Calculates Surface points Dictionary
-    void SurfacePoints(Chunk2 chunk, int scale = 1){
+    private static void SurfacePoints(Chunk2 chunk, int scale = 1){
         SurfPt surfPt = null;
         chunk.surfPts = new Dictionary<Vector3, SurfPt>();
         float scaleSize = scale * voxelSize;;
         for(int y = 0;y <= chunkVoxels; y+= scale){
             for(int x = 0; x<= chunkVoxels; x+= scale){
                 for(int z = 0; z<= chunkVoxels; z+= scale){
-                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z,scale);
+                    surfPt = chunk.GetVoxel(x,y,z).FindSurfacePoint(chunk,x,y,z,scale);
                     if (surfPt != null){
                         surfPt.scale = scaleSize;
                         chunk.surfPts.Add(new Vector3(x*voxelSize,y*voxelSize,z*voxelSize), surfPt);
@@ -510,6 +510,10 @@ public class Chunk2 : MonoBehaviour
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;
+    }
+
+    public bool GetChunkRes(){
+        return column.region.fullRes;
     }
 
 }
