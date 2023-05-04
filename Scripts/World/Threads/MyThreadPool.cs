@@ -13,6 +13,8 @@ public class MyThreadPool : MonoBehaviour
     private Queue<ThreadJobChunk> postChunkQueue = new Queue<ThreadJobChunk>();
     private Queue<ThreadJob> postJobQueue = new Queue<ThreadJob>();
 
+    private readonly object syncLock = new object();
+
     private List<MyThread> threads = new List<MyThread>();
 
     void Start(){
@@ -24,20 +26,28 @@ public class MyThreadPool : MonoBehaviour
     }
 
     void Update(){
+        PostProcessJob();
+    }
 
+    void OnDestroy(){
+        foreach(MyThread thread in threads){
+            thread.Destroy();
+        }
     }
 
 
     public ThreadJob GetNextJob(){
-        if(chunkQueue.Count > 0 ){
-            return chunkQueue.Dequeue();
-        }
-        else if(jobQueue.Count > 0){
-            return jobQueue.Dequeue();
-        }
-        else{
-            return null;
-        }
+        lock(syncLock){
+            if(chunkQueue.Count > 0 ){
+                return chunkQueue.Dequeue();
+            }
+            else if(jobQueue.Count > 0){
+                return jobQueue.Dequeue();
+            }
+            else{
+                return null;
+            }
+        }  
     }
 
     public void FinishJob(ThreadJob job){
@@ -59,6 +69,15 @@ public class MyThreadPool : MonoBehaviour
 
     public void QueueJob(ThreadJobChunk job){
         chunkQueue.Enqueue(job);
+    }
+
+    private void PostProcessJob(){
+        if(postJobQueue.Count > 0){
+            ThreadJob job = postJobQueue.Dequeue();
+            if(job.postProcess){
+                job.PostProcess();
+            }
+        }
     }
 
 

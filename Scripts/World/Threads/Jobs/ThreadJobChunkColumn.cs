@@ -6,7 +6,7 @@ public class ThreadJobChunkColumn : ThreadJob
 {
     Columns2 column;
 
-    public ThreadJobChunkColumn(bool postProcess, Columns2 column) : base(postProcess){
+    public ThreadJobChunkColumn(Columns2 column) : base(true){
         this.column = column;
     }
 

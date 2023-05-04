@@ -6,7 +6,7 @@ public class ThreadJobChunk : ThreadJob
 {
     private Chunk2 chunk;
     
-    public ThreadJobChunk(bool postProcess, Chunk2 chunk) : base(postProcess){
+    public ThreadJobChunk(Chunk2 chunk) : base(true){
         this.chunk = chunk;
     }
 

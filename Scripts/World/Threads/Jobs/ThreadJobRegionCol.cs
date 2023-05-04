@@ -7,7 +7,7 @@ public class ThreadJobRegionCol : ThreadJob
     private RegionCol regionCol;
     private bool generated = false;
 
-    public ThreadJobRegionCol(bool postProcess, RegionCol regionCol) : base(postProcess){
+    public ThreadJobRegionCol(RegionCol regionCol) : base(true){
         this.regionCol = regionCol;
     }
 
