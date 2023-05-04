@@ -31,7 +31,8 @@ public class MyThread
                 Thread.Sleep(10);
             }
             else{
-                
+                threadJob.Process();
+                threadPool.QueuePostProcess(threadJob);
             }
         }
     }

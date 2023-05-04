@@ -53,7 +53,7 @@ public class MyThreadPool : MonoBehaviour
         }  
     }
 
-    public void FinishJob(ThreadJob job){
+    public void QueuePostProcess(ThreadJob job){
         if(job is ThreadJobChunk){
             postChunkQueue.Enqueue((ThreadJobChunk) job);
         }
