@@ -97,7 +97,7 @@ public class LoadRegions : MonoBehaviour
             if(regionCol.generating){
                 return true;
             }
-            List<RegionSurfacePos> regions = regionCol.GetLoadingRegions();
+            List<RegionSurfacePos> regions = new List<RegionSurfacePos>();
             bool loading = true;
             if(regions.Count == 0){
                 regions = regionCol.GetRegionList();
@@ -123,7 +123,7 @@ public class LoadRegions : MonoBehaviour
                 col = World.GetWorld().GetRegionCol(pos);
 
                 if(col != null && !col.IsComplete()){
-                    flag = col.LoadRegions(playerPos);
+                    // flag = col.LoadRegions(playerPos);
                     if(flag){
                         regionCol = col;
                         return true;
@@ -163,7 +163,7 @@ public class LoadRegions : MonoBehaviour
                 return true;
             }
             else if(!col.IsComplete()){
-                if(col.LoadRegions2(playerPos)){
+                if(col.LoadRegions(playerPos)){
                     return true;
                 }
             }

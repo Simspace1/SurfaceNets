@@ -19,7 +19,7 @@ public class RegionCol
     private List<RegionSurfacePos> regionList = new List<RegionSurfacePos>();
     private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
-    private List<RegionSurfacePos> loadingRegions = new List<RegionSurfacePos>();
+    private Queue<RegionSurfacePos> loadingRegions = new Queue<RegionSurfacePos>();
 
     public float [] minMax {get; private set;} = new float[2];
     private Dictionary<WorldPos, ColumnGen> gens = new Dictionary<WorldPos, ColumnGen>(World.worldPosEqC);
@@ -31,9 +31,10 @@ public class RegionCol
     public bool complete {get; private set;} = false;
     public bool modified {get; private set;} = false;
     public bool generating {get; private set;} = false;
+    public bool fullRes {get; private set;} = false;
 
 
-    public RegionCol(RegionPos pos, bool generate){
+    public RegionCol(RegionPos pos, bool generate, bool fullRes = false){
         regionPos = pos.GetColumn();
         if(generate){
             GenerateRegion();
@@ -258,33 +259,42 @@ public class RegionCol
 
 
     //loads unloaded regions that are in range of player
-    public bool LoadRegions(RegionPos playerpos){
-        foreach (RegionSurfacePos surfacePos in nonLoadedRegionsList){
-            if(surfacePos.regionPos.y <= playerpos.y + 10 && surfacePos.regionPos.y >= playerpos.y -10){
-                loadingRegions.Add(surfacePos);
-            }
-        }
+    // public bool LoadRegions(RegionPos playerpos){
+    //     foreach (RegionSurfacePos surfacePos in nonLoadedRegionsList){
+    //         if(surfacePos.regionPos.y <= playerpos.y + 10 && surfacePos.regionPos.y >= playerpos.y -10){
+    //             loadingRegions.Add(surfacePos);
+    //         }
+    //     }
 
+    //     if(loadingRegions.Count > 0){
+    //         generating = true;
+    //         ThreadPool.QueueUserWorkItem(loadRegions,this);
+    //         return true;
+    //     }
+    //     else{
+    //         return false;
+    //     }
+    // }
+
+    public bool LoadRegions(RegionPos playerPos){
         if(loadingRegions.Count > 0){
-            generating = true;
-            ThreadPool.QueueUserWorkItem(loadRegions,this);
-            return true;
-        }
-        else{
             return false;
         }
-    }
 
-    public bool LoadRegions2(RegionPos playerPos){
         foreach (RegionSurfacePos surfacePos in nonLoadedRegionsList){
             if(surfacePos.regionPos.y <= playerPos.y + 10 && surfacePos.regionPos.y >= playerPos.y -10){
-                loadingRegions.Add(surfacePos);
+                loadingRegions.Enqueue(surfacePos);
             }
+        }
+
+        foreach(RegionSurfacePos surfacePos1 in loadingRegions){
+            nonLoadedRegionsList.Remove(surfacePos1);
+            loadedRegionList.Add(surfacePos1);
         }
 
         if(loadingRegions.Count > 0){
             generating = true;
-            MyThreadPool.QueueJob();
+            MyThreadPool.QueueJob(new ThreadJobRegionColVert(this));
             return true;
         }
         else{
@@ -292,9 +302,36 @@ public class RegionCol
         }
     }
 
-    public List<RegionSurfacePos> GetLoadingRegions(){
-        return loadingRegions;
+    public void GenerateVertical(){
+        foreach(RegionSurfacePos surfacePos in loadingRegions){
+            throw new NotImplementedException("Loading of regions not implemented yet");
+        }
     }
+
+    public void CreateVertical(){
+        Region region = null;
+        foreach(RegionSurfacePos surfacePos in loadingRegions){
+            regions.TryGetValue(surfacePos.regionPos, out region);
+            if(region != null){
+                region.CreateAllChunks();
+            }
+        }
+    }
+
+    public void QueueVerticalUpdates(){
+        Region region = null;
+        while(loadingRegions.Count > 0){
+            RegionSurfacePos surfacePos = loadingRegions.Dequeue();
+            regions.TryGetValue(surfacePos.regionPos, out region);
+            if(region != null){
+                region.QueueAllChunkUpdates();
+            }
+        }
+    }
+
+    // public List<RegionSurfacePos> GetLoadingRegions(){
+    //     return loadingRegions;
+    // }
 
     public void ClearLoadingList(){
         loadingRegions.Clear();
