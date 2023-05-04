@@ -33,9 +33,11 @@ public class RegionCol
     public bool generating {get; private set;} = false;
 
 
-    public RegionCol(RegionPos pos){
+    public RegionCol(RegionPos pos, bool generate){
         regionPos = pos.GetColumn();
-        GenerateRegion();
+        if(generate){
+            GenerateRegion();
+        }
     }
 
     public RegionCol(WorldPos pos){
@@ -53,6 +55,39 @@ public class RegionCol
         foreach(RegionSurfacePos surfacePos in loadingRegions){
             throw new NotImplementedException("Loading of regions not implemented yet");
         }
+        generating = false;
+    }
+
+    public void Generate(){
+        if(generated){
+            return;
+        }
+
+        WorldPos pos = regionPos.ToWorldPos();
+        int x = pos.xi;
+        int z = pos.zi;
+
+        TerrainGen2 gen = World.GetWorld().gen;
+
+        minMax[0] = 0;
+        minMax[1] = 0;
+
+        WorldPos temp = null;
+        for(int i = x; i < (x+regionVoxels); i += Chunk2.chunkVoxels){
+            for(int j = z; j < (z+regionVoxels); j += Chunk2.chunkVoxels){
+                temp = new WorldPos(i,0,j);
+                ColumnGen colGen = gen.GenerateColumnGen(temp);
+                gens.Add(temp,colGen);
+                MinMaxHeights(colGen);
+            }
+        }
+
+        Debug.Assert(gens.Count == regionChunks* regionChunks, "RegionColumn "+ regionPos.ToColString()+ "has generated " + gens.Count + " ColumnGens instead of " + regionChunks*regionChunks);
+        Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+regionPos.ToColString()+ "has not generated minMax heights");
+
+        CreateGenRegions();
+
+        generated = true;
         generating = false;
     }
 
@@ -244,8 +279,20 @@ public class RegionCol
         return loadingRegions;
     }
 
-    public void clearLoadingList(){
+    public void ClearLoadingList(){
         loadingRegions.Clear();
+    }
+
+    public void CreateAllChunks(){
+        foreach(var regionEntry in regions){
+            regionEntry.Value.CreateAllChunks();
+        }
+    }
+
+    public void QueueAllChunkUpdates(){
+        foreach(var regionEntry in regions){
+            regionEntry.Value.QueueAllChunkUpdates();
+        }
     }
 
 

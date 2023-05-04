@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThreadJobChunkColum : ThreadJob
+public class ThreadJobChunkColumn : ThreadJob
 {
     Columns2 column;
 
-    public ThreadJobChunkColum(bool postProcess, Columns2 column) : base(postProcess){
+    public ThreadJobChunkColumn(bool postProcess, Columns2 column) : base(postProcess){
         this.column = column;
     }
 

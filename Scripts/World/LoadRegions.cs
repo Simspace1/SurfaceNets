@@ -102,7 +102,7 @@ public class LoadRegions : MonoBehaviour
             }
 
             if(loading){
-                regionCol.clearLoadingList();
+                regionCol.ClearLoadingList();
             }
             regionCol = null;
             return true;
@@ -122,7 +122,7 @@ public class LoadRegions : MonoBehaviour
                     }
                 }
                 else if(col == null){
-                    regionCol = new RegionCol(pos);
+                    regionCol = new RegionCol(pos,true);
                     return true;
                 }
             }

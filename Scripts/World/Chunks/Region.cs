@@ -153,4 +153,11 @@ public class Region
     public void SetSurface(bool surface){
         this.surface = surface;
     }
+
+    public void QueueAllChunkUpdates(){
+        MyThreadPool threadPool = MyThreadPool.GetThreadPool();
+        foreach(var colEntry in columns){  
+            threadPool.QueueJob(new ThreadJobChunkColumn(true, colEntry.Value));
+        }
+    }
 }
