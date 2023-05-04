@@ -2,17 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThreadJobChunkColum : MonoBehaviour
+public class ThreadJobChunkColum : ThreadJob
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    Columns2 column;
+
+    public ThreadJobChunkColum(bool postProcess, Columns2 column) : base(postProcess){
+        this.column = column;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public override void PostProcess(){
+        column.RenderChunks();
+    }
+
+    public override void Process(){
+        column.GenerateChunks();
+        if(column.GetColumnRes()){
+            column.UpdateChunksFull();
+        }
+        else{
+            column.UpdateChunksHalf();
+        }
     }
 }

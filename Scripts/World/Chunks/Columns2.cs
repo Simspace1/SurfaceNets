@@ -76,7 +76,9 @@ public class Columns2
         return false;
     }
 
-    
+    public bool GetColumnRes(){
+        return region.fullRes;
+    }    
 
 
 
