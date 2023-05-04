@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LoadRegions : MonoBehaviour
 {
-
+    private static LoadRegions loadRegions;
     private int timer = 0;
 
     public static int maxRegionRadius = 10;
@@ -26,9 +26,12 @@ public class LoadRegions : MonoBehaviour
     private bool chunksGenerating = false;
     private bool chunksUpdating = false;
 
+    private bool nextRegionCol = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        loadRegions = this;
         for(int radius = 0; radius <= maxRegionRadius; radius++){
             for(int x = -radius; x <= radius; x++){
                 for(int z = -radius; z <=radius; z++){
@@ -52,7 +55,7 @@ public class LoadRegions : MonoBehaviour
             return;
         }
 
-        Load();
+        Load2();
     }
 
     //Load/Create regions with priority, mostly from terrain modifications
@@ -77,6 +80,10 @@ public class LoadRegions : MonoBehaviour
         if(CreateRegions()){return;}
         if(CreateRegionColumn()){return;}
         // UpdateFullResRegions();
+    }
+
+    private void Load2(){
+        CreateRegionColumn2();
     }
 
     private void UpdateFullResRegions(){
@@ -128,6 +135,33 @@ public class LoadRegions : MonoBehaviour
             }
             return false;
         }
+    }
+
+    private void CreateRegionColumn2()
+    {
+        if(nextRegionCol){
+            World.GetWorld().AddRegionCol(regionCol);
+            FindCreateRegionCol();
+        }
+        else if(regionCol == null){
+            FindCreateRegionCol();
+        }
+        
+    }
+
+    private bool FindCreateRegionCol(){
+        RegionCol col = null;
+        foreach(RegionPos regionPos in regionList){
+            RegionPos pos = playerPos.GetColumn().Add(regionPos);
+            col = World.GetWorld().GetRegionCol(pos);
+
+            if(col == null){
+                regionCol = new RegionCol(pos,false);
+                MyThreadPool.GetThreadPool().QueueJob(new ThreadJobRegionColGen(regionCol));
+                return true;
+            }
+        }
+        return false;
     }
 
     private bool CreateRegions()
@@ -233,5 +267,13 @@ public class LoadRegions : MonoBehaviour
         foreach(T obj in removeList){
             mainList.Remove(obj);
         }
+    }
+
+    public static void NotifyRegionCol(){
+        loadRegions.SetNextRegionCol(true);
+    }
+
+    public void SetNextRegionCol(bool val){
+        nextRegionCol = val;
     }
 }
