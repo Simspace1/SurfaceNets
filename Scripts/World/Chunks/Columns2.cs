@@ -25,8 +25,8 @@ public class Columns2
         int y = columnPos.yi;
         World world = World.GetWorld();
 
-        int min = Mathf.FloorToInt((region.regionCol.minMax[0]-Chunk2.chunkSize)/Chunk2.chunkSize)*Chunk2.chunkVoxels;
-        int max = Mathf.CeilToInt((region.regionCol.minMax[1]+Chunk2.chunkSize)/Chunk2.chunkSize)*Chunk2.chunkVoxels;
+        int min = Mathf.FloorToInt((region.regionCol.minMax[0])/Chunk2.chunkSize)*Chunk2.chunkVoxels;
+        int max = Mathf.CeilToInt((region.regionCol.minMax[1])/Chunk2.chunkSize)*Chunk2.chunkVoxels;
 
         if(min < y){
             min = y;
