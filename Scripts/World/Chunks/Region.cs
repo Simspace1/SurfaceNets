@@ -157,7 +157,7 @@ public class Region
     public void QueueAllChunkUpdates(){
         MyThreadPool threadPool = MyThreadPool.GetThreadPool();
         foreach(var colEntry in columns){  
-            threadPool.QueueJob(new ThreadJobChunkColumn(true, colEntry.Value));
+            threadPool.QueueJob(new ThreadJobChunkColumn(colEntry.Value));
         }
     }
 }

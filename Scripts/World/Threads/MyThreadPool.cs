@@ -17,6 +17,8 @@ public class MyThreadPool : MonoBehaviour
 
     private List<MyThread> threads = new List<MyThread>();
 
+    private int chunksUpdating = 0;
+
     void Start(){
         myThreadPool = this;
         for(int i = 0; i < 4; i++){
@@ -26,6 +28,7 @@ public class MyThreadPool : MonoBehaviour
     }
 
     void Update(){
+        if(PostProcessJobChunk()){return;}
         PostProcessJob();
     }
 
@@ -69,6 +72,7 @@ public class MyThreadPool : MonoBehaviour
 
     public void QueueJob(ThreadJobChunk job){
         chunkQueue.Enqueue(job);
+        chunksUpdating++;
     }
 
     private void PostProcessJob(){
@@ -77,6 +81,22 @@ public class MyThreadPool : MonoBehaviour
             if(job.postProcess){
                 job.PostProcess();
             }
+        }
+    }
+
+    private bool PostProcessJobChunk(){
+        if(chunksUpdating > 0 && chunkQueue.Count == 0 && postChunkQueue.Count == chunksUpdating){
+            chunksUpdating = 0;
+            
+            ThreadJobChunk jobChunk = null;
+            while(postChunkQueue.Count > 0){
+                jobChunk = postChunkQueue.Dequeue();
+                jobChunk.PostProcess();
+            }
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
