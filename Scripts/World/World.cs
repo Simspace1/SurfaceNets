@@ -793,7 +793,7 @@ public class World : MonoBehaviour
     public List<RegionCol> CheckDestroyRegionColumns(RegionPos playerPos, int loadDistance){
         List<RegionCol> toDestroy = new List<RegionCol>();
         foreach(var colEntry in regionsColumns){
-            if(Vector3.Distance(new Vector3(colEntry.Key.x,0,colEntry.Key.z), new Vector3(playerPos.x,0,playerPos.z)) > loadDistance){
+            if(Mathf.Abs(colEntry.Key.x - playerPos.x) > loadDistance || Mathf.Abs(colEntry.Key.z - playerPos.z) > loadDistance){
                 toDestroy.Add(colEntry.Value);
             }
         }
@@ -805,5 +805,10 @@ public class World : MonoBehaviour
             regionsColumns.Remove(regionCol.regionPos);
             regionCol.Destroy();
         }
+    }
+
+    public List<Region> CheckChangeRegionResolution(int fullResRegionRadius){
+        List<Region> regions = new List<Region>();
+        return regions;
     }
 }

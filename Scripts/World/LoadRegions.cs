@@ -7,11 +7,12 @@ public class LoadRegions : MonoBehaviour
 {
     private static LoadRegions loadRegions;
     private int timer = 0;
+    private int resTimer = 0;
 
     public static int maxRegionRadius = 10;
     public static int fullResRegionRadius = 2;
     public static int regionColUpdates = 1;
-    public static int loadDistance =Mathf.CeilToInt(MyMath.Hypothenuse(10,10));
+    public static int loadDistance = maxRegionRadius+1;
 
     public static List<RegionPos> newRegionWaitList = new List<RegionPos>();
 
@@ -31,6 +32,7 @@ public class LoadRegions : MonoBehaviour
     private bool newRegionCol = false;
 
     private bool unloading = false;
+    private bool changingResolution = false;
 
     // Start is called before the first frame update
     void Start()
@@ -89,6 +91,10 @@ public class LoadRegions : MonoBehaviour
         if(!unloading && Unload()){
             return;
         }
+
+        // if(!changingResolution && ChangeResolution()){
+        //     return;
+        // }
 
         Load2();
     }
@@ -328,5 +334,22 @@ public class LoadRegions : MonoBehaviour
 
     public static void NotifiyUnloadingDone(){
         loadRegions.unloading = false;
+    }
+
+    public static void NotifiyChangeResolutionDone(){
+        loadRegions.changingResolution = false;
+    }
+
+    private bool ChangeResolution(){
+        if(resTimer < 20){
+            resTimer++;
+            return false;
+        }
+
+        resTimer = 0;
+        changingResolution = true;
+
+
+        return true;
     }
 }
