@@ -66,12 +66,16 @@ public class MyThreadPool : MonoBehaviour
     }
 
     public static void QueueJob(ThreadJob job){
-        myThreadPool.jobQueue.Enqueue(job);
+        lock(myThreadPool.syncLock){
+            myThreadPool.jobQueue.Enqueue(job);
+        }
     }
 
     public static void QueueJob(ThreadJobChunk job){
-        myThreadPool.chunkQueue.Enqueue(job);
-        myThreadPool.chunksUpdating++;
+        lock(myThreadPool.syncLock){
+            myThreadPool.chunkQueue.Enqueue(job);
+            myThreadPool.chunksUpdating++;
+        }
     }
 
     private void PostProcessJob(){
