@@ -307,7 +307,8 @@ public class LoadRegions : MonoBehaviour
         }
 
         timer = 0;
-        MyThreadPool.QueueJob(new ThreadJobUnloader(playerPos,loadDistance));
+        List<RegionCol> toDestroy = World.GetWorld().CheckDestroyRegionColumns(playerPos, loadDistance);
+        MyThreadPool.QueueJob(new ThreadJobUnloader(toDestroy));
         return true;
     }
 

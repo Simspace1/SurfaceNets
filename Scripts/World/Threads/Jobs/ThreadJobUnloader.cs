@@ -4,13 +4,10 @@ using UnityEngine;
 
 public class ThreadJobUnloader : ThreadJob
 {
-    private RegionPos playerPos;
-    private int loadDistance;
     List<RegionCol> toDestroy;
 
-    public ThreadJobUnloader(RegionPos playerPos, int loadDistance) : base(true){
-        this.playerPos = playerPos;
-        this.loadDistance = loadDistance;
+    public ThreadJobUnloader(List<RegionCol> toDestroy) : base(true){
+        this.toDestroy = toDestroy;
     }
 
     public override void PostProcess()
@@ -20,9 +17,7 @@ public class ThreadJobUnloader : ThreadJob
     }
 
     public override void Process()
-    {
-        toDestroy = World.GetWorld().CheckDestroyRegionColumns(playerPos, loadDistance);
-        
+    {       
         foreach(RegionCol regionCol in toDestroy){
             regionCol.Save();
         }

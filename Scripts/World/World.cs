@@ -56,9 +56,9 @@ public class World : MonoBehaviour
 
 
     // TEST VARS
-    RegionCol regionCol;
-    bool test = false;
-    bool test1 = false;
+    // RegionCol regionCol;
+    // bool test = false;
+    // bool test1 = false;
 
     Stopwatch stopwatch;
 
