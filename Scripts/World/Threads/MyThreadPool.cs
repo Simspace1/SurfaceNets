@@ -80,7 +80,10 @@ public class MyThreadPool : MonoBehaviour
 
     private void PostProcessJob(){
         if(postJobQueue.Count > 0){
-            ThreadJob job = postJobQueue.Dequeue();
+            ThreadJob job;
+            lock(myThreadPool.syncLock1){
+                job = postJobQueue.Dequeue();
+            }
             if(job.postProcess){
                 job.PostProcess();
             }

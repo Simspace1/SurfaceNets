@@ -167,4 +167,28 @@ public class Region
         }
         UnityEngine.Object.Destroy(regionObject);
     }
+
+    public void SetChunkUpdatedFull(bool val){
+        chunksUpdatedFull = val;
+    }
+
+    public void SetChunkUpdatedhalf(bool val){
+        chunksUpdatedHalf = val;
+    }
+
+    public void QueueRes(bool fullRes){
+        this.fullRes = fullRes;
+        foreach(var colEntry in columns){
+            MyThreadPool.QueueJob(new ThreadJobChangeChunkColumnResolution(colEntry.Value, fullRes));
+        }
+        
+        if(fullRes){
+            chunksUpdatedFull = true;
+            chunksUpdatedHalf = false;
+        }
+        else{
+            chunksUpdatedFull = false;
+            chunksUpdatedHalf = true;
+        }
+    }
 }

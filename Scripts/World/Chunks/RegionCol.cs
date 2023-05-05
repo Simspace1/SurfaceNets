@@ -349,6 +349,12 @@ public class RegionCol
     public void QueueAllChunkUpdates(){
         foreach(var regionEntry in regions){
             regionEntry.Value.QueueAllChunkUpdates();
+            if(regionEntry.Value.fullRes){
+                regionEntry.Value.SetChunkUpdatedFull(true);
+            }
+            else{
+                regionEntry.Value.SetChunkUpdatedhalf(true);
+            }
         }
     }
 
@@ -364,6 +370,21 @@ public class RegionCol
         foreach(var regionEntry in regions){
             regionEntry.Value.Destroy();
         }
+    }
+
+
+    public List<Region>[] CheckChangeRegionResolution(RegionPos playerPos, int fullResRegionRadius){
+        List<Region> regionsUpRes = new List<Region>();
+        List<Region> regionsDownRes = new List<Region>();
+        foreach(var regionEntry in regions){
+            if(regionEntry.Value.chunksUpdatedHalf && Mathf.Abs(regionEntry.Key.x - playerPos.x) <= fullResRegionRadius && Mathf.Abs(regionEntry.Key.z - playerPos.z) <= fullResRegionRadius && Mathf.Abs(regionEntry.Key.y - playerPos.y) <= fullResRegionRadius && !regionEntry.Value.fullRes){
+                regionsUpRes.Add(regionEntry.Value);
+            }
+            else if(regionEntry.Value.fullRes && regionEntry.Value.chunksUpdatedFull && (Mathf.Abs(regionEntry.Key.x - playerPos.x) > fullResRegionRadius || Mathf.Abs(regionEntry.Key.z - playerPos.z) > fullResRegionRadius || Mathf.Abs(regionEntry.Key.y - playerPos.y) > fullResRegionRadius)){
+                regionsDownRes.Add(regionEntry.Value);
+            }
+        }
+        return new List<Region>[]{regionsUpRes, regionsDownRes};
     }
 
 

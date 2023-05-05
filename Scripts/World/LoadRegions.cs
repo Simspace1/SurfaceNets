@@ -92,9 +92,9 @@ public class LoadRegions : MonoBehaviour
             return;
         }
 
-        // if(!changingResolution && ChangeResolution()){
-        //     return;
-        // }
+        if(!changingResolution && ChangeResolution()){
+            return;
+        }
 
         Load2();
     }
@@ -347,9 +347,12 @@ public class LoadRegions : MonoBehaviour
         }
 
         resTimer = 0;
+        List<Region>[] resRegions = World.GetWorld().CheckChangeRegionResolution(playerPos,fullResRegionRadius);
+        if(resRegions[0].Count == 0 && resRegions[1].Count == 0){
+            return true;
+        }
         changingResolution = true;
-
-
+        MyThreadPool.QueueJob(new ThreadJobChangeRegionResolution(resRegions[0],resRegions[1]));
         return true;
     }
 }

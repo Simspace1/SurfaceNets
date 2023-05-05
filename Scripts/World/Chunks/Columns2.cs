@@ -97,6 +97,15 @@ public class Columns2
         }
     }
 
+    public void ChangeResolution(bool fullRes){
+        if(fullRes){
+            UpdateChunksFull();
+        }
+        else{
+            UpdateChunksHalf();
+        }
+    }
+
 
 
 }

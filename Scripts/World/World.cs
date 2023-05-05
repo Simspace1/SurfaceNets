@@ -807,8 +807,15 @@ public class World : MonoBehaviour
         }
     }
 
-    public List<Region> CheckChangeRegionResolution(int fullResRegionRadius){
-        List<Region> regions = new List<Region>();
+    public List<Region>[] CheckChangeRegionResolution(RegionPos playerPos, int fullResRegionRadius){
+        List<Region>[] regions = new List<Region>[]{new List<Region>(), new List<Region>()};
+        List<Region>[] regionsTemp = new List<Region>[2];
+        foreach(var colEntry in regionsColumns){
+            regionsTemp = colEntry.Value.CheckChangeRegionResolution(playerPos,fullResRegionRadius);
+            regions[0].AddRange(regionsTemp[0]);
+            regions[1].AddRange(regionsTemp[1]);
+        }
         return regions;
     }
+
 }
