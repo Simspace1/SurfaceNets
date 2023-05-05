@@ -33,13 +33,44 @@ public class LoadRegions : MonoBehaviour
     void Start()
     {
         loadRegions = this;
-        for(int radius = 0; radius <= maxRegionRadius; radius++){
-            for(int x = -radius; x <= radius; x++){
-                for(int z = -radius; z <=radius; z++){
-                    if((Mathf.Abs(x) == radius || Mathf.Abs(z) == radius) && MyMath.Hypothenuse(x,z) <= maxRegionRadius){
-                        regionList.Add(new RegionPos(x,0,z));
-                    }
-                }
+
+        // for(int radius = 0; radius <= maxRegionRadius; radius++){
+        //     for(int x = -radius; x <= radius; x++){
+        //         for(int z = -radius; z <=radius; z++){
+        //             if((Mathf.Abs(x) == radius || Mathf.Abs(z) == radius) && MyMath.Hypothenuse(x,z) <= maxRegionRadius){
+        //                 regionList.Add(new RegionPos(x,0,z));
+        //             }
+        //         }
+        //     }
+        // }
+
+        for(int i = 0; i <= maxRegionRadius; i++){
+            if( i == 0){
+                regionList.Add(new RegionPos(i,0,i));
+            }
+            else{
+                regionList.Add(new RegionPos(i,0,0));
+                regionList.Add(new RegionPos(0,0,i));
+                regionList.Add(new RegionPos(-i,0,0));
+                regionList.Add(new RegionPos(0,0,-i));
+            }
+
+            for(int j = 1; j < i; j++){
+                regionList.Add(new RegionPos(i,0,j));
+                regionList.Add(new RegionPos(-j,0,i));
+                regionList.Add(new RegionPos(-i,0,-j));
+                regionList.Add(new RegionPos(j,0,-i));
+                regionList.Add(new RegionPos(i,0,-j));
+                regionList.Add(new RegionPos(j,0,i));
+                regionList.Add(new RegionPos(-i,0,j));
+                regionList.Add(new RegionPos(-j,0,-i));
+            }
+
+            if(i != 0){
+                regionList.Add(new RegionPos(i,0,-i));
+                regionList.Add(new RegionPos(i,0,i));
+                regionList.Add(new RegionPos(-i,0,i));
+                regionList.Add(new RegionPos(-i,0,-i));
             }
         }
     }
