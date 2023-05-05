@@ -338,6 +338,9 @@ public class RegionCol
     }
 
     public void CreateAllChunks(){
+        if(destroyed){
+            return;
+        }
         foreach(var regionEntry in regions){
             regionEntry.Value.CreateAllChunks();
         }
@@ -346,6 +349,20 @@ public class RegionCol
     public void QueueAllChunkUpdates(){
         foreach(var regionEntry in regions){
             regionEntry.Value.QueueAllChunkUpdates();
+        }
+    }
+
+    public void Save(){
+        if(modified){
+            throw new NotImplementedException("Saving of RegionCol not implemented yet");
+        }
+    }
+
+    public void Destroy(){
+        destroyed = true;
+        
+        foreach(var regionEntry in regions){
+            regionEntry.Value.Destroy();
         }
     }
 

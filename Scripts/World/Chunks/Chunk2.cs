@@ -14,6 +14,8 @@ public class Chunk2 : MonoBehaviour
     public const int chunkVoxels = 16;
     public const float sDistLimit = 0.9f;//3f*voxelSize;  // 10000000;
 
+    public bool destroyed {get; private set;} = false;
+
     [SerializeField]
     private WorldPos pos;
     public WorldPos chunkPos {get => pos; private set => pos = value;}
@@ -130,6 +132,9 @@ public class Chunk2 : MonoBehaviour
 
     public static void UpdateFull(object stateIn){
         Chunk2 chunk = (Chunk2) stateIn;
+        if(chunk.destroyed){
+            return;
+        }
         //Updates surface points 
         SurfacePoints(chunk);
         //Makes mesh
@@ -138,6 +143,9 @@ public class Chunk2 : MonoBehaviour
 
     public static void UpdateHalf(object stateIn){
         Chunk2 chunk = (Chunk2) stateIn;
+        if(chunk.destroyed){
+            return;
+        }
         //Updates surface points 
         SurfacePoints(chunk,2);
         //Makes mesh
@@ -473,7 +481,11 @@ public class Chunk2 : MonoBehaviour
     }
 
     //Render Chunk Mesh
-    public void RenderMesh(){        
+    public void RenderMesh(){ 
+        if(destroyed){
+            return;
+        }
+
         rendered = true;
         filter.mesh.Clear();
         filter.mesh.vertices = meshData.vertices.ToArray();
@@ -514,6 +526,10 @@ public class Chunk2 : MonoBehaviour
 
     public bool GetChunkRes(){
         return column.region.fullRes;
+    }
+
+    public void Destroy(){
+        destroyed = true;
     }
 
 }

@@ -159,4 +159,12 @@ public class Region
             MyThreadPool.QueueJob(new ThreadJobChunkColumn(colEntry.Value));
         }
     }
+
+    public void Destroy(){
+        destroyed = true;
+        foreach(var colEntry in columns){
+            colEntry.Value.Destroy();
+        }
+        UnityEngine.Object.Destroy(regionObject);
+    }
 }

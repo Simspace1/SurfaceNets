@@ -787,4 +787,23 @@ public class World : MonoBehaviour
         regionsColumns.TryGetValue(pos,out regionCol);
         return regionCol;
     }
+
+
+    //Method to identify which regionColumns must be removed
+    public List<RegionCol> CheckDestroyRegionColumns(RegionPos playerPos, int loadDistance){
+        List<RegionCol> toDestroy = new List<RegionCol>();
+        foreach(var colEntry in regionsColumns){
+            if(Vector3.Distance(new Vector3(colEntry.Key.x,0,colEntry.Key.z), new Vector3(playerPos.x,0,playerPos.z)) > loadDistance){
+                toDestroy.Add(colEntry.Value);
+            }
+        }
+        return toDestroy;
+    }
+
+    public void DestroyRegionColumns(List<RegionCol> toDestroy){
+        foreach(RegionCol regionCol in toDestroy){
+            regionsColumns.Remove(regionCol.regionPos);
+            regionCol.Destroy();
+        }
+    }
 }

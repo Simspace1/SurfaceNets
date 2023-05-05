@@ -88,7 +88,14 @@ public class Columns2
 
     public bool GetColumnRes(){
         return region.fullRes;
-    }    
+    }
+
+    public void Destroy(){
+        destroyed = true;
+        foreach(var chunkEntry in chunks){
+            chunkEntry.Value.Destroy();
+        }
+    }
 
 
 

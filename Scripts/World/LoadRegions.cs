@@ -11,6 +11,7 @@ public class LoadRegions : MonoBehaviour
     public static int maxRegionRadius = 10;
     public static int fullResRegionRadius = 2;
     public static int regionColUpdates = 1;
+    public static int loadDistance =Mathf.CeilToInt(MyMath.Hypothenuse(10,10));
 
     public static List<RegionPos> newRegionWaitList = new List<RegionPos>();
 
@@ -28,6 +29,8 @@ public class LoadRegions : MonoBehaviour
 
     private bool nextRegionCol = true;
     private bool newRegionCol = false;
+
+    private bool unloading = false;
 
     // Start is called before the first frame update
     void Start()
@@ -79,11 +82,11 @@ public class LoadRegions : MonoBehaviour
     void Update()
     {
         UpdatePlayerPos();
-        if(LoadWaitList()){
-            return;
-        }
+        // if(LoadWaitList()){
+        //     return;
+        // }
 
-        if(Unload()){
+        if(!unloading && Unload()){
             return;
         }
 
@@ -298,7 +301,14 @@ public class LoadRegions : MonoBehaviour
     }
 
     private bool Unload(){
-        return false;
+        if(timer < 10){
+            timer++;
+            return false;
+        }
+
+        timer = 0;
+        MyThreadPool.QueueJob(new ThreadJobUnloader(playerPos,loadDistance));
+        return true;
     }
 
     private void ListRemover<T>(List<T> mainList, List<T> removeList){
@@ -313,5 +323,9 @@ public class LoadRegions : MonoBehaviour
 
     public void SetNextRegionCol(bool val){
         nextRegionCol = val;
+    }
+
+    public static void NotifiyUnloadingDone(){
+        loadRegions.unloading = false;
     }
 }
