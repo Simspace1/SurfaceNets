@@ -160,6 +160,9 @@ public class WorldPos
         return new WorldPos(xi,0,zi);
     }
     
+    public WorldPos Substract(WorldPos pos){
+        return new WorldPos(this.xi - pos.xi, this.yi - pos.yi, this.zi - pos.zi);
+    }
 }
 
 public class WorldPosEqualityComparer : IEqualityComparer<WorldPos>

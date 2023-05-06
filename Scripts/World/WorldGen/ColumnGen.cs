@@ -296,6 +296,10 @@ public class ColumnGen
         return heights;
     }
 
+    public float GetHeight(int xi, int zi){
+        return terrainHeight[xi+1,zi+1];
+    }
+
     public float[,] GetTerrainHeight(){
         return terrainHeight;
     }

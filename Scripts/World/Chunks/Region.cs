@@ -4,7 +4,11 @@ using UnityEngine;
 using System.Threading;
 using System;
 
-public class Region
+[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshCollider))]
+
+public class Region : MonoBehaviour
 {
     public RegionPos regionPos {get; private set;}
 
@@ -14,6 +18,10 @@ public class Region
     private Dictionary<WorldPos, Columns2> columns = new Dictionary<WorldPos, Columns2>(World.worldPosEqC);
 
     public GameObject regionObject {get; private set;}
+
+    private MeshFilter filter;
+    private MeshCollider coll;
+    private MyMesh meshData;   
 
     public bool generated {get; private set;} = false;
     public bool destroying {get; private set;} = false;
@@ -36,6 +44,13 @@ public class Region
         this.regionCol = regionCol;
 
         GenColumns();
+    }
+
+    void Start(){
+        if(filter == null) {
+            filter = gameObject.GetComponent<MeshFilter>();
+            coll = gameObject.GetComponent<MeshCollider>();
+        }
     }
 
     private void GenColumns(){
@@ -191,4 +206,107 @@ public class Region
             chunksUpdatedHalf = true;
         }
     }
+
+    public void SetRegionCol(RegionCol regionCol){
+        this.regionCol = regionCol;
+    }
+
+    public void SetRegionPos(RegionPos regionPos){
+        this.regionPos = regionPos;
+    }
+
+    public void GenerateCheapMesh(){
+        GenerateBadMesh();
+        // UpdateRegion(GenerateSurfacePoints(GenerateVoxelArray()));
+    }
+    
+    //Generates Mesh with only the generated surface
+    //IS NOT MEANT TO BE USED PERMANENTLY
+    //PLACEHOLDER
+    public void GenerateBadMesh(){
+        meshData = new MyMesh();
+        meshData.useRenderDataForCol = true;
+
+        Voxel voxel = new Voxel();
+        
+        WorldPos regionPos = this.regionPos.ToWorldPos();
+
+        float x,z;
+        foreach(var genEntry in regionCol.GetAllGens()){
+            WorldPos colPos = genEntry.Key.Substract(regionPos);
+            for(int xi = -1; xi < Chunk2.chunkVoxels+1; xi+=2){
+                for(int zi = -1; zi < Chunk2.chunkVoxels+1; zi+=2){
+                    x = colPos.x + xi*Chunk2.voxelSize;
+                    z = colPos.z + zi*Chunk2.voxelSize;
+                    if(CheckHeights(regionPos,genEntry.Value,xi,zi,2)){
+                        meshData.AddVertex(new Vector3(x+2*Chunk.voxelSize, genEntry.Value.GetHeight(xi+2,zi)-regionPos.y, z));
+                        meshData.AddVertex(new Vector3(x+2*Chunk.voxelSize, genEntry.Value.GetHeight(xi+2,zi+2)-regionPos.y, z+2*Chunk.voxelSize));
+                        meshData.AddVertex(new Vector3(x, genEntry.Value.GetHeight(xi,zi+2)-regionPos.y, z+2*Chunk.voxelSize));
+                        meshData.AddVertex(new Vector3(x, genEntry.Value.GetHeight(xi,zi)-regionPos.y, z));
+                        meshData.AddQuadTriangles();
+                        meshData.uv.AddRange(voxel.FaceUVs());
+                    }
+                }
+            }
+        }
+    }
+
+    private bool CheckHeights(WorldPos pos,ColumnGen gen, int xi, int zi, int inc){
+        float ymax = pos.y+RegionCol.regionSize;
+        float ymin = pos.y;
+        if((gen.GetHeight(xi,zi) >= ymin && gen.GetHeight(xi,zi) <= ymax) || (gen.GetHeight(xi+inc,zi) >= ymin && gen.GetHeight(xi+inc,zi) <= ymax) || (gen.GetHeight(xi,zi+inc) >= ymin && gen.GetHeight(xi,zi+inc) <= ymax) || (gen.GetHeight(xi+inc,zi+inc) >= ymin && gen.GetHeight(xi+inc,zi+inc) <= ymax)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private Voxel[,,] GenerateVoxelArray(){
+        throw new NotImplementedException("Generate Voxel array not implemented");   
+    }
+
+    private List<SurfPt> GenerateSurfacePoints(Voxel[,,] voxels){
+        throw new NotImplementedException("Generate Surface points not implemented");   
+    }
+
+    private void UpdateRegion(List<SurfPt> surfPts){
+        throw new NotImplementedException("UpdateRegion not implemented");   
+    }
+
+    public void RenderCheapMesh(){
+        if(destroyed){
+            return;
+        }
+
+        filter.mesh.Clear();
+        filter.mesh.vertices = meshData.vertices.ToArray();
+        filter.mesh.triangles = meshData.triangles.ToArray();
+        filter.mesh.SetUVs(0, meshData.uv);
+        filter.mesh.RecalculateNormals();
+
+        coll.sharedMesh = null;
+        Mesh mesh = new Mesh();
+        mesh.vertices = meshData.colVertices.ToArray();
+        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.RecalculateNormals();
+
+        coll.sharedMesh = mesh;
+    }
+
+    public void ActivateMesh(){
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        gameObject.GetComponent<MeshCollider>().enabled = true;
+    }
+
+    public void DeactivateMesh(){
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        gameObject.GetComponent<MeshCollider>().enabled = false;
+    }
+
+    private void GetGen(WorldPos pos){
+        
+    }
+
+    
 }

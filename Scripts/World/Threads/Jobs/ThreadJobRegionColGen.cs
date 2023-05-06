@@ -11,11 +11,11 @@ public class ThreadJobRegionColGen : ThreadJob
     }
 
     public override void PostProcess(){
-        regionCol.CreateAllChunks();
-        regionCol.QueueAllChunkUpdates();
+        regionCol.CreateAllRegions();
+        regionCol.QueueAllRegionUpdates();
     }
 
     public override void Process(){
-        regionCol.Generate();
+        regionCol.Generate2();
     }
 }

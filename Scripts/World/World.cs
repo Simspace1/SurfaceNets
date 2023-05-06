@@ -56,8 +56,8 @@ public class World : MonoBehaviour
 
 
     // TEST VARS
-    // RegionCol regionCol;
-    // bool test = false;
+    RegionCol regionCol;
+    bool test = false;
     // bool test1 = false;
 
     Stopwatch stopwatch;
@@ -83,7 +83,8 @@ public class World : MonoBehaviour
         //TEST CODE
         // stopwatch = new Stopwatch();
         // stopwatch.Start();
-        //regionCol = new RegionCol(new RegionPos(0,0,0));
+        // regionCol = new RegionCol(new RegionPos(0,0,0),false);
+        
         // stopwatch.Stop();
         // print("test " + stopwatch.ElapsedMilliseconds);
         
@@ -98,10 +99,16 @@ public class World : MonoBehaviour
 
     void Update()
     {
+        // if(!test){
+        //     test = true;
+        //     MyThreadPool.QueueJob(new ThreadJobRegionColGen(regionCol));
+        // }
+
         if (chunkUpdates.Count == 0){
             return;
         }
 
+        
         // if(regionCol.generated && !test){
         //     test = true;
         //     print("test ");
@@ -439,11 +446,23 @@ public class World : MonoBehaviour
 
 
     //Creates the "holder" gameobject for all chunks in a region
+    // DEPRECATED
     public GameObject CreateRegion(RegionPos rPos){
         WorldPos pos = rPos.ToWorldPos();
         GameObject regionObject = Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
         regionObject.name = "Region "+rPos.ToString();
         return regionObject;
+    }
+
+    //Create Region
+    public Region CreateRegion(RegionPos rPos, RegionCol rCol){
+        WorldPos pos = rPos.ToWorldPos();
+        GameObject regionObject = Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
+        regionObject.name = "Region "+rPos.ToString();
+        Region region = regionObject.GetComponent<Region>();
+        region.SetRegionCol(rCol);
+        region.SetRegionPos(rPos);
+        return region;
     }
 
 

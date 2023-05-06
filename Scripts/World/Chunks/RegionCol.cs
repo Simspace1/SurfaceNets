@@ -19,6 +19,8 @@ public class RegionCol
     private List<RegionSurfacePos> regionList = new List<RegionSurfacePos>();
     private Dictionary<RegionPos, Region> regions = new Dictionary<RegionPos, Region>(World.regionPosEqualityComparer);
 
+    private Queue<RegionSurfacePos> toCreateRegions = new Queue<RegionSurfacePos>();
+
     private Queue<RegionSurfacePos> loadingRegions = new Queue<RegionSurfacePos>();
 
     public float [] minMax {get; private set;} = new float[2];
@@ -31,10 +33,10 @@ public class RegionCol
     public bool complete {get; private set;} = false;
     public bool modified {get; private set;} = false;
     public bool generating {get; private set;} = false;
-    public bool fullRes {get; private set;} = false;
+    public bool fullRes {get; private set;} = true;
 
 
-    public RegionCol(RegionPos pos, bool generate, bool fullRes = false){
+    public RegionCol(RegionPos pos, bool generate){
         regionPos = pos.GetColumn();
         if(generate){
             GenerateRegion();
@@ -87,6 +89,39 @@ public class RegionCol
         Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+regionPos.ToColString()+ "has not generated minMax heights");
 
         CreateGenRegions();
+
+        generated = true;
+        generating = false;
+    }
+
+    public void Generate2(){
+        if(generated){
+            return;
+        }
+
+        WorldPos pos = regionPos.ToWorldPos();
+        int x = pos.xi;
+        int z = pos.zi;
+
+        TerrainGen2 gen = World.GetWorld().gen;
+
+        minMax[0] = 0;
+        minMax[1] = 0;
+
+        WorldPos temp = null;
+        for(int i = x; i < (x+regionVoxels); i += Chunk2.chunkVoxels){
+            for(int j = z; j < (z+regionVoxels); j += Chunk2.chunkVoxels){
+                temp = new WorldPos(i,0,j);
+                ColumnGen colGen = gen.GenerateColumnGen(temp);
+                gens.Add(temp,colGen);
+                MinMaxHeights(colGen);
+            }
+        }
+
+        Debug.Assert(gens.Count == regionChunks* regionChunks, "RegionColumn "+ regionPos.ToColString()+ "has generated " + gens.Count + " ColumnGens instead of " + regionChunks*regionChunks);
+        Debug.Assert(minMax[0] != 0 && minMax[1] != 0, "RegionColumn "+regionPos.ToColString()+ "has not generated minMax heights");
+
+        CreateGenRegions2();
 
         generated = true;
         generating = false;
@@ -175,6 +210,36 @@ public class RegionCol
         }
     }
 
+    private void CreateGenRegions2(){
+        int yMin = Mathf.FloorToInt((minMax[0]+regionSize/2)/regionSize);
+        int yMax = Mathf.FloorToInt((minMax[1]+regionSize/2)/regionSize);
+
+        RegionPos pos = null;
+        for(int i = yMin; i <= yMax; i++){
+            pos = new RegionPos(regionPos.x,i,regionPos.z);
+            if(WasSavedRegion(pos)){
+                throw new NotImplementedException("Loading of regions not implemented yet");
+                //Add region to loadedRegion list
+            }
+            else{
+                toCreateRegions.Enqueue(new RegionSurfacePos(pos, true));
+            }
+        }
+    }
+
+    public void CreateAllRegions(){
+        while(toCreateRegions.Count > 0){
+            RegionSurfacePos surfacePos = toCreateRegions.Dequeue();
+            CreateRegion(surfacePos.regionPos, surfacePos.surface);
+        }
+    }
+
+    public void QueueAllRegionUpdates(){
+        foreach(var regionEntry in regions){
+            MyThreadPool.QueueJob(new ThreadJobRegionCheapMesh(regionEntry.Value));
+        }
+    }
+
     private void CreateSurfaceRegions(){
         foreach(RegionSurfacePos surfacePos in savedRegionList){
             if(surfacePos.surface && !AlreadyCreated(surfacePos)){
@@ -216,7 +281,7 @@ public class RegionCol
     public void CreateRegion(RegionPos pos, bool genTerrain = false){
         if(destroying || destroyed || !regionPos.InColumn(pos))
             return;
-        Region region = new Region(pos,this);
+        Region region = World.GetWorld().CreateRegion(pos,this);
         AddRegion(region , genTerrain);
     }
 
@@ -224,6 +289,10 @@ public class RegionCol
         ColumnGen gen = null;
         gens.TryGetValue(pos.ToColumn(),out gen);
         return gen;
+    }
+
+    public Dictionary<WorldPos, ColumnGen> GetAllGens(){
+        return gens;
     }
 
     public List<RegionSurfacePos> GetRegionList(){
