@@ -37,6 +37,10 @@ public class Region : MonoBehaviour
     public bool chunksUpdatedHalf {get; private set;} = false;
     public bool chunksRendered {get; private set;} = false;
 
+    public bool realRegion {get; private set;} = false;
+
+    public int countCol {get; private set;} = 0;
+
     public Region(RegionPos pos, RegionCol regionCol){
         Debug.Assert(regionCol.regionPos.InColumn(pos), "Created a region "+ pos.ToString() +" in the Wrong RegionColumn " + regionCol.regionPos.ToColString());
 
@@ -51,9 +55,14 @@ public class Region : MonoBehaviour
             filter = gameObject.GetComponent<MeshFilter>();
             coll = gameObject.GetComponent<MeshCollider>();
         }
+        columns = new Dictionary<WorldPos, Columns2>(World.worldPosEqC);
+        savedColumnsList = new List<WorldPos>();
+
+        countCol = 0;
+        realRegion = false;
     }
 
-    private void GenColumns(){
+    public void GenColumns(){
         WorldPos pos = regionPos.ToWorldPos();
         int x = pos.xi;
         int y = pos.yi;
@@ -208,6 +217,28 @@ public class Region : MonoBehaviour
         }
     }
 
+    public void QueueLoadReal(bool real){
+        this.realRegion = real;
+        
+        if(real){
+            MyThreadPool.QueueJob(new ThreadJobRealLoader(this));
+        }
+        else{
+            MyThreadPool.QueueJob(new ThreadJobRealUnloader(this));
+        }
+    }
+
+    public void UnloadReal(){
+        ActivateMesh();
+        if(columns != null){
+            foreach(var colEntry in columns){
+                colEntry.Value.Destroy();
+            }
+            columns = null;
+        }
+        countCol = 0;
+    }
+
     public void SetRegionCol(RegionCol regionCol){
         this.regionCol = regionCol;
     }
@@ -298,15 +329,24 @@ public class Region : MonoBehaviour
     public void ActivateMesh(){
         gameObject.GetComponent<MeshRenderer>().enabled = true;
         gameObject.GetComponent<MeshCollider>().enabled = true;
+        realRegion = false;
     }
 
     public void DeactivateMesh(){
         gameObject.GetComponent<MeshRenderer>().enabled = false;
         gameObject.GetComponent<MeshCollider>().enabled = false;
+        realRegion = true;
     }
 
     private void GetGen(WorldPos pos){
         
+    }
+
+    public void AddColCount(){
+        countCol++;
+        if(countCol == 16){
+            realRegion = false;
+        }
     }
 
     

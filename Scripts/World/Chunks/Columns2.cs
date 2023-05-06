@@ -94,6 +94,7 @@ public class Columns2
         destroyed = true;
         foreach(var chunkEntry in chunks){
             chunkEntry.Value.Destroy();
+            World.GetWorld().DestroyChunk(chunkEntry.Value);
         }
     }
 

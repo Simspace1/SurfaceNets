@@ -504,6 +504,14 @@ public class World : MonoBehaviour
         column.chunkColumn.destroying = true;
     }
 
+    public void DestroyChunk(Chunk2 chunk){
+        if(chunk == null){
+            return;
+        }
+
+        Object.Destroy(chunk.gameObject);
+    }
+
     public Chunk GetChunk(float x, float y,float z){
         WorldPos pos = new WorldPos(x,y,z);
         return GetChunk(pos);
@@ -831,6 +839,17 @@ public class World : MonoBehaviour
         List<Region>[] regionsTemp = new List<Region>[2];
         foreach(var colEntry in regionsColumns){
             regionsTemp = colEntry.Value.CheckChangeRegionResolution(playerPos,fullResRegionRadius);
+            regions[0].AddRange(regionsTemp[0]);
+            regions[1].AddRange(regionsTemp[1]);
+        }
+        return regions;
+    }
+
+    public List<Region>[] CheckRealRegions(RegionPos playerPos, int realRegionsRadius){
+        List<Region>[] regions = new List<Region>[]{new List<Region>(), new List<Region>()};
+        List<Region>[] regionsTemp = new List<Region>[2];
+        foreach(var colEntry in regionsColumns){
+            regionsTemp = colEntry.Value.CheckRealRegions(playerPos,realRegionsRadius);
             regions[0].AddRange(regionsTemp[0]);
             regions[1].AddRange(regionsTemp[1]);
         }

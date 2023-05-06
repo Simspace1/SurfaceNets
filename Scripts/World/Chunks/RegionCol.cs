@@ -457,5 +457,18 @@ public class RegionCol
         return new List<Region>[]{regionsUpRes, regionsDownRes};
     }
 
+    public List<Region>[] CheckRealRegions(RegionPos playerPos, int realRegionsRadius){
+        List<Region> loadReal = new List<Region>();
+        List<Region> unloadReal = new List<Region>();
+        foreach(var regionEntry in regions){
+            if(!regionEntry.Value.realRegion && Mathf.Abs(regionEntry.Key.x - playerPos.x) <= realRegionsRadius && Mathf.Abs(regionEntry.Key.z - playerPos.z) <= realRegionsRadius && Mathf.Abs(regionEntry.Key.y - playerPos.y) <= realRegionsRadius){
+                loadReal.Add(regionEntry.Value);
+            }
+            else if(regionEntry.Value.realRegion && (Mathf.Abs(regionEntry.Key.x - playerPos.x) > realRegionsRadius || Mathf.Abs(regionEntry.Key.z - playerPos.z) > realRegionsRadius || Mathf.Abs(regionEntry.Key.y - playerPos.y) > realRegionsRadius)){
+                unloadReal.Add(regionEntry.Value);
+            }
+        }
+        return new List<Region>[]{loadReal,unloadReal};
+    }
 
 }

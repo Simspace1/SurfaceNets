@@ -12,11 +12,12 @@ public class ThreadJobChunkColumn : ThreadJob
 
     public override void PostProcess(){
         column.RenderChunks();
+        column.region.AddColCount();
     }
 
     public override void Process(){
         column.GenerateChunks();
-        if(column.GetColumnRes()){
+        if(true || column.GetColumnRes()){
             column.UpdateChunksFull();
         }
         else{

@@ -11,6 +11,7 @@ public class LoadRegions : MonoBehaviour
 
     public static int maxRegionRadius = 10;
     public static int fullResRegionRadius = 2;
+    public static int realRegionsRadius = 2;
     public static int regionColUpdates = 1;
     public static int loadDistance = maxRegionRadius+1;
 
@@ -33,6 +34,7 @@ public class LoadRegions : MonoBehaviour
 
     private bool unloading = false;
     private bool changingResolution = false;
+    private bool changingRealRegions = false;
 
     // Start is called before the first frame update
     void Start()
@@ -89,6 +91,10 @@ public class LoadRegions : MonoBehaviour
         // }
 
         if(!unloading && Unload()){
+            return;
+        }
+
+        if(!changingRealRegions && LoadRealRegions()){
             return;
         }
 
@@ -340,6 +346,10 @@ public class LoadRegions : MonoBehaviour
         loadRegions.changingResolution = false;
     }
 
+    public static void NotifyRealRegionsDone(){
+        loadRegions.changingRealRegions = false;
+    }
+
     private bool ChangeResolution(){
         if(resTimer < 20){
             resTimer++;
@@ -353,6 +363,22 @@ public class LoadRegions : MonoBehaviour
         }
         changingResolution = true;
         MyThreadPool.QueueJob(new ThreadJobChangeRegionResolution(resRegions[0],resRegions[1]));
+        return true;
+    }
+
+    private bool LoadRealRegions(){
+        if(resTimer < 20){
+            resTimer++;
+            return false;
+        }
+
+        resTimer = 0;
+        List<Region>[] regions = World.GetWorld().CheckRealRegions(playerPos,realRegionsRadius);
+        if(regions[0].Count == 0 && regions[1].Count == 0){
+            return true;
+        }
+        changingRealRegions = true;
+        MyThreadPool.QueueJob(new ThreadJobChangeRealRegions(regions[0],regions[1]));
         return true;
     }
 }
