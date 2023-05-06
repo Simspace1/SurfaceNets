@@ -88,9 +88,9 @@ public class LoadRegions : MonoBehaviour
         //     return;
         // }
 
-        // if(!unloading && Unload()){
-        //     return;
-        // }
+        if(!unloading && Unload()){
+            return;
+        }
 
         // if(!changingResolution && ChangeResolution()){
         //     return;

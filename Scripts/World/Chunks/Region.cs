@@ -177,10 +177,11 @@ public class Region : MonoBehaviour
 
     public void Destroy(){
         destroyed = true;
-        foreach(var colEntry in columns){
-            colEntry.Value.Destroy();
+        if(columns != null){
+            foreach(var colEntry in columns){
+                colEntry.Value.Destroy();
+            }
         }
-        UnityEngine.Object.Destroy(regionObject);
     }
 
     public void SetChunkUpdatedFull(bool val){

@@ -438,6 +438,7 @@ public class RegionCol
         
         foreach(var regionEntry in regions){
             regionEntry.Value.Destroy();
+            UnityEngine.Object.Destroy(regionEntry.Value.gameObject);
         }
     }
 
