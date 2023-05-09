@@ -17,7 +17,7 @@ public class Region : MonoBehaviour
     private List<WorldPos> savedColumnsList = new List<WorldPos>();
     private Dictionary<WorldPos, Columns2> columns = new Dictionary<WorldPos, Columns2>(World.worldPosEqC);
 
-    public GameObject regionObject {get; private set;}
+    // public GameObject regionObject {get; private set;}
 
     private MeshFilter filter;
     private MeshCollider coll;
@@ -37,7 +37,8 @@ public class Region : MonoBehaviour
     public bool chunksUpdatedHalf {get; private set;} = false;
     public bool chunksRendered {get; private set;} = false;
 
-    public bool realRegion {get; private set;} = false;
+    [SerializeField]
+    public bool realRegion  = false;
 
     public int countCol {get; private set;} = 0;
 
@@ -59,10 +60,12 @@ public class Region : MonoBehaviour
         savedColumnsList = new List<WorldPos>();
 
         countCol = 0;
-        realRegion = false;
     }
 
     public void GenColumns(){
+        // if(realRegion){
+        //     return;
+        // }
         WorldPos pos = regionPos.ToWorldPos();
         int x = pos.xi;
         int y = pos.yi;
@@ -117,7 +120,7 @@ public class Region : MonoBehaviour
 
     //test code for chunk generation
     public void CreateAllChunks(){
-        regionObject = World.GetWorld().CreateRegion(regionPos);
+        // regionObject = World.GetWorld().CreateRegion(regionPos);
 
         foreach(var colEntry in columns){
             colEntry.Value.CreateChunks();
@@ -218,7 +221,7 @@ public class Region : MonoBehaviour
     }
 
     public void QueueLoadReal(bool real){
-        this.realRegion = real;
+        // this.realRegion = real;
         
         if(real){
             MyThreadPool.QueueJob(new ThreadJobRealLoader(this));
@@ -229,12 +232,16 @@ public class Region : MonoBehaviour
     }
 
     public void UnloadReal(){
+        if(modified){
+
+        }
+        
         ActivateMesh();
         if(columns != null){
             foreach(var colEntry in columns){
                 colEntry.Value.Destroy();
             }
-            columns = null;
+            columns = new Dictionary<WorldPos, Columns2>();
         }
         countCol = 0;
     }
@@ -327,12 +334,18 @@ public class Region : MonoBehaviour
     }
 
     public void ActivateMesh(){
+        if(destroyed){
+            return;
+        }
         gameObject.GetComponent<MeshRenderer>().enabled = true;
         gameObject.GetComponent<MeshCollider>().enabled = true;
         realRegion = false;
     }
 
     public void DeactivateMesh(){
+        if(destroyed){
+            return;
+        }
         gameObject.GetComponent<MeshRenderer>().enabled = false;
         gameObject.GetComponent<MeshCollider>().enabled = false;
         realRegion = true;
@@ -345,8 +358,12 @@ public class Region : MonoBehaviour
     public void AddColCount(){
         countCol++;
         if(countCol == 16){
-            realRegion = false;
+            DeactivateMesh();
         }
+    }
+
+    public void SetRealRegion(bool realRegion){
+        this.realRegion = realRegion;
     }
 
     

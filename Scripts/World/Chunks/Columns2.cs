@@ -38,7 +38,7 @@ public class Columns2
         WorldPos pos = null;
         for(int i = min; i < max; i+=Chunk2.chunkVoxels){
             pos = new WorldPos(columnPos.xi,i,columnPos.zi);
-            Chunk2 chunk = world.CreateChunk(pos, region.regionObject);
+            Chunk2 chunk = world.CreateChunk(pos, region.gameObject);
             chunk.SetPos(pos);
             chunk.SetColumn(this);
             AddChunk(chunk);
@@ -96,6 +96,7 @@ public class Columns2
             chunkEntry.Value.Destroy();
             World.GetWorld().DestroyChunk(chunkEntry.Value);
         }
+        // chunks = new Dictionary<WorldPos, Chunk2>();
     }
 
     public void ChangeResolution(bool fullRes){

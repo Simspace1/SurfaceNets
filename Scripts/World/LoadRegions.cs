@@ -36,6 +36,9 @@ public class LoadRegions : MonoBehaviour
     private bool changingResolution = false;
     private bool changingRealRegions = false;
 
+    //TEST VARS
+    private bool unloadedOnce = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -94,15 +97,17 @@ public class LoadRegions : MonoBehaviour
             return;
         }
 
-        if(!changingRealRegions && LoadRealRegions()){
-            return;
-        }
-
-        // if(!changingResolution && ChangeResolution()){
+                // if(!changingResolution && ChangeResolution()){
         //     return;
         // }
 
-        Load2();
+        if(CreateRegionColumn2()){
+            return;
+        }
+
+        if(!changingRealRegions && LoadRealRegions()){
+            return;
+        }
     }
 
     //Load/Create regions with priority, mostly from terrain modifications
@@ -184,16 +189,21 @@ public class LoadRegions : MonoBehaviour
         }
     }
 
-    private void CreateRegionColumn2()
+    private bool CreateRegionColumn2()
     {
         if(nextRegionCol && newRegionCol){
             World.GetWorld().AddRegionCol(regionCol);
             newRegionCol = false;
             nextRegionCol = !FindCreateRegionCol();
+            return !nextRegionCol;
         }
         else if(nextRegionCol){
             nextRegionCol = !FindCreateRegionCol();
-        }        
+            return !nextRegionCol;
+        }     
+        else{
+            return false;
+        }   
     }
 
     private bool FindCreateRegionCol(){
@@ -320,6 +330,10 @@ public class LoadRegions : MonoBehaviour
 
         timer = 0;
         List<RegionCol> toDestroy = World.GetWorld().CheckDestroyRegionColumns(playerPos, loadDistance);
+        if(toDestroy.Count == 0){
+            return true;
+        }
+        unloading = true;
         MyThreadPool.QueueJob(new ThreadJobUnloader(toDestroy));
         return true;
     }
@@ -372,10 +386,16 @@ public class LoadRegions : MonoBehaviour
             return false;
         }
 
+        if(unloadedOnce){
+            print("test");
+        }
         resTimer = 0;
         List<Region>[] regions = World.GetWorld().CheckRealRegions(playerPos,realRegionsRadius);
         if(regions[0].Count == 0 && regions[1].Count == 0){
             return true;
+        }
+        if(regions[1].Count > 0){
+            unloadedOnce = true;
         }
         changingRealRegions = true;
         MyThreadPool.QueueJob(new ThreadJobChangeRealRegions(regions[0],regions[1]));

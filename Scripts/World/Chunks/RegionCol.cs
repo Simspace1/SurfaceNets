@@ -462,13 +462,35 @@ public class RegionCol
         List<Region> unloadReal = new List<Region>();
         foreach(var regionEntry in regions){
             if(!regionEntry.Value.realRegion && Mathf.Abs(regionEntry.Key.x - playerPos.x) <= realRegionsRadius && Mathf.Abs(regionEntry.Key.z - playerPos.z) <= realRegionsRadius && Mathf.Abs(regionEntry.Key.y - playerPos.y) <= realRegionsRadius){
+            // if(!regionEntry.Value.realRegion && CheckCloseReal(regionEntry.Key,playerPos,realRegionsRadius)){    
                 loadReal.Add(regionEntry.Value);
+                regionEntry.Value.SetRealRegion(true);
             }
             else if(regionEntry.Value.realRegion && (Mathf.Abs(regionEntry.Key.x - playerPos.x) > realRegionsRadius || Mathf.Abs(regionEntry.Key.z - playerPos.z) > realRegionsRadius || Mathf.Abs(regionEntry.Key.y - playerPos.y) > realRegionsRadius)){
+            // else if(regionEntry.Value.realRegion && CheckTooFarReal(regionEntry.Key,playerPos,realRegionsRadius)){
                 unloadReal.Add(regionEntry.Value);
+                regionEntry.Value.SetRealRegion(false);
             }
         }
         return new List<Region>[]{loadReal,unloadReal};
     }
+
+    // private bool CheckTooFarReal(RegionPos pos1, RegionPos playerPos, int realRegionsRadius){
+    //     bool val = false;
+    //     if(Mathf.Abs(pos1.x - playerPos.x) > realRegionsRadius){
+    //         val = true;
+    //     }
+    //     else if( Mathf.Abs(pos1.z - playerPos.z) > realRegionsRadius){
+    //         val = true;
+    //     }
+    //     else if(Mathf.Abs(pos1.y - playerPos.y) > realRegionsRadius){
+    //         val = true;
+    //     }
+    //     return val;
+    // }
+
+    // private bool CheckCloseReal(RegionPos pos1, RegionPos playerPos, int realRegionsRadius){
+    //     return Mathf.Abs(pos1.x - playerPos.x) <= realRegionsRadius && Mathf.Abs(pos1.y - playerPos.y) <= realRegionsRadius && Mathf.Abs(pos1.z - playerPos.z) <= realRegionsRadius;
+    // }
 
 }

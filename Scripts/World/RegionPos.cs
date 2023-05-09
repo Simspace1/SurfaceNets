@@ -33,8 +33,7 @@ public class RegionPos
     }
 
     public RegionPos GetColumn(){
-        this.y = 0;
-        return this;
+        return new RegionPos(x,0,z);
     }
 
     public bool InColumn(RegionPos pos){
