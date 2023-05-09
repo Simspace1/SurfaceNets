@@ -164,7 +164,7 @@ public class Chunk2 : MonoBehaviour
      // Main code for updating and calculating surface of the Chunk
     private static void UpdateChunk(Chunk2 chunk){
         MyMesh meshData = new MyMesh();
-        meshData.useRenderDataForCol = true;
+        // meshData.useRenderDataForCol = true;
 
         // Booleans to check whether there is a connecting side mesh
         // bool side1= true,side2= true,side3= true,side4 = true;
@@ -485,40 +485,21 @@ public class Chunk2 : MonoBehaviour
         if(destroyed){
             return;
         }
-
         rendered = true;
+
+        Vector3[] vertices = meshData.vertices.ToArray();
+        int[] triangles = meshData.triangles.ToArray();
+
         filter.mesh.Clear();
-        filter.mesh.vertices = meshData.vertices.ToArray();
-        filter.mesh.triangles = meshData.triangles.ToArray();
+        filter.mesh.vertices = vertices;
+        filter.mesh.triangles = triangles;
         filter.mesh.SetUVs(0, meshData.uv);
-        if(splatter){
-            filter.mesh.SetUVs(1,meshData.uv2);
-            filter.mesh.SetUVs(2,meshData.uv3);
-            filter.mesh.SetUVs(3,meshData.uv4);
-        }
-        // filter.mesh.uv = meshData.uv.ToArray();
-        // filter.mesh.SetNormals(meshData.normals,0,meshData.vertices.Count);
         filter.mesh.RecalculateNormals();
-
-
-        // var myMaterial = GetComponent<Renderer>().material;
-        // List<Vector4> testing = new List<Vector4>();
-        // // Vector4[,,] testing2 = new Vector4[chunkVoxels,chunkVoxels,chunkVoxels];
-        // foreach (KeyValuePair<Vector3, SurfPt> entry in surfPts){
-        //     testing.Add(new Vector4(x,y,z,0f));
-        //     // int xi = Mathf.FloorToInt(x/voxelSize);
-        //     // int yi = Mathf.FloorToInt(y/voxelSize);
-        //     // int zi = Mathf.FloorToInt(z/voxelSize);
-        //     // testing2[xi,yi,zi] = new Vector4(x,y,z,0f);
-        // }
-        // myMaterial.SetVectorArray("_SurfPts", testing);
-
-        // var test = myMaterial.GetTexture("_MainTex");
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;

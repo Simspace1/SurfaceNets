@@ -264,7 +264,7 @@ public class Region : MonoBehaviour
     //PLACEHOLDER
     public void GenerateBadMesh(){
         meshData = new MyMesh();
-        meshData.useRenderDataForCol = true;
+        // meshData.useRenderDataForCol = true;
 
         Voxel voxel = new Voxel();
         
@@ -318,16 +318,19 @@ public class Region : MonoBehaviour
             return;
         }
 
+        Vector3[] vertices = meshData.vertices.ToArray();
+        int[] triangles = meshData.triangles.ToArray();
+
         filter.mesh.Clear();
-        filter.mesh.vertices = meshData.vertices.ToArray();
-        filter.mesh.triangles = meshData.triangles.ToArray();
+        filter.mesh.vertices = vertices;
+        filter.mesh.triangles = triangles;
         filter.mesh.SetUVs(0, meshData.uv);
         filter.mesh.RecalculateNormals();
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;

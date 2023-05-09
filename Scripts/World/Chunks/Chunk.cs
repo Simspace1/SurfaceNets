@@ -273,7 +273,7 @@ public class Chunk : MonoBehaviour
         SurfacePoints();
         
         MyMesh meshData = new MyMesh();
-        meshData.useRenderDataForCol = true;
+        // meshData.useRenderDataForCol = true;
 
         // Booleans to check whether there is a connecting side mesh
         // bool side1= true,side2= true,side3= true,side4 = true;
@@ -502,7 +502,7 @@ public class Chunk : MonoBehaviour
         state.SurfacePoints();
         
         MyMesh meshData = new MyMesh();
-        meshData.useRenderDataForCol = true;
+        // meshData.useRenderDataForCol = true;
 
         // Booleans to check whether there is a connecting side mesh
         // bool side1= true,side2= true,side3= true,side4 = true;
@@ -771,7 +771,7 @@ public class Chunk : MonoBehaviour
 
 
 
-
+    //OLD CODE Deprecated
     //Render Chunk Mesh
     public void RenderMesh(MyMesh meshData){
         rendered = true;
@@ -805,8 +805,8 @@ public class Chunk : MonoBehaviour
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = meshData.vertices.ToArray();
+        mesh.triangles = meshData.triangles.ToArray();
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;

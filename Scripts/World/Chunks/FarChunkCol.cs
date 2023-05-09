@@ -90,8 +90,8 @@ public class FarChunkCol : MonoBehaviour
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = meshData.vertices.ToArray();
+        mesh.triangles = meshData.triangles.ToArray();
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;
