@@ -12,8 +12,13 @@ public class FarChunkCol : MonoBehaviour
     public MyMesh meshData;
     [HideInInspector]
     public bool render = false;
+    [HideInInspector]
     public bool created = false;
+    [HideInInspector]
     public Columns col {get; private set;}
+    [HideInInspector]
+    public bool creating = false;
+    
 
 
     MeshFilter filter;
@@ -58,7 +63,7 @@ public class FarChunkCol : MonoBehaviour
                 meshData.uv.AddRange(voxels[xi,zi].FaceUVs());
             }
         }      
-        created = true;  
+        created = true; 
     }
 
     public void CreateFilter(){
@@ -85,8 +90,8 @@ public class FarChunkCol : MonoBehaviour
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = meshData.vertices.ToArray();
+        mesh.triangles = meshData.triangles.ToArray();
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;
@@ -111,5 +116,15 @@ public class FarChunkCol : MonoBehaviour
 
     public void SetColumn(Columns col){
         this.col = col;
+    }
+
+    public void SetCreating(){
+        creating = true;
+        col.updating = true;
+    }
+
+    public void SetNotCreating(){
+        creating = false;
+        col.updating = false;
     }
 }

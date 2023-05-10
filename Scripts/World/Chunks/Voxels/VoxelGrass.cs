@@ -6,12 +6,14 @@ using System;
 
 public class VoxelGrass : Voxel
 {
+   private static uint BlockID = 3;
    public VoxelGrass() : base(){
-
+      this.id = BlockID;
    }
 
-   public VoxelGrass(float sDistF) : base(){
-      this.sDistF = sDistF;
+   public VoxelGrass(float sDistF) : base(sDistF){
+      // this.sDistF = sDistF;
+      this.id = BlockID;
    }
 
    public override Tile TexturePosition(){

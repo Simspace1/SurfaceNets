@@ -10,8 +10,8 @@ public class LoadChunks : MonoBehaviour
     private World world;
 
     static List<Columns> farCreateList = new List<Columns>();
-    static List<Columns> createList1 = new List<Columns>();
-    static List<Columns> renderList1 = new List<Columns>();
+    static List<Columns> createList = new List<Columns>();
+    static List<Columns> renderList = new List<Columns>();
 
     FarChunkColThread farChunkColThread;
 
@@ -26,7 +26,7 @@ public class LoadChunks : MonoBehaviour
     private WorldPos[] chunkPositions = new WorldPos[loadDiameter*loadDiameter];
     private WorldPos[] farChunkPositions = new WorldPos[farLoadDiameter*farLoadDiameter];
 
-    // Stopwatch stopWatch = new Stopwatch();
+    Stopwatch stopWatch = new Stopwatch();
 
 
     // Start is called before the first frame update
@@ -62,7 +62,7 @@ public class LoadChunks : MonoBehaviour
             }
         }
         
-        // stopWatch.Start();
+        stopWatch.Start();
     }
 
     // Update is called once per frame
@@ -83,11 +83,26 @@ public class LoadChunks : MonoBehaviour
     void FindLoadCreateRenderColumns(){
         
 
-        List<Columns> createListRemover = new List<Columns>();
-        List<Columns> renderListRemover = new List<Columns>();
+        CreateFarChunksManager();
+
+        //Check for create ChunkColumn, if true there are more chunks creating thus we wait
+        if(CreateChunksManager()){
+            return;
+        }
+        //Check for render ChunkColumn, if true there are more chunks rendering thus we wait
+        else if(RenderChunksManager()){
+            return;
+        }
+        else{
+            //Creates the columns and populate the create lists
+            CreateColumnManager();
+        }
+        
+    }
+
+    private void CreateFarChunksManager(){
         List<Columns> farCreateListRemover = new List<Columns>();
 
-        
         //Creates and Render the FarChunkCols
         if(farCreateList.Count <= 0){
 
@@ -97,26 +112,31 @@ public class LoadChunks : MonoBehaviour
             foreach(Columns column in farCreateList){
                 column.farChunkCol = world.CreateFarChunkColumn(column);
                 farChunkCols.Add(column.farChunkCol);
+                column.farChunkCol.SetCreating();
                 farCreateListRemover.Add(column);
             }
             farChunkColThread = new FarChunkColThread(farChunkCols);
         }
         else if(!farChunkColThread.CreateCheck() && !farChunkColThread.rendered){
+            foreach(FarChunkCol farCol in farChunkColThread.farChunkCols){
+                farCreateListRemover.Add(farCol.col);
+            }
             farChunkColThread.Render();
         }
 
         foreach(Columns column in farCreateListRemover){
             farCreateList.Remove(column);
         }
-        
+    }
 
-
+    private bool CreateChunksManager(){
+        List<Columns> createListRemover = new List<Columns>();
         int i = 0;
         int j = 0;
 
         //Check for create ChunkColumn
         // int count = 0;
-        foreach(Columns column in createList1){
+        foreach(Columns column in createList){
             if(column.chunkColumn == null){
                 createListRemover.Add(column);
                 continue;
@@ -160,7 +180,7 @@ public class LoadChunks : MonoBehaviour
 
         //remove ChunkColumns from create list if they are done creating
         foreach(Columns column in createListRemover){
-            createList1.Remove(column);
+            createList.Remove(column);
         }
         //If there are any chunksColumns still creating wait for them to finish
         if(i > 0){
@@ -170,12 +190,18 @@ public class LoadChunks : MonoBehaviour
             // print("Chunk create check count: "+ count);
             // print("Creation Return: "+ stopWatch.ElapsedMilliseconds);
             
-            return;
+            return true;
         }
-        
+        else{
+            return false;
+        }
+    }
+
+    private bool RenderChunksManager(){
+        List<Columns> renderListRemover = new List<Columns>();
 
         //Check for render ChunkColumn
-        foreach(Columns column in renderList1){
+        foreach(Columns column in renderList){
             if(column.chunkColumn == null){
                 renderListRemover.Add(column);
                 continue;
@@ -194,30 +220,38 @@ public class LoadChunks : MonoBehaviour
 
         //remove ChunkColumns from render list if they are done rendering
         foreach(Columns column in renderListRemover){
-            renderList1.Remove(column);
+            renderList.Remove(column);
         }
 
         //If there are any chunksColumns still rendering wait for them to finish
-        if(renderList1.Count > 0 ){
+        if(renderList.Count > 0 ){
             // if(stopWatch.ElapsedMilliseconds > 10){
             //     print("Render Return: "+ stopWatch.ElapsedMilliseconds);
             // }
-            return;
+            return true;
         }
+        else{
+            return false;
+        }
+    }
 
-
-        
-
+    private void CreateColumnManager(){
         float pposx = Mathf.FloorToInt(transform.position.x/Chunk.chunkSize)*Chunk.chunkSize;
         float pposy = Mathf.FloorToInt(transform.position.y/Chunk.chunkSize)*Chunk.chunkSize;
         float pposz = Mathf.FloorToInt(transform.position.z/Chunk.chunkSize)*Chunk.chunkSize;
         WorldPos playerPos = new WorldPos(pposx,pposy,pposz);
-        i = 0;
+        int i = 0;
 
         foreach(WorldPos chunkColumnPos in farChunkPositions){
             if(chunkColumnPos == null){
                 break;
             }
+
+            // //Check end of farChunk Loading
+            // if(farChunkPositions[5168].Equals(chunkColumnPos)){
+            //     // stopWatch.Stop();
+            //     print("FarChunk Loading Time:  " + stopWatch.ElapsedMilliseconds);
+            // }
 
             //Create Pos for checking chunks
             WorldPos newChunkColumnPos = new WorldPos(chunkColumnPos.x+playerPos.x,0,chunkColumnPos.z+playerPos.z);
@@ -231,13 +265,20 @@ public class LoadChunks : MonoBehaviour
                     if(column.chunkColumn == null){
                         CreateAdjChunkColumns(newChunkColumnPos);
                         column.CreateChunkColumn();
-                        createList1.Add(column);
-                        renderList1.Add(column);
+                        createList.Add(column);
+                        renderList.Add(column);
                         i++;
+
+                        // //Check how long to load "all" chunks
+                        // if(WorldPos.Distance(playerPos, newChunkColumnPos) < loadDistance && WorldPos.Distance(playerPos, newChunkColumnPos) >= loadDistance-Chunk.chunkSize){
+                        //     // stopWatch.Stop();
+                        //     print("Chunk Loading:  " + stopWatch.ElapsedMilliseconds);
+                        // }
+                        
                     }
                     else if(column.chunkColumn.created && !column.chunkColumn.rendered){
                         CreateAdjChunkColumns(newChunkColumnPos);
-                        renderList1.Add(column);
+                        renderList.Add(column);
                         i++;
                     }
                 }
@@ -271,7 +312,7 @@ public class LoadChunks : MonoBehaviour
             if(columnAdj != null){
                 if(columnAdj.chunkColumn == null){
                     columnAdj.chunkColumn = new ChunkColumn(columnAdj);
-                    createList1.Add(columnAdj);
+                    createList.Add(columnAdj);
                 }
             }
             else{
@@ -279,7 +320,7 @@ public class LoadChunks : MonoBehaviour
                 world.AddColumns(posAdj, col);
                 farCreateList.Add(col);
                 col.CreateChunkColumn();
-                createList1.Add(col);
+                createList.Add(col);
             }
         }
     }
@@ -301,6 +342,10 @@ public class LoadChunks : MonoBehaviour
             toDestroy = world.CheckDestroyColumn(ppos,chunkDistance,columnDistance);
 
             foreach(Columns column in toDestroy){
+                if(farCreateList.Contains(column)){
+                    continue;
+                }
+                column.DestroyChunkColumn();
                 Columns.Destroy(column);
             }
             
@@ -311,7 +356,7 @@ public class LoadChunks : MonoBehaviour
 
     public static void CreateChunkColumn(Columns column){
         column.CreateChunkColumn();
-        createList1.Add(column);
+        createList.Add(column);
     }
 
     public static void RemoveColumnFLists(Columns column){
@@ -319,9 +364,10 @@ public class LoadChunks : MonoBehaviour
             farCreateList.Remove(column);
         }
         if(column.chunkColumn != null){
-            createList1.Remove(column);
-            renderList1.Remove(column);
+            createList.Remove(column);
+            renderList.Remove(column);
         }
     }
+  
 
 }

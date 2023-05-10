@@ -9,7 +9,7 @@ public class ColumnData
     public List<ChunkData> chunks;
 
     public ColumnData(ChunkColumn chunkColumn){
-        pos = chunkColumn.pos;
+        pos = chunkColumn.columnPos;
 
         chunks = new List<ChunkData>();
         foreach(Chunk chunk in chunkColumn.chunks){
@@ -18,7 +18,7 @@ public class ColumnData
     }
 
     public void Revert1(ChunkColumn col){
-        col.pos = pos;
+        col.columnPos = pos;
         col.loaded = true;
         col.chunks = new List<Chunk>();
     }
@@ -32,7 +32,7 @@ public class ColumnData
     public void Revert2(ChunkColumn col){
         foreach(ChunkData data in chunks){
             foreach(Chunk chunk in col.chunks){
-                if(WorldPos.Equals(chunk.pos, data.pos)){
+                if(WorldPos.Equals(chunk.GetPos(), data.pos)){
                     data.Revert(chunk);
                     break;
                 }

@@ -8,6 +8,8 @@ using Unity.Collections;
 
 public class World : MonoBehaviour
 {
+    private static World world;
+
     private string worldName = "world";
     private long worldSeed = 0;
 
@@ -16,31 +18,55 @@ public class World : MonoBehaviour
     [SerializeField]
     private GameObject chunkPrefab;
     [SerializeField]
+    private GameObject chunkPrefab2;
+    [SerializeField]
     private GameObject farChunkColumnPrefab;
+    [SerializeField]
+    private GameObject regionsPrefab;
+    [SerializeField]
+    private GameObject chunksContainer;
+    [SerializeField]
+    private GameObject regionsContainer;
 
 
-    static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
+    public static WorldPosEqualityComparer worldPosEqC = new WorldPosEqualityComparer();
+    public static RegionPosEqualityComparer regionPosEqualityComparer = new RegionPosEqualityComparer();
+    public static RegionPosColumnEqualityComparer regionPosColumnEqualityComparer = new RegionPosColumnEqualityComparer();
+
+    private Dictionary<RegionPos, RegionCol> regionsColumns = new Dictionary<RegionPos, RegionCol>(regionPosColumnEqualityComparer);
 
 
-    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(WorldPosEqC);
+    private Dictionary<WorldPos, Columns> chunkColumns = new Dictionary<WorldPos, Columns>(worldPosEqC);
 
     private List<Chunk> chunkUpdates = new List<Chunk>();
+
+    private Dictionary<WorldPos, ChunkRegions> chunkRegions = new Dictionary<WorldPos, ChunkRegions>(worldPosEqC);
 
     // private static float bottomWorldHeight = -1600;
 
     public static int maxChunkUpdates = 4;
 
-    private List<ChunkThread> chunkThreads = new List<ChunkThread>();
+    // private List<ChunkThread> chunkThreads = new List<ChunkThread>();
 
     [SerializeField]
-    private bool purgeSave = false;
+    public bool purgeSave  = false ;
 
     public TerrainGen2 gen {get; private set;}
 
 
+
+    // TEST VARS
+    RegionCol regionCol;
+    bool test = false;
+    // bool test1 = false;
+
+    Stopwatch stopwatch;
+
     // Start is called before the first frame update
     void Start()
     {
+        world = this;
+
         gen = new TerrainGen2(worldSeed);
         if(StaticWorld.worldName != null){
             worldName = StaticWorld.worldName;
@@ -53,7 +79,14 @@ public class World : MonoBehaviour
             SaveManager.SaveWorld(this);
         }
 
+
+        //TEST CODE
+        // stopwatch = new Stopwatch();
+        // stopwatch.Start();
+        // regionCol = new RegionCol(new RegionPos(0,0,0),false);
         
+        // stopwatch.Stop();
+        // print("test " + stopwatch.ElapsedMilliseconds);
         
 
         // Stopwatch stopwatch = new Stopwatch();
@@ -66,9 +99,40 @@ public class World : MonoBehaviour
 
     void Update()
     {
+        // if(!test){
+        //     test = true;
+        //     MyThreadPool.QueueJob(new ThreadJobRegionColGen(regionCol));
+        // }
+
         if (chunkUpdates.Count == 0){
             return;
         }
+
+        
+        // if(regionCol.generated && !test){
+        //     test = true;
+        //     print("test ");
+
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).CreateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).CreateAllChunks();
+
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).GenerateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).GenerateAllChunks();
+
+        //     var stopwatch = new Stopwatch();
+        //     stopwatch.Start();
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).UpdateAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).UpdateAllChunks();
+        //     stopwatch.Stop();
+
+
+        //     print("test 2 " + stopwatch.ElapsedMilliseconds + " ms, " +stopwatch.ElapsedTicks + " ticks" );
+        // }
+        // else if(test && !test1){
+        //     test1 = true;
+        //     regionCol.GetRegion(new RegionPos(0,0,0)).RenderAllChunks();
+        //     regionCol.GetRegion(new RegionPos(0,1,0)).RenderAllChunks();
+        // }
 
 
         // Stopwatch stopwatch = new Stopwatch();
@@ -83,7 +147,7 @@ public class World : MonoBehaviour
     }
 
     void OnDestroy(){
-        SaveAll();
+        // SaveAndQuit();
     }
 
     public void SaveAll(){
@@ -93,6 +157,28 @@ public class World : MonoBehaviour
             }  
         }
         SaveManager.SaveWorld(this);
+    }
+
+    public void SaveAndQuit(){
+        foreach(var regions in chunkRegions){
+            if(regions.Value.modified){
+                SaveManager.SaveChunkRegion(regions.Value);
+                regions.Value.modified = false;
+            }
+        }
+    }
+
+    public void Save(){
+        foreach(var regions in chunkRegions){
+            if(regions.Value.modified){
+                SaveManager.SaveChunkRegion(regions.Value);
+                regions.Value.modified = false;                
+            }
+        }
+    }
+
+    public static World GetWorld(){
+        return world;
     }
 
     
@@ -235,7 +321,10 @@ public class World : MonoBehaviour
                 chunkUpdateRemove.Add(chunk);
                 continue;
             }
-            if(chunk.updating && i <= maxChunkUpdates){
+            // else if(){
+
+            // }
+            else if(chunk.updating && i <= maxChunkUpdates){
                 if(chunk.CheckUpdateTh()){
                     i++;
                     continue;
@@ -268,8 +357,7 @@ public class World : MonoBehaviour
         //     print("SurfPtsTh Total: " + stopwatch.ElapsedMilliseconds);
         // }
     }
-
-    
+ 
 
 
     //     //Test Generation
@@ -298,43 +386,58 @@ public class World : MonoBehaviour
 
 
     public void CreateChunk(WorldPos pos, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
+        
 
         newChunk.SetPos(pos);
         newChunk.SetWorld(this);
 
         chunkColumn.chunks.Add(newChunk);
+        newChunk.col = chunkColumn;
 
+        if(chunkColumn.rendered || chunkColumn.created){
+            chunkColumn.col.gen.ChunkGenC2(newChunk);
+        }
         // newChunk = chunkColumn.col.gen.ChunkGenC2(newChunk);
 
         newChunk.update = true;
         chunkUpdates.Add(newChunk);
     }
 
+    public Chunk2 CreateChunk(WorldPos pos, GameObject regionObject){
+        GameObject newChunkObject = Instantiate(chunkPrefab2, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero), regionObject.transform) as GameObject;
+        Chunk2 newChunk = newChunkObject.GetComponent<Chunk2>();
+
+        return newChunk;
+    }
+
 
     //Creates chunk at chunkData location
     public void CreateChunkInst(ChunkData chunkData, ChunkColumn chunkColumn){
-        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(chunkData.pos.x,chunkData.pos.y,chunkData.pos.z), Quaternion.Euler(Vector3.zero), chunksContainer.transform) as GameObject;
         Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
         newChunk.SetPos(chunkData.pos);
         newChunk.SetWorld(this);
+
+        newChunk.col = chunkColumn;
 
         chunkColumn.chunks.Add(newChunk);
     }
 
 
 
-    public List<Chunk> CreateChunkColumn(List<WorldPos> column){
+    public List<Chunk> CreateChunkColumn(ChunkColumn col){
         List<Chunk> chunkList = new List<Chunk>();
 
-        foreach(WorldPos pos in column){
-            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        foreach(WorldPos pos in col.chunkColumn){
+            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(pos.x,pos.y,pos.z), Quaternion.Euler(Vector3.zero), chunksContainer.transform) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
             
             newChunk.SetPos(pos);
             newChunk.SetWorld(this);
+            newChunk.col = col;
 
             chunkList.Add(newChunk);
         }
@@ -342,8 +445,29 @@ public class World : MonoBehaviour
     }
 
 
+    //Creates the "holder" gameobject for all chunks in a region
+    // DEPRECATED
+    public GameObject CreateRegion(RegionPos rPos){
+        WorldPos pos = rPos.ToWorldPos();
+        GameObject regionObject = Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
+        regionObject.name = "Region "+rPos.ToString();
+        return regionObject;
+    }
+
+    //Create Region
+    public Region CreateRegion(RegionPos rPos, RegionCol rCol){
+        WorldPos pos = rPos.ToWorldPos();
+        GameObject regionObject = Instantiate(regionsPrefab, new Vector3(pos.x,pos.y,pos.z),Quaternion.Euler(Vector3.zero), regionsContainer.transform) as GameObject;
+        regionObject.name = "Region "+rPos.ToString();
+        Region region = regionObject.GetComponent<Region>();
+        region.SetRegionCol(rCol);
+        region.SetRegionPos(rPos);
+        return region;
+    }
+
+
     public FarChunkCol CreateFarChunkColumn(Columns col){
-        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero)) as GameObject;
+        GameObject newFarChunkColumnObject = Instantiate(farChunkColumnPrefab, new Vector3(col.pos.x,col.pos.y,col.pos.z), Quaternion.Euler(Vector3.zero),chunksContainer.transform) as GameObject;
         FarChunkCol newFarChunkColumn = newFarChunkColumnObject.GetComponent<FarChunkCol>();
 
         newFarChunkColumn.SetPos(col.pos);
@@ -378,6 +502,14 @@ public class World : MonoBehaviour
         }
 
         column.chunkColumn.destroying = true;
+    }
+
+    public void DestroyChunk(Chunk2 chunk){
+        if(chunk == null){
+            return;
+        }
+
+        Object.Destroy(chunk.gameObject);
     }
 
     public Chunk GetChunk(float x, float y,float z){
@@ -418,44 +550,47 @@ public class World : MonoBehaviour
     public Voxel GetVoxel(float x, float y, float z){
         Chunk containerChunk = GetChunk(x,y,z);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(x - containerChunk.pos.x, y - containerChunk.pos.y, z-containerChunk.pos.z);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxel(x - chunkPos.x, y - chunkPos.y, z-chunkPos.z);
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
     public Voxel GetVoxel(int xi, int yi, int zi){
         Chunk containerChunk = GetChunk(xi,yi,zi);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(xi - containerChunk.pos.xi, yi - containerChunk.pos.yi, zi-containerChunk.pos.zi);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxel(xi - chunkPos.xi, yi - chunkPos.yi, zi-chunkPos.zi);
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
     public Voxel GetVoxel(WorldPos pos){
         Chunk containerChunk = GetChunk(pos);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxel(WorldPos.Sub(pos, containerChunk.pos));
+            Voxel voxel = containerChunk.GetVoxel(WorldPos.Sub(pos, containerChunk.GetPos()));
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
     public Voxel GetVoxelDb(float x, float y, float z){
         Chunk containerChunk = GetChunk(x,y,z);
         if(containerChunk != null){
-            Voxel voxel = containerChunk.GetVoxelDb(x - containerChunk.pos.x, y - containerChunk.pos.y, z-containerChunk.pos.z);
+            WorldPos chunkPos = containerChunk.GetPos();
+            Voxel voxel = containerChunk.GetVoxelDb(x - chunkPos.x, y - chunkPos.y, z-chunkPos.z);
             return voxel;
         }
         else{
-            return new Voxel();
+            return new VoxelAir();
         }
     }
 
@@ -482,22 +617,27 @@ public class World : MonoBehaviour
     public void SetVoxel(WorldPos pos, Voxel voxel){
         Chunk chunk = GetChunk(pos);
         if(chunk != null){
-            int xi = pos.xi - chunk.pos.xi;
-            int yi = pos.yi - chunk.pos.yi;
-            int zi = pos.zi - chunk.pos.zi;
+            WorldPos chunkPos = chunk.GetPos();
+            int xi = pos.xi - chunkPos.xi;
+            int yi = pos.yi - chunkPos.yi;
+            int zi = pos.zi - chunkPos.zi;
             chunk.SetVoxel(new WorldPos(xi,yi,zi), voxel);
+            if(!chunk.col.modified && !chunk.col.col.region.CheckChunkColumns(chunk.GetPos())){
+                chunk.col.col.region.AddChunkColumn(chunk.col);
+            }
             chunk.modified = true;
+            chunk.col.modified = true;
             if(!chunk.update){
                 chunk.update = true;
                 chunkUpdates.Add(chunk);
             }
 
-            UpdateIfEqual(xi, 1, new WorldPos(chunk.pos.xi - Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi + Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(yi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi-Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi+Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(zi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi-Chunk.chunkVoxels));
-            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi+Chunk.chunkVoxels));
+            UpdateIfEqual(xi, 1, new WorldPos(chunkPos.xi - Chunk.chunkVoxels,chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi + Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(yi, 1, new WorldPos(chunkPos.xi, chunkPos.yi-Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi+Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(zi, 1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi-Chunk.chunkVoxels));
+            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi+Chunk.chunkVoxels));
 
         }
     }
@@ -505,22 +645,27 @@ public class World : MonoBehaviour
     public void SetSDistF(WorldPos pos, Voxel voxel, float sDistf){
         Chunk chunk = GetChunk(pos);
         if(chunk != null){
-            int xi = pos.xi - chunk.pos.xi;
-            int yi = pos.yi - chunk.pos.yi;
-            int zi = pos.zi - chunk.pos.zi;
+            WorldPos chunkPos = chunk.GetPos();
+            int xi = pos.xi - chunkPos.xi;
+            int yi = pos.yi - chunkPos.yi;
+            int zi = pos.zi - chunkPos.zi;
             chunk.SetSDistF(new WorldPos(xi,yi,zi), voxel, sDistf);
+            if(!chunk.col.modified && !chunk.col.col.region.CheckChunkColumns(chunk.GetPos())){
+                chunk.col.col.region.AddChunkColumn(chunk.col);
+            }
             chunk.modified = true;
+            chunk.col.modified = true;
             if(!chunk.update){
                 chunk.update = true;
                 chunkUpdates.Add(chunk);
             }
 
-            UpdateIfEqual(xi, 1, new WorldPos(chunk.pos.xi - Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi + Chunk.chunkVoxels, chunk.pos.yi, chunk.pos.zi));
-            UpdateIfEqual(yi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi-Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi+Chunk.chunkVoxels, chunk.pos.zi));
-            UpdateIfEqual(zi, 1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi-Chunk.chunkVoxels));
-            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunk.pos.xi, chunk.pos.yi, chunk.pos.zi+Chunk.chunkVoxels));
+            UpdateIfEqual(xi, 1, new WorldPos(chunkPos.xi - Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(xi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi + Chunk.chunkVoxels, chunkPos.yi, chunkPos.zi));
+            UpdateIfEqual(yi, 1, new WorldPos(chunkPos.xi, chunkPos.yi-Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(yi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi+Chunk.chunkVoxels, chunkPos.zi));
+            UpdateIfEqual(zi, 1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi-Chunk.chunkVoxels));
+            UpdateIfEqual(zi, Chunk.chunkVoxels-1, new WorldPos(chunkPos.xi, chunkPos.yi, chunkPos.zi+Chunk.chunkVoxels));
 
         }
     }
@@ -550,7 +695,7 @@ public class World : MonoBehaviour
                 if(column.chunkColumn != null){
                     bool found = false;
                     foreach(Chunk chunk in column.chunkColumn.chunks){
-                        if (WorldPos.Equals(chunk.pos, pos)){
+                        if (WorldPos.Equals(chunk.GetPos(), pos)){
                             found = true;
                             if(chunk.update){
                                 break;
@@ -612,6 +757,7 @@ public class World : MonoBehaviour
 
     public void AddColumns(WorldPos pos, Columns col){
         chunkColumns.Add(pos, col);
+        col.region = ChunkRegions.GetRegions(pos);
     }
 
     public Columns TryGetColumn(WorldPos pos){
@@ -637,7 +783,7 @@ public class World : MonoBehaviour
                 entry.Value.DestroyChunkColumn();
             }
 
-            if(distance >= columnDistance){
+            if(distance >= columnDistance && !entry.Value.updating){
                 toDestroy.Add(entry.Value);
             }
         }
@@ -648,4 +794,66 @@ public class World : MonoBehaviour
     public void RemoveColumns(WorldPos pos){
         chunkColumns.Remove(pos);
     }
+
+    public ChunkRegions GetChunkRegions(WorldPos pos){
+        ChunkRegions region = null;
+        chunkRegions.TryGetValue(pos, out region);
+        return region;
+    }
+
+    public void AddChunkRegions(ChunkRegions region){
+        chunkRegions.Add(region.GetPos(), region);
+    }
+
+    public void AddRegionCol(RegionCol regionCol){
+        regionsColumns.Add(regionCol.regionPos,regionCol);
+    }
+
+    public RegionCol GetRegionCol(RegionPos pos){
+        RegionCol regionCol = null;
+        regionsColumns.TryGetValue(pos,out regionCol);
+        return regionCol;
+    }
+
+
+    //Method to identify which regionColumns must be removed
+    public List<RegionCol> CheckDestroyRegionColumns(RegionPos playerPos, int loadDistance){
+        List<RegionCol> toDestroy = new List<RegionCol>();
+        foreach(var colEntry in regionsColumns){
+            if(Mathf.Abs(colEntry.Key.x - playerPos.x) > loadDistance || Mathf.Abs(colEntry.Key.z - playerPos.z) > loadDistance){
+                toDestroy.Add(colEntry.Value);
+            }
+        }
+        return toDestroy;
+    }
+
+    public void DestroyRegionColumns(List<RegionCol> toDestroy){
+        foreach(RegionCol regionCol in toDestroy){
+            regionsColumns.Remove(regionCol.regionPos);
+            regionCol.Destroy();
+        }
+    }
+
+    public List<Region>[] CheckChangeRegionResolution(RegionPos playerPos, int fullResRegionRadius){
+        List<Region>[] regions = new List<Region>[]{new List<Region>(), new List<Region>()};
+        List<Region>[] regionsTemp = new List<Region>[2];
+        foreach(var colEntry in regionsColumns){
+            regionsTemp = colEntry.Value.CheckChangeRegionResolution(playerPos,fullResRegionRadius);
+            regions[0].AddRange(regionsTemp[0]);
+            regions[1].AddRange(regionsTemp[1]);
+        }
+        return regions;
+    }
+
+    public List<Region>[] CheckRealRegions(RegionPos playerPos, int realRegionsRadius){
+        List<Region>[] regions = new List<Region>[]{new List<Region>(), new List<Region>()};
+        List<Region>[] regionsTemp = new List<Region>[2];
+        foreach(var colEntry in regionsColumns){
+            regionsTemp = colEntry.Value.CheckRealRegions(playerPos,realRegionsRadius);
+            regions[0].AddRange(regionsTemp[0]);
+            regions[1].AddRange(regionsTemp[1]);
+        }
+        return regions;
+    }
+
 }

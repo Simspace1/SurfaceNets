@@ -10,6 +10,10 @@ public class Columns
     public WorldPos pos;
     public ColumnGen gen {get; private set;}
 
+    public bool updating = false;
+
+    public ChunkRegions region;
+
     public Columns(World world, WorldPos pos, ColumnGen gen){
         this.world = world;
         this.pos = pos;
@@ -52,7 +56,16 @@ public class Columns
     }
 
     public void CreateChunkColumn(){
-        chunkColumn = new ChunkColumn(this);
+        ChunkColumn col = GetChunkColumnFromRegion(pos);
+        if(col != null && col.columnPos.Equals(pos)){
+            col.world = world;
+            col.col = this;
+            chunkColumn = col;
+        }
+        else{
+            chunkColumn = new ChunkColumn(this);
+        }
+        
     }
 
     public void RenderEndChunkColumn(){
@@ -108,5 +121,15 @@ public class Columns
         if(this.gen == null){
             this.gen = gen;
         }
+    }
+
+
+    private ChunkRegions GetRegions(WorldPos pos){
+        return ChunkRegions.GetRegions(pos);
+    }
+
+    private ChunkColumn GetChunkColumnFromRegion(WorldPos pos){
+        ChunkRegions region = GetRegions(pos);
+        return region.GetChunkColumn(pos);
     }
 }

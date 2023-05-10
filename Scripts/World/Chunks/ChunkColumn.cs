@@ -4,21 +4,46 @@ using UnityEngine;
 using System.Threading;
 
 public class ChunkColumn
-{
+{   
+    [System.NonSerialized]
     public World world;
-    public WorldPos pos;
+    
+    public WorldPos columnPos;
+    
     public List<WorldPos> chunkColumn = new List<WorldPos>();
+
+    [System.NonSerialized]
     public List<Chunk> chunks;
+
+    [SerializeField]
+    private List<string> saveChunks;
+
+    
+
+    [System.NonSerialized]
     public bool rendered = false;
+    [System.NonSerialized]
     public bool created = false;
+    [System.NonSerialized]
     public bool creating = false;
+    [System.NonSerialized]
     public bool rendering = false;
+    [System.NonSerialized]
     public bool destroying = false;
+    [System.NonSerialized]
     public bool creating2 = false;
+    [System.NonSerialized]
     public bool loaded = false;
+    [System.NonSerialized]
     public bool modified = false;
+    [System.NonSerialized]
+    private bool createTh1 = false;
+    [System.NonSerialized]
+    private bool createTh2 = false;
     private ColumnData data;
+    [System.NonSerialized]
     public string path = Application.persistentDataPath;
+    [System.NonSerialized]
     public Columns col;
 
 
@@ -35,29 +60,38 @@ public class ChunkColumn
 
     public ChunkColumn(Columns column){
         this.world = column.world;
-        this.pos = column.pos;
+        this.columnPos = column.pos;
         this.col = column;
-        CreateThread = new Thread(new ThreadStart(() => Create()));
-        CreateThread2 = new Thread(new ThreadStart(() => Create2()));
+        // CreateThread = new Thread(new ThreadStart(() => Create()));
+        // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
     }
 
 
     public void CreateStart(){
         creating = true;
+        createTh1 = true;
         // CreateThread = new Thread(new ThreadStart(() => Create()));
-        CreateThread.Start();
+        // CreateThread.Start();
+        ThreadPool.QueueUserWorkItem(Create);
     }
 
     public void CreateStart2(){
-        if(loaded){
-            data.ReCreateChunks(this);
-        }
-        else{
-            chunks = world.CreateChunkColumn(chunkColumn);
-        }
+        // if(loaded){
+        //     data.ReCreateChunks(this);
+
+        // }
+        // else{
+        chunks = world.CreateChunkColumn(this);
+        
+        // if(loaded){
+        //     JSONToChunk();
+        // }
+        // }
         // CreateThread2 = new Thread(new ThreadStart(() => Create2()));
         creating2 = true;
-        CreateThread2.Start();
+        createTh2 = true;
+        // CreateThread2.Start();
+        ThreadPool.QueueUserWorkItem(Create2);
     }
 
     // public void RenderStart(){
@@ -72,29 +106,15 @@ public class ChunkColumn
     //     DestroyThread.Start();
     // }
 
-    public bool CreateCheck(){
-        if(CreateThread.IsAlive){
-            return true;
-        }
-        else if(CreateThread2 == null){
-            creating2 = true;
-            CreateStart2();
-            return true;
-        }
-        else if(CreateThread2.IsAlive){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
+    
     public bool CreateCheck1(){
-        return CreateThread.IsAlive;
+        // return CreateThread.IsAlive;
+        return createTh1;
     }
 
     public bool CreateCheck2(){
-        return CreateThread2.IsAlive;
+        // return CreateThread2.IsAlive;
+        return createTh2;
     }
 
     // public bool RenderCheck(){
@@ -113,26 +133,26 @@ public class ChunkColumn
         // CreateThread2 = null;
     }
 
-    public void RenderEnd(){
 
-    }
-
-    public void DestroyEnd(){
-
-    }
-
-    void Create(){
-        if(world.GetWorldData().Contains(pos)){
-            loaded = true;
+    private void Create(object state){
+        
+        // if(world.GetWorldData().Contains(columnPos)){
+        //     loaded = true;
+        //     if(col.gen == null){
+        //         col.SetGen(world.gen.GenerateColumnGen(columnPos));
+        //     }
+        //     data = SaveManager.LoadChunkColumn(this);
+        //     data.Revert1(this);
+        // }
+        
+        if(loaded){
             if(col.gen == null){
-                col.SetGen(world.gen.GenerateColumnGen(pos));
+                col.SetGen(world.gen.GenerateColumnGen(columnPos));
             }
-            data = SaveManager.LoadChunkColumn(this);
-            data.Revert1(this);
         }
         else{
             if(col.gen == null){
-                col.SetGen(world.gen.GenerateColumnGen(pos));
+                col.SetGen(world.gen.GenerateColumnGen(columnPos));
             }
             float [] minMax = col.gen.minMax;
 
@@ -141,45 +161,48 @@ public class ChunkColumn
 
             WorldPos chunkPos;
             for(float y = min; y <= max; y +=Chunk.chunkSize){
-                chunkPos = new WorldPos(pos.x,y,pos.z);
+                chunkPos = new WorldPos(columnPos.x,y,columnPos.z);
                 chunkColumn.Add(chunkPos);
             }
         }
+        createTh1 = false;
     }
 
-    void Create2(){
+    private void Create2(object state){
         if(loaded){
-            data.Revert2(this);
+            // data.Revert2(this);
+            JSONToChunk();
         }
         else{
             foreach(Chunk chunk in chunks){
                 col.gen.ChunkGenC2(chunk);
             }
         }
+        createTh2 = false;
     }
 
 
     public void Render(){
-        if(loaded){
-            foreach(Chunk chunk in chunks){
-                if(chunk.meshData !=null){
-                    chunk.RenderMesh(chunk.meshData);
-                }
-                else{
-                    world.AddChunkUpdate(chunk);
-                    chunk.update = true;
-                }
-            }
-            rendered = true;
-            loaded = false;
-        }        
-        else{
+        // if(loaded){
+        //     foreach(Chunk chunk in chunks){
+        //         if(chunk.meshData !=null){
+        //             chunk.RenderMesh(chunk.meshData);
+        //         }
+        //         else{
+        //             world.AddChunkUpdate(chunk);
+        //             chunk.update = true;
+        //         }
+        //     }
+        //     rendered = true;
+        //     loaded = false;
+        // }        
+        // else{
             foreach(Chunk chunk in chunks){
                 world.AddChunkUpdate(chunk);
                 chunk.update = true;
             }
             rendered = true;
-        }    
+        // }
     }
 
     public bool CheckRendered(){
@@ -209,7 +232,7 @@ public class ChunkColumn
 
     public Chunk GetChunk(WorldPos pos){
         foreach(Chunk chunk in chunks){
-            if(chunk.pos.Equals(pos)){
+            if(chunk.GetPos().Equals(pos)){
                 return chunk;
             }
         }
@@ -232,6 +255,46 @@ public class ChunkColumn
             }
         }
         return false;
+    }
+
+    private void ChunksToJSON(){
+        saveChunks = new List<string>();
+
+        foreach(Chunk chunk in chunks){
+            saveChunks.Add(chunk.ChunkToJSON());
+        }
+    }
+
+    public string ChunkColumnToJSON(){
+        ChunksToJSON();
+        string save = JsonUtility.ToJson(this);
+        return save;
+    }
+
+    public static ChunkColumn JsonToChunkColumn(string save){
+        ChunkColumn col = JsonUtility.FromJson<ChunkColumn>(save);
+        col.loaded = true;
+        col = FixPos(col);
+        return col;
+    }
+
+    private static ChunkColumn FixPos(ChunkColumn col){
+        col.columnPos.FixfloatPos();
+        foreach(WorldPos pos in col.chunkColumn){
+            pos.FixfloatPos();
+        }
+        return col;
+    }
+
+    private void JSONToChunk(){
+        string[] save = saveChunks.ToArray();
+
+        int i = 0;
+        foreach(Chunk chunk in chunks){
+            chunk.JSONToChunk(save[i]);
+            i++;
+        }
+
     }
 
 }

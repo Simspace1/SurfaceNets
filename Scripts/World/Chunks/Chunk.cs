@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Collections;
 using System.Diagnostics;
+using System.Threading;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
 
-
+[System.Serializable]
 
 public class Chunk : MonoBehaviour
 {
@@ -16,34 +17,65 @@ public class Chunk : MonoBehaviour
     public const int chunkSize = 8;
     public const float voxelSize = 0.5f;
     public const int chunkVoxels = 16;
-    public const float sDistLimit = 3f*voxelSize;  // 10000000;
+    public const float sDistLimit =  2 ;//3f*voxelSize;  // 10000000;
     
+    // [SerializeField]
     private Voxel [, ,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
     private Dictionary<Vector3, SurfPt> surfPts = new Dictionary<Vector3, SurfPt>();
     static WorldPosEqualityComparer WorldPosEqC = new WorldPosEqualityComparer();
 
     [HideInInspector]
+    [System.NonSerialized]
     public bool update = false ;
     [HideInInspector]
+    [System.NonSerialized]
     public bool rendered = false;
+    [System.NonSerialized]
     public MyMesh meshData;
     [HideInInspector]
+    [System.NonSerialized]
     public bool modified = false;
 
-    private ChunkThread chunkthread;
+    // private ChunkThread chunkthread;
     [HideInInspector]
+    [System.NonSerialized]
     public bool updating = false;
     [HideInInspector]
+    [System.NonSerialized]
     public bool destoying = false;
+
+    [HideInInspector]
+    [System.NonSerialized]
+    public bool updateThread = false;
 
     private MeshFilter filter;
     private MeshCollider coll;
 
     public World world {get; private set;}
-    public WorldPos pos {get; private set;}
+    [SerializeField]
+    private WorldPos chunkPos;
 
     static bool splatter = false;
-    
+
+    [System.NonSerialized]
+    public ChunkColumn col;
+
+    // [HideInInspector]
+    // [System.NonSerialized]
+    // public bool created = false;
+
+    // [HideInInspector]
+    // [System.NonSerialized]
+    // public bool creating = false;
+
+    [System.Serializable]
+    private struct VoxelList{
+        public List<Voxel> voxels;
+    }
+
+    [SerializeField]
+    private VoxelList voxelList = new VoxelList();
+
 
 
     // Start is called before the first frame update
@@ -65,18 +97,50 @@ public class Chunk : MonoBehaviour
     public void StartUpdateTh(){
         updating = true;
         update = false;
-        chunkthread = new ChunkThread(this);
-        chunkthread.Start();
+        // chunkthread = new ChunkThread(this);
+        // chunkthread.Start();
+
+        updateThread = true;
+        ThreadPool.QueueUserWorkItem(UpdateChunk2, this);
     }
 
     public bool CheckUpdateTh(){
-        return chunkthread.IsAlive();
+        // return chunkthread.IsAlive();
+        return updateThread;
     }
 
     public void EndUpdateTh(){
         updating = false;
-        chunkthread = null;
+        // chunkthread = null;
         RenderMesh(meshData);
+
+        // VoxelsToList();
+        // string save = JsonUtility.ToJson(this);
+        // SaveManager.SaveChunkJSON(save);
+        // print(save);
+
+        // voxelList.voxels = null;
+
+        // JsonUtility.FromJsonOverwrite(save, this);
+
+        // Voxel[,,] voxelsTest = ListToVoxels();
+
+        // bool equals = true;
+        // for(int i =0; i < chunkVoxels; i++){
+        //     for(int j =0; j < chunkVoxels; j++){
+        //         for(int k =0; k < chunkVoxels; k++){
+        //             if(Voxel.Equals(voxels[i,j,k], voxelsTest[i,j,k])){
+        //                 continue;
+        //             }
+        //             else{
+        //                 equals = false;
+        //             }
+        //         }
+        //     }
+        // }
+        // print(equals);
+
+
     }
 
     
@@ -102,7 +166,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxel(pos.x+x,pos.y+y,pos.z+z);
+            return world.GetVoxel(chunkPos.x+x,chunkPos.y+y,chunkPos.z+z);
         }        
     } 
 
@@ -113,7 +177,7 @@ public class Chunk : MonoBehaviour
             int yi = Mathf.FloorToInt(y/voxelSize);
             int zi = Mathf.FloorToInt(z/voxelSize);
 
-            print("Pos x:"+(pos.x+x)+" y:"+(pos.y+y)+" z:"+(pos.z+z));
+            print("Pos x:"+(chunkPos.x+x)+" y:"+(chunkPos.y+y)+" z:"+(chunkPos.z+z));
             print("xi:"+xi+" yi:"+yi+" zi:"+zi);
 
 
@@ -128,7 +192,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxelDb(pos.x+x,pos.y+y,pos.z+z);
+            return world.GetVoxelDb(chunkPos.x+x,chunkPos.y+y,chunkPos.z+z);
         }        
     }
 
@@ -137,7 +201,7 @@ public class Chunk : MonoBehaviour
             return voxels[pos.xi,pos.yi,pos.zi];
         }
         else{
-            return world.GetVoxel(WorldPos.Add(this.pos,pos));
+            return world.GetVoxel(WorldPos.Add(this.chunkPos,pos));
         }
     }
 
@@ -147,7 +211,7 @@ public class Chunk : MonoBehaviour
             return voxels[xi,yi,zi];
         }
         else{
-            return world.GetVoxel(pos.xi+xi,pos.yi+yi,pos.zi+zi);
+            return world.GetVoxel(chunkPos.xi+xi,chunkPos.yi+yi,chunkPos.zi+zi);
         }
     }
 
@@ -156,7 +220,7 @@ public class Chunk : MonoBehaviour
             voxels[xi,yi,zi] = voxel;
         }
         else{
-            world.SetVoxel(WorldPos.Add(new WorldPos(xi,yi,zi),this.pos), voxel);
+            world.SetVoxel(WorldPos.Add(new WorldPos(xi,yi,zi),this.chunkPos), voxel);
         }
     }
 
@@ -165,7 +229,7 @@ public class Chunk : MonoBehaviour
             voxels[pos.xi,pos.yi,pos.zi] = voxel;
         }
         else{
-            world.SetVoxel(WorldPos.Add(this.pos,pos),voxel);
+            world.SetVoxel(WorldPos.Add(this.chunkPos,pos),voxel);
         }
     }
 
@@ -174,7 +238,7 @@ public class Chunk : MonoBehaviour
             voxels[pos.xi,pos.yi,pos.zi].sDistF = sDistf;
         }
         else{
-            world.SetSDistF(WorldPos.Add(this.pos,pos),voxel,sDistf);
+            world.SetSDistF(WorldPos.Add(this.chunkPos,pos),voxel,sDistf);
         }
     }
 
@@ -203,12 +267,13 @@ public class Chunk : MonoBehaviour
         return true;
     }
 
+    // Currently not in use because thread pool
     public void UpdateChunk(){
         //Updates surface points                   
         SurfacePoints();
         
         MyMesh meshData = new MyMesh();
-        meshData.useRenderDataForCol = true;
+        // meshData.useRenderDataForCol = true;
 
         // Booleans to check whether there is a connecting side mesh
         // bool side1= true,side2= true,side3= true,side4 = true;
@@ -429,6 +494,236 @@ public class Chunk : MonoBehaviour
         this.meshData = meshData;
     }
 
+    // Main code for updating and calculating surface of the Chunk
+    private void UpdateChunk2(object stateIn){
+
+        Chunk state = (Chunk) stateIn;
+        //Updates surface points                   
+        state.SurfacePoints();
+        
+        MyMesh meshData = new MyMesh();
+        // meshData.useRenderDataForCol = true;
+
+        // Booleans to check whether there is a connecting side mesh
+        // bool side1= true,side2= true,side3= true,side4 = true;
+        
+        //Variables and constants for convenience
+        Voxel voxel0, voxel1, voxel2, temp, temp2;
+        // float vS = voxelSize;
+        SurfPt surfpt1,surfpt2,surfpt3;
+        foreach (KeyValuePair<Vector3, SurfPt> entry in state.surfPts){
+            //Veryfy there is a value at the Key location in dictionary
+            if(entry.Value != null){
+                //Sets values for key and a voxel for easier access and reuse
+                float x = entry.Key.x, y = entry.Key.y, z = entry.Key.z;
+                voxel0 = state.GetVoxel(x,y,z);
+                voxel2 = state.GetVoxel(x+voxelSize,y+voxelSize,z+voxelSize);
+
+                //Verifys if the mesh is supposed to be formed in case of close surface points
+                voxel1 = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){
+                    //Checks if there are more surface points to form an mesh on the xz plane
+                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z+voxelSize),out surfpt3)){
+                        //Calculates the booleans to check weather there are connecting meshes on all sides
+                        // side1 = Contunity(x-vS,y,z, x-vS,y,z+vS) || Contunity(x,y+vS,z, x,y+vS,z+vS) || Contunity(x,y-vS,z, x,y-vS,z+vS);
+                        // side2 = Contunity(x,y,z+2*vS, x+vS,y,z+2*vS) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y-vS,z+vS, x+vS,y-vS,z+vS);
+                        // side3 = Contunity(x+2*vS,y,z, x+2*vS,y,z+vS) || Contunity(x+vS,y+vS,z, x+vS,y+vS,z+vS) || Contunity(x+vS,y-vS,z, x+vS,y-vS,z+vS);
+                        // side4 = Contunity(x,y,z-vS, x+vS,y,z-vS) || Contunity(x,y+vS,z, x+vS,y+vS,z) || Contunity(x,y-vS,z, x+vS,y-vS,z);
+
+                        
+                        //Chooses which direction to render mesh
+                        if(voxel1.sDistF < voxel2.sDistF ){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));  
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                     
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }
+                    }
+                }
+                //Repeat same code but for xy plane mesh
+                voxel1 = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){
+                    if(state.surfPts.TryGetValue(new Vector3(x+voxelSize,y,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x+voxelSize,y+voxelSize,z),out surfpt3)){
+                        // side1 = Contunity(x-vS,y,z, x-vS,y+vS,z) || Contunity(x,y,z+vS, x,y+vS,z+vS) || Contunity(x,y,z-vS, x,y+vS,z-vS);
+                        // side2 = Contunity(x,y+2*vS,z, x+vS,y+2*vS,z) || Contunity(x,y+vS,z+vS, x+vS,y+vS,z+vS) || Contunity(x,y+vS,z-vS, x+vS,y+vS,z-vS);
+                        // side3 = Contunity(x+2*vS,y,z, x+2*vS,y+vS,z) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x+vS,y,z-vS, x+vS,y+vS,z-vS);
+                        // side4 = Contunity(x,y-vS,z, x+vS,y-vS,z) || Contunity(x,y,z+vS, x+vS,y,z+vS) || Contunity(x,y,z-vS, x+vS,y,z-vS);
+
+                        
+                        if(voxel1.sDistF < voxel2.sDistF ){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));  
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                     
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x+voxelSize,y,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x+voxelSize,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }
+                    }
+                }
+                //Repeat same code but for yz plane mesh
+                voxel1 = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                if(!Voxel.SameSignsDistF(voxel1,voxel2)){  
+                    if(state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z),out surfpt1) && state.surfPts.TryGetValue(new Vector3(x,y,z+voxelSize),out surfpt2) && state.surfPts.TryGetValue(new Vector3(x,y+voxelSize,z+voxelSize),out surfpt3)){                    
+                        // side1 = Contunity(x,y-vS,z, x,y-vS,z+vS) || Contunity(x+vS,y,z, x+vS,y,z+vS) || Contunity(x-vS,y,z, x-vS,y,z+vS);
+                        // side2 = Contunity(x,y,z+2*vS, x,y+vS,z+2*vS) || Contunity(x+vS,y,z+vS, x+vS,y+vS,z+vS) || Contunity(x-vS,y,z+vS, x-vS,y+vS,z+vS);
+                        // side3 = Contunity(x,y+2*vS,z, x,y+2*vS,z+vS) || Contunity(x+vS,y+vS,z, x+vS,y+vS,z+vS) || Contunity(x-vS,y+vS,z, x-vS,y+vS,z+vS);
+                        // side4 = Contunity(x,y,z-vS, x,y+vS,z-vS) || Contunity(x+vS,y,z, x+vS,y+vS,z) || Contunity(x-vS,y,z, x-vS,y+vS,z);
+                    
+                        
+                        if(voxel1.sDistF < voxel2.sDistF){
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));                    
+                        }
+                        else{
+                            meshData.AddVertex(new Vector3(surfpt1.x,surfpt1.y,surfpt1.z));
+                            meshData.AddVertex(new Vector3(surfpt3.x,surfpt3.y,surfpt3.z));
+                            meshData.AddVertex(new Vector3(surfpt2.x,surfpt2.y,surfpt2.z));
+                            meshData.AddVertex(new Vector3(entry.Value.x,entry.Value.y,entry.Value.z));                                                      
+                        }
+                        meshData.AddQuadTriangles();
+                        if(voxel0.sDistF<0){
+                            meshData.uv.AddRange(voxel0.FaceUVs());
+
+                            if(splatter){
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                state.AirVoxelFace(temp, voxel0, meshData.uv4);
+                            }
+                        }
+                        else{
+                            if(voxel1.sDistF<0){
+                                meshData.uv.AddRange(voxel1.FaceUVs());
+                                temp2 = voxel1;
+                            }
+                            else if(voxel2.sDistF<0){
+                                meshData.uv.AddRange(voxel2.FaceUVs());
+                                temp2 = voxel2;
+                            }
+                            else{
+                                meshData.uv.AddRange(voxel0.FaceUVs());
+                                temp2 = voxel0;
+                            }
+                            
+
+                            if(splatter){
+                                temp = state.GetVoxel(x,y+voxelSize,z);
+                                state.AirVoxelFace(temp, temp2, meshData.uv2);
+
+                                temp = state.GetVoxel(x,y,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv3);
+                                
+                                temp = state.GetVoxel(x,y+voxelSize,z+voxelSize);
+                                state.AirVoxelFace(temp, temp2, meshData.uv4);
+                            }
+                        }                 
+                    }
+                }
+            }
+        }
+        // RenderMesh(meshData);
+        state.meshData = meshData;
+        state.updateThread = false;
+    }
+
     void AirVoxelFace(Voxel temp, Voxel voxel0, List<Vector2> uv){
         if(temp.sDistF > 0){
             uv.AddRange(voxel0.FaceUVs());
@@ -452,42 +747,9 @@ public class Chunk : MonoBehaviour
         }
     }
 
-    // bool Contunity(int x1, int y1, int z1, int x2, int y2, int z2){
-    //     Vector3 surfPt = new Vector3(0,0,0); 
-    //     if(surfPts2.TryGetValue(new WorldPos(x1,y1,z1), out surfPt) && surfPts2.TryGetValue(new WorldPos(x2,y2,z2), out surfPt)){
-    //         return true;
-    //     }
-    //     else if(x1 == 0 || x1 == chunkSize || y1 == 0 || y1 == chunkSize || z1 == 0 || z1 == chunkSize){
-    //         return true;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
-
     public static bool SameSignsDistF(float v1, float v2){
         return ((v1 >= 0 && v2 >= 0)  || (v1 < 0 && v2 < 0));
     }
-
-    // Vector3 Normals(int xi,int yi,int zi){
-    //     return GetVoxel(xi,yi,zi).SurfGrad(this,xi,yi,zi);
-    // }
-
-    //Calculates Surface points Dictionary
-    // void SurfacePoints(){
-    //     SurfPt surfPt = null;
-    //     surfPts = new Dictionary<Vector3, SurfPt>();
-    //     for(float y = 0;y <= chunkSize; y = y+voxelSize){
-    //         for(float x = 0; x<= chunkSize; x = x+voxelSize){
-    //             for(float z = 0; z<=chunkSize; z = z+voxelSize){
-    //                 surfPt = GetVoxel(x,y,z).FindSurfacePoint(this,x,y,z);
-    //                 if (surfPt != null){
-    //                     surfPts.Add(new Vector3(x,y,z), surfPt);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     //Calculates Surface points Dictionary
     void SurfacePoints(){
@@ -509,7 +771,7 @@ public class Chunk : MonoBehaviour
 
 
 
-
+    //OLD CODE Deprecated
     //Render Chunk Mesh
     public void RenderMesh(MyMesh meshData){
         rendered = true;
@@ -543,8 +805,8 @@ public class Chunk : MonoBehaviour
 
         coll.sharedMesh = null;
         Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
+        mesh.vertices = meshData.vertices.ToArray();
+        mesh.triangles = meshData.triangles.ToArray();
         mesh.RecalculateNormals();
 
         coll.sharedMesh = mesh;
@@ -552,11 +814,11 @@ public class Chunk : MonoBehaviour
 
 
     public WorldPos GetPos(){
-        return pos;
+        return chunkPos;
     }
 
     public void SetPos(WorldPos pos){
-        this.pos = pos;
+        this.chunkPos = pos;
     }
 
     public void SetWorld(World world){
@@ -571,6 +833,77 @@ public class Chunk : MonoBehaviour
 
     public Voxel[, ,] GetVoxels(){
         return voxels;
+    }
+
+    private void VoxelsToList(){
+        voxelList.voxels = new List<Voxel>();
+
+        for(int i =0; i < chunkVoxels; i++){
+            for(int j =0; j < chunkVoxels; j++){
+                for(int k =0; k < chunkVoxels; k++){
+                    voxelList.voxels.Add(voxels[i,j,k]);
+                }
+            }
+        }
+    }
+
+    // private Voxel[,,]  ListToVoxels(){
+    //     int i = 0,j = 0,k = 0;
+
+    //     Voxel[,,] voxels = new Voxel[chunkVoxels,chunkVoxels,chunkVoxels];
+    //     foreach(Voxel voxel in voxelList.voxels){
+    //         voxels[i,j,k] = VoxelFactory.Create(voxel);
+    //         if(k >= 15){
+    //             if(j >= 15){
+    //                 i++;
+    //                 j = 0;
+    //                 k = 0;
+    //             }
+    //             else{
+    //                 j++;
+    //                 k = 0;
+    //             }
+    //         }
+    //         else{
+    //             k++;
+    //         }
+    //     }
+    //     return voxels;
+    // }
+
+    private void  ListToVoxels(){
+        int i = 0,j = 0,k = 0;
+
+        foreach(Voxel voxel in voxelList.voxels){
+            voxels[i,j,k] = VoxelFactory.Create(voxel);
+            if(k >= 15){
+                if(j >= 15){
+                    i++;
+                    j = 0;
+                    k = 0;
+                }
+                else{
+                    j++;
+                    k = 0;
+                }
+            }
+            else{
+                k++;
+            }
+        }
+        voxelList.voxels = null;
+    }
+
+    public string ChunkToJSON(){
+        VoxelsToList();
+        return JsonUtility.ToJson(this);
+    }
+
+    public void JSONToChunk(string save){
+        WorldPos pos = this.chunkPos;
+        JsonUtility.FromJsonOverwrite(save,this);
+        this.chunkPos = pos;
+        ListToVoxels();
     }
 
 }

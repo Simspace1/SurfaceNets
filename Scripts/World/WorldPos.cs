@@ -8,9 +8,16 @@ public class WorldPos
     public float x {get; private set;}
     public float y {get; private set;}
     public float z {get; private set;}
-    public int xi {get; private set;}
-    public int yi {get; private set;}
-    public int zi {get; private set;}
+    public int xi {get => Xi; private set => Xi = value;}
+    public int yi {get => Yi; private set => Yi = value;}
+    public int zi {get => Zi; private set => Zi = value;}
+
+    [SerializeField]
+    private int Xi;
+    [SerializeField]
+    private int Yi;
+    [SerializeField]
+    private int Zi;
 
 
     public WorldPos(float x, float y, float z){
@@ -123,7 +130,39 @@ public class WorldPos
     public static float Distance(WorldPos pos1, WorldPos pos2){
         return Mathf.Sqrt(Mathf.Pow(pos1.x-pos2.x,2) + Mathf.Pow(pos1.y-pos2.y,2) + Mathf.Pow(pos1.z-pos2.z,2));
     }
+
+    public void FixfloatPos(){
+        this.x = xi*Chunk.voxelSize;
+        this.y = yi*Chunk.voxelSize;
+        this.z = zi*Chunk.voxelSize;
+    }
+
+    public void FixIntPos(){
+        this.xi = Mathf.FloorToInt(x/Chunk.voxelSize);
+        this.yi = Mathf.FloorToInt(y/Chunk.voxelSize);
+        this.zi = Mathf.FloorToInt(z/Chunk.voxelSize);
+    }
+
+    public RegionPos GetRegion(){
+        // return new RegionPos((xi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(yi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels,(zi+RegionCol.regionVoxels/2)/RegionCol.regionVoxels);
+        return new RegionPos(Mathf.FloorToInt(((float) xi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels), Mathf.FloorToInt(((float) yi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels), Mathf.FloorToInt(((float) zi + RegionCol.regionVoxels/2)/RegionCol.regionVoxels));
+    }
+
+    new public string ToString(){
+        return "pos:"+x+"_"+y+"_"+z;
+    }
+
+    public string ToIntString(){
+        return "posI:"+xi+"_"+yi+"_"+zi;
+    }
+
+    public WorldPos ToColumn(){
+        return new WorldPos(xi,0,zi);
+    }
     
+    public WorldPos Substract(WorldPos pos){
+        return new WorldPos(this.xi - pos.xi, this.yi - pos.yi, this.zi - pos.zi);
+    }
 }
 
 public class WorldPosEqualityComparer : IEqualityComparer<WorldPos>

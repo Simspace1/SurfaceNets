@@ -76,16 +76,16 @@ public class TerrainGen2
     }
 
     public ColumnGen GenerateColumnGen(WorldPos pos){
-        float[,] terrainHeight = new float[Chunk.chunkVoxels+3,Chunk.chunkVoxels+3];
-        float[,] stoneHeight = new float[Chunk.chunkVoxels+3,Chunk.chunkVoxels+3];
+        float[,] terrainHeight = new float[Chunk.chunkVoxels+5,Chunk.chunkVoxels+5];
+        float[,] stoneHeight = new float[Chunk.chunkVoxels+5,Chunk.chunkVoxels+5];
         float[] minMax = new float[2];
 
         // Old Code from TerrainGen
         // float stoneheight, MountainsBiome,dirtHeight;
         float min = 0;
         float max = 0;
-        for (float x = pos.x-Chunk.voxelSize ; x<pos.x+Chunk.chunkSize+Chunk.voxelSize*2; x += Chunk.voxelSize){
-            for (float z = pos.z-Chunk.voxelSize ; z<pos.z+Chunk.chunkSize+Chunk.voxelSize*2; z += Chunk.voxelSize){
+        for (float x = pos.x-Chunk.voxelSize ; x<pos.x+Chunk.chunkSize+Chunk.voxelSize*4; x += Chunk.voxelSize){
+            for (float z = pos.z-Chunk.voxelSize ; z<pos.z+Chunk.chunkSize+Chunk.voxelSize*4; z += Chunk.voxelSize){
                 int xi = Mathf.FloorToInt((x-(pos.x-Chunk.voxelSize))/Chunk.voxelSize);
                 int zi = Mathf.FloorToInt((z-(pos.z-Chunk.voxelSize))/Chunk.voxelSize);
 
